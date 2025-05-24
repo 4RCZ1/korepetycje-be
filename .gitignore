@@ -38,6 +38,9 @@ Icon
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
 
+# AWS SAM directory
+.aws-sam/
+
 # Directories potentially created on remote AFP share
 .AppleDB
 .AppleDesktop
