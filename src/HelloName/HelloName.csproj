@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+        <AWSProjectType>Lambda</AWSProjectType>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <PublishAot>true</PublishAot>
+        <StripSymbols Condition="$([MSBuild]::IsOSPlatform('Linux')) and '$(Configuration)' != 'Debug'">true</StripSymbols>
+        <TrimMode>partial</TrimMode>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Amazon.Lambda.Core" Version="2.2.0" />
+        <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.4.1" />
+        <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="2.6.0" />
+    </ItemGroup>
+</Project>
