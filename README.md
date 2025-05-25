@@ -34,12 +34,7 @@ To use the SAM CLI, you need the following tools.
 * .NET Core - [Install .NET Core](https://www.microsoft.com/net/download)
 * Docker - [Install Docker community edition](https://hub.docker.com/search/?type=edition&offering=community)
 
-To build and deploy your application for the first time, run the following in your shell:
-
-```bash
-sam build
-sam deploy --guided
-```
+Build and deploy is handled by AWS pipeline, so just push to branch dev to deploy a test version, and to branch prod to deploy a final version.
 
 The first command will build the source of your application. The second command will package and deploy your application to AWS, with a series of prompts:
 
