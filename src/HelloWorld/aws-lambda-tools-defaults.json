@@ -5,8 +5,15 @@
     "dotnet lambda help",
     "All the command line options for the Lambda command can be specified in this file."
   ],
-  "profile": "",
-  "region": "",
+  "profile": "default",
+  "region": "eu-central-1",
   "configuration": "Release",
+  "framework": "net8.0",
+  "function-runtime": "dotnet8",
+  "function-handler": "HelloWorld",
+  "function-name": "YourLambdaFunctionName",
+  "function-description": "My ASP.NET Core API on Lambda",
+  "function-timeout": 30,
+  "function-memory-size": 512,
   "template": "template.yaml"
 }
