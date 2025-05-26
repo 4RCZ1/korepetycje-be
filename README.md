@@ -118,3 +118,12 @@ sam delete --stack-name sam-app
 See the [AWS SAM developer guide](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) for an introduction to SAM specification, the SAM CLI, and serverless application concepts.
 
 Next, you can use AWS Serverless Application Repository to deploy ready to use Apps that go beyond hello world samples and learn how authors developed their applications: [AWS Serverless Application Repository main page](https://aws.amazon.com/serverless/serverlessrepo/)
+
+## Adding a new endpoint
+
+To add a new endpoint you need to:
+1. Create a new function in the `src` folder, following the structure of the existing functions.
+   - Ensure the function is defined in a new file, e.g., `src/NewFunction.cs`.
+   - Implement the function logic in the new file.
+2. Add a new function to the `template.yaml` file under the `Resources` section.
+3. Add a new output to the `Outputs` section of the `template.yaml` file.
