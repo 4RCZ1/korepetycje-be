@@ -8,5 +8,5 @@ public class OurDbContext : DbContext
         : base(options) { }
     public DbSet<Lesson> Lessons { get; set; }
     public DbSet<Student> Students { get; set; }
-    public DbSet<Series> Series { get; set; }
+    public DbSet<Schedule> Schedules { get; set; }
 }

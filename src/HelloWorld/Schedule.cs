@@ -3,11 +3,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HelloWorld;
 
-[Table("series")]
-public class Series
+[Table("schedule")]
+public class Schedule
 {
     [Key]
-    [Column("series_id")]
+    [Column("schedule_id")]
     public int Id { get; set; }
 
     [Required]

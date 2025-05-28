@@ -25,5 +25,5 @@ public class Student
     [Column("address")]
     public required string Address { get; set; }
 
-    public ICollection<Series> Series { get; } = new List<Series>();
+    public ICollection<Schedule> Schedules { get; } = new List<Schedule>();
 }

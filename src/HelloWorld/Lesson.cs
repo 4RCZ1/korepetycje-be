@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HelloWorld;
 
-[PrimaryKey(nameof(SeriesId), nameof(Ordinal))]
+[PrimaryKey(nameof(ScheduleId), nameof(Ordinal))]
 [Table("lesson")]
 public class Lesson
 {
     [Key]
-    [Column("series_id")]
-    public int SeriesId { get; set; }
+    [Column("schedule_id")]
+    public int ScheduleId { get; set; }
 
     [Key]
     [Column("ordinal")]
@@ -31,6 +31,6 @@ public class Lesson
     [Column("has_occurred")]
     public bool HasOccurred { get; set; }
 
-    [ForeignKey(nameof(SeriesId))]
-    public required Series Series { get; set; }
+    [ForeignKey(nameof(ScheduleId))]
+    public required Schedule Schedule { get; set; }
 }
