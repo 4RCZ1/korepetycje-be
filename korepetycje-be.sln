@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloWorld", "src\HelloWorl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloWorld.Tests", "test\HelloWorld.Test\HelloWorld.Tests.csproj", "{FBA93529-0CBA-4E12-9F56-65B189EEEA9B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database.Contract", "Database.Contract\Database.Contract.csproj", "{3D88421D-F51D-41DA-9568-524C79F4F444}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{FBA93529-0CBA-4E12-9F56-65B189EEEA9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FBA93529-0CBA-4E12-9F56-65B189EEEA9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FBA93529-0CBA-4E12-9F56-65B189EEEA9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D88421D-F51D-41DA-9568-524C79F4F444}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D88421D-F51D-41DA-9568-524C79F4F444}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D88421D-F51D-41DA-9568-524C79F4F444}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D88421D-F51D-41DA-9568-524C79F4F444}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
