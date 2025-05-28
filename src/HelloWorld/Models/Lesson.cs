@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace HelloWorld;
+namespace HelloWorld.Models;
 
 [PrimaryKey(nameof(ScheduleId), nameof(Ordinal))]
 [Table("lesson")]

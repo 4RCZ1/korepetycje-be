@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace HelloWorld;
+namespace HelloWorld.Models;
 
 [Table("schedule")]
 public class Schedule

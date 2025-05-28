@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-
+using HelloWorld.Models;
 namespace HelloWorld;
 
 public class OurDbContext : DbContext
