@@ -1,20 +1,29 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HelloWorld;
 
+[Table("student")]
 public class Student
 {
     [Key]
+    [Column("student_id")]
     public int Id { get; set; }
 
     [Required]
-    public string Name { get; set; }
+    [MaxLength(50)]
+    [Column("name")]
+    public required string Name { get; set; }
 
     [Required]
-    public string Surname { get; set; }
+    [MaxLength(50)]
+    [Column("surname")]
+    public required string Surname { get; set; }
 
     [Required]
-    public string Address { get; set; }
+    [MaxLength(200)]
+    [Column("address")]
+    public required string Address { get; set; }
 
-    public List<Serie>? Series { get; set; }
+    public ICollection<Series> Series { get; } = new List<Series>();
 }

@@ -1,28 +1,36 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace HelloWorld;
 
+[PrimaryKey(nameof(SeriesId), nameof(Ordinal))]
+[Table("lesson")]
 public class Lesson
 {
     [Key]
-    [Column(Order = 1)]
-    public int Series_id { get; set; }
+    [Column("series_id")]
+    public int SeriesId { get; set; }
 
     [Key]
-    [Column(Order = 2)]
+    [Column("ordinal")]
     public int Ordinal { get; set; }
 
-    public DateTime Custom_time { get; set; }
-    public TimeSpan Custom_duration { get; set; }
-    public string Tutor_info { get; set; }
+    [Column("custom_duration")]
+    public TimeSpan? CustomDuration { get; set; }
+
+    [MaxLength(200)]
+    [Column("tutor_info")]
+    public string? TutorInfo { get; set; }
 
     [Required]
-    public bool Is_confirmed { get; set; }
+    [Column("is_confirmed")]
+    public bool IsConfirmed { get; set; }
 
     [Required]
-    public bool Has_occured { get; set; }
+    [Column("has_occurred")]
+    public bool HasOccurred { get; set; }
 
-    [ForeignKey("Series_id")]
-    public Serie Serie { get; set; }
+    [ForeignKey(nameof(SeriesId))]
+    public required Series Series { get; set; }
 }
