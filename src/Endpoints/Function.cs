@@ -7,7 +7,7 @@ using Amazon.Lambda.APIGatewayEvents;
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
 
-namespace HelloName;
+namespace Endpoints;
 
 public class Function
 {
@@ -22,10 +22,10 @@ public class Function
         {
             // Parse the JSON body
             var requestBody = JsonSerializer.Deserialize<RequestBody>(apigProxyEvent.Body ?? "{}");
-            
+
             // Get the name parameter or use a default
             var name = !string.IsNullOrEmpty(requestBody?.name) ? requestBody.name : "World";
-            
+
             // Create response body
             var responseBody = new Dictionary<string, string>
             {
@@ -36,8 +36,8 @@ public class Function
             {
                 Body = JsonSerializer.Serialize(responseBody),
                 StatusCode = 200,
-                Headers = new Dictionary<string, string> 
-                { 
+                Headers = new Dictionary<string, string>
+                {
                     { "Content-Type", "application/json" },
                     { "Access-Control-Allow-Origin", "*" },
                     { "Access-Control-Allow-Headers", "Content-Type" },
@@ -64,7 +64,7 @@ public class Function
         {
             // Handle other errors
             context.Logger.LogLine($"Error: {ex.Message}");
-            
+
             var errorResponse = new Dictionary<string, string>
             {
                 { "error", "Internal server error" }
