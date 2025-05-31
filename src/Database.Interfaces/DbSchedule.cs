@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Database.Interfaces;
 
-namespace HelloWorld.Models;
+namespace Database.Interfaces;
 
 [Table("schedule")]
 public class DbSchedule

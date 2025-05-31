@@ -1,5 +1,3 @@
 namespace Timetable.Interfaces;
 
-public class InvalidRequestException : Exception
-{
-}
+public class InvalidRequestException : Exception;

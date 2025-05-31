@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace HelloWorld.Models;
+namespace Database.Interfaces;
 
 [Table("student")]
 public class DbStudent

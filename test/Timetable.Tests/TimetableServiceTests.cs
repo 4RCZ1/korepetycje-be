@@ -45,8 +45,8 @@ public class TimetableServiceTests
 
     private const string RequestBeginDateString = "2025-01-01";
     private const string RequestEndDateString = "2026-01-01";
-    private static readonly DateOnly RequestBeginDate = new DateOnly(2025, 1, 1);
-    private static readonly DateOnly RequestEndDate = new DateOnly(2026, 1, 1);
-    private static readonly DateTime LessonStart = new DateTime(2025, 5, 31, 14, 0, 0);
-    private static readonly DateTime LessonEnd = new DateTime(2025, 5, 31, 14, 30, 0);
+    private static readonly DateOnly RequestBeginDate = new(2025, 1, 1);
+    private static readonly DateOnly RequestEndDate = new(2026, 1, 1);
+    private static readonly DateTime LessonStart = new(2025, 5, 31, 14, 0, 0);
+    private static readonly DateTime LessonEnd = new(2025, 5, 31, 14, 30, 0);
 }
