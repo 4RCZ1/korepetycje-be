@@ -6,7 +6,7 @@ namespace HelloWorld.Models;
 
 [PrimaryKey(nameof(ScheduleId), nameof(Ordinal))]
 [Table("lesson")]
-public class Lesson
+public class DbLesson
 {
     [Key]
     [Column("schedule_id")]
@@ -32,5 +32,5 @@ public class Lesson
     public bool HasOccurred { get; set; }
 
     [ForeignKey(nameof(ScheduleId))]
-    public required Schedule Schedule { get; set; }
+    public required DbSchedule Schedule { get; set; }
 }

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace HelloWorld.Models;
 
 [Table("schedule")]
-public class Schedule
+public class DbSchedule
 {
     [Key]
     [Column("schedule_id")]
@@ -31,7 +31,7 @@ public class Schedule
     public TimeSpan LessonDuration { get; set; }
 
     [ForeignKey(nameof(StudentId))]
-    public required Student Student { get; set; }
+    public required DbStudent Student { get; set; }
 
-    public ICollection<Lesson> Lessons { get; } = new List<Lesson>();
+    public ICollection<DbLesson> Lessons { get; } = new List<DbLesson>();
 }

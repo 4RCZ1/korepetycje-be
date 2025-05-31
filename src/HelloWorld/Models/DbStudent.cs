@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace HelloWorld.Models;
 
 [Table("student")]
-public class Student
+public class DbStudent
 {
     [Key]
     [Column("student_id")]
@@ -25,5 +25,5 @@ public class Student
     [Column("address")]
     public required string Address { get; set; }
 
-    public ICollection<Schedule> Schedules { get; } = new List<Schedule>();
+    public ICollection<DbSchedule> Schedules { get; } = new List<DbSchedule>();
 }
