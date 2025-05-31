@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using HelloWorld.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Database.Interfaces;

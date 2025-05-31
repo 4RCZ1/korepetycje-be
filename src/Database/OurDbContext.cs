@@ -1,5 +1,4 @@
 ﻿using Database.Interfaces;
-using HelloWorld.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Database;
