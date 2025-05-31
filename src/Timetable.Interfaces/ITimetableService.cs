@@ -2,5 +2,5 @@ namespace Timetable.Interfaces;
 
 public interface ITimetableService
 {
-    IList<LessonDto> GetLessons(DateOnly startDate, DateOnly endDate);
+    IList<LessonDto> GetLessons(string startDate, string endDate);
 }

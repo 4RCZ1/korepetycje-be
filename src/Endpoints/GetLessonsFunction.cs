@@ -1,32 +1,31 @@
 using System.Text.Json;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
+using Database;
+using Timetable;
+using Timetable.Interfaces;
 
 namespace Endpoints;
 
 public class GetLessonsFunction
 {
-    public class RequestBody
-    {
-        public string startDate { get; set; } = string.Empty;
-    }
-
-    public async Task<APIGatewayProxyResponse> GetLessonsHandler(
+    public APIGatewayProxyResponse GetLessonsHandler(
         APIGatewayProxyRequest request, ILambdaContext context)
     {
-        var responseBody = new Dictionary<string, string>
-        {
-            { "message", "test message" },
-        };
+        var lessons = _service.GetLessons(
+            request.QueryStringParameters["start-date"],
+            request.QueryStringParameters["end-date"]);
 
         return new APIGatewayProxyResponse
         {
-            Body = JsonSerializer.Serialize(responseBody),
+            Body = JsonSerializer.Serialize(lessons),
             StatusCode = 200,
             Headers = new Dictionary<string, string>
             {
                 { "Content-Type", "application/json" },
-            }
+            },
         };
     }
+
+    private readonly ITimetableService _service = new TimetableService(new LessonDao());
 }
