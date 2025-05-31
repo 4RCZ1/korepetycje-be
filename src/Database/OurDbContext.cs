@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Database.Interfaces;
 using HelloWorld.Models;
-namespace HelloWorld;
+using Microsoft.EntityFrameworkCore;
+
+namespace Database;
 
 public class OurDbContext : DbContext
 {

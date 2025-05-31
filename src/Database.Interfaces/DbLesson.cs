@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using HelloWorld.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace HelloWorld.Models;
+namespace Database.Interfaces;
 
 [PrimaryKey(nameof(ScheduleId), nameof(Ordinal))]
 [Table("lesson")]
