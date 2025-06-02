@@ -27,7 +27,7 @@ public class TimetableService : ITimetableService
         string startTime,
         string endDate,
         int periodInDays,
-        string studentUuid,
+        string studentExternalId,
         int durationInMinutes)
     {
         var start = DateTime.ParseExact(
@@ -44,7 +44,7 @@ public class TimetableService : ITimetableService
         }
         var schedule = new DbSchedule
         {
-            StudentId = DecodeStudentUuid(studentUuid),
+            StudentId = DecodeStudentExternalId(studentExternalId),
             Period = period,
             LessonDuration = TimeSpan.FromMinutes(durationInMinutes),
             Lessons = lessons,
@@ -52,14 +52,14 @@ public class TimetableService : ITimetableService
         _dao.SaveSchedule(schedule);
     }
 
-    public void ConfirmLesson(string lessonUuid)
+    public void ConfirmLesson(string lessonExternalId)
     {
-        _dao.ConfirmLesson(int.Parse(lessonUuid));
+        _dao.ConfirmLesson(int.Parse(lessonExternalId));
     }
 
-    private static int DecodeStudentUuid(string uuid)
+    private static int DecodeStudentExternalId(string externalId)
     {
-        return int.Parse(uuid);
+        return int.Parse(externalId);
     }
 
     private static DateOnly ParseDate(string s)

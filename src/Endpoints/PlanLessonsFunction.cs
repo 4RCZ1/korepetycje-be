@@ -11,7 +11,7 @@ public class PlanLessonsFunction
         public required string BeginTime { get; set; }
         public required string EndDate { get; set; }
         public required int PeriodInDays { get; set; }
-        public required string StudentUuid { get; set; }
+        public required string StudentExternalId { get; set; }
         public required int DurationInMinutes { get; set; }
     }
 
@@ -24,7 +24,7 @@ public class PlanLessonsFunction
             body.BeginTime,
             body.EndDate,
             body.PeriodInDays,
-            body.StudentUuid,
+            body.StudentExternalId,
             body.DurationInMinutes);
         return new APIGatewayProxyResponse
         {

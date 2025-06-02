@@ -9,8 +9,8 @@ public class ConfirmLessonFunction
         APIGatewayProxyRequest request, ILambdaContext context)
     {
         var service = await ServiceFactory.CreateTimetableService();
-        var lessonUuid = request.PathParameters["lessonUuid"];
-        service.ConfirmLesson(lessonUuid);
+        var lessonExternalId = request.PathParameters["lessonExternalId"];
+        service.ConfirmLesson(lessonExternalId);
         return new APIGatewayProxyResponse
         {
             StatusCode = 200,
