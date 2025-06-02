@@ -14,10 +14,6 @@ public class ConfirmLessonFunction
         return new APIGatewayProxyResponse
         {
             StatusCode = 200,
-            Headers = new Dictionary<string, string>
-            {
-                { "Content-Type", "application/json" },
-            },
         };
     }
 }
