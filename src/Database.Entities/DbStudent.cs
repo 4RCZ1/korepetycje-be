@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Database.Interfaces;
+namespace Database.Entities;
 
 [Table("student")]
 public class DbStudent

@@ -1,20 +1,22 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
-namespace Database.Interfaces;
+namespace Database.Entities;
 
-[PrimaryKey(nameof(ScheduleId), nameof(Ordinal))]
 [Table("lesson")]
 public class DbLesson
 {
     [Key]
+    [Column("lesson_id")]
+    public int Id { get; set; }
+
+    [Required]
     [Column("schedule_id")]
     public int ScheduleId { get; set; }
 
-    [Key]
-    [Column("ordinal")]
-    public int Ordinal { get; set; }
+    [Required]
+    [Column("start_time")]
+    public DateTime StartTime { get; set; }
 
     [Column("custom_duration")]
     public TimeSpan? CustomDuration { get; set; }
@@ -32,5 +34,5 @@ public class DbLesson
     public bool HasOccurred { get; set; }
 
     [ForeignKey(nameof(ScheduleId))]
-    public required DbSchedule Schedule { get; set; }
+    public DbSchedule? Schedule { get; set; }
 }
