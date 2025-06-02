@@ -10,7 +10,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Timetable.Tests", "test\Tim
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database", "src\Database\Database.csproj", "{D5AAE659-E260-42DF-AAA9-3A93031A1ADB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database.Interfaces", "src\Database.Interfaces\Database.Interfaces.csproj", "{BDE80288-6FA7-46D9-919F-36468B459779}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database.Entities", "src\Database.Entities\Database.Entities.csproj", "{BDE80288-6FA7-46D9-919F-36468B459779}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Endpoints.Interfaces", "src\Endpoints.Interfaces\Endpoints.Interfaces.csproj", "{2C2A8F4D-D448-49C0-8CBC-57A29C7AFD2B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,5 +44,9 @@ Global
 		{BDE80288-6FA7-46D9-919F-36468B459779}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDE80288-6FA7-46D9-919F-36468B459779}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDE80288-6FA7-46D9-919F-36468B459779}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C2A8F4D-D448-49C0-8CBC-57A29C7AFD2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C2A8F4D-D448-49C0-8CBC-57A29C7AFD2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C2A8F4D-D448-49C0-8CBC-57A29C7AFD2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C2A8F4D-D448-49C0-8CBC-57A29C7AFD2B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

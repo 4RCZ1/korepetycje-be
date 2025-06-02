@@ -1,5 +1,7 @@
-using Timetable.Interfaces;
+using Database.Entities;
+using Endpoints.Interfaces;
 using FakeItEasy;
+using Timetable.Interfaces;
 
 namespace Timetable.Tests;
 
@@ -13,12 +15,17 @@ public class TimetableServiceTests
     [Fact]
     public void GetLessonsFromDao()
     {
-        List<Lesson> lessons =
+        List<DbLesson> lessons =
         [
-            new() { StartTime = LessonStart, EndTime = LessonEnd, TutorInfo = string.Empty },
+            new()
+            {
+                StartTime = LessonStart,
+                Schedule = new DbSchedule { LessonDuration = LessonDuration },
+            },
         ];
         A.CallTo(() => _dao.GetLessonsInRange(RequestBeginDate, RequestEndDate))
             .Returns(lessons);
+        var actual = _service.GetLessons(RequestBeginDateString, RequestEndDateString);
         List<LessonDto> expected =
         [
             new()
@@ -26,9 +33,9 @@ public class TimetableServiceTests
                 StartTime = LessonStart,
                 EndTime = LessonEnd,
                 Info = string.Empty,
-            }
+            },
         ];
-        Assert.Equivalent(expected, _service.GetLessons(RequestBeginDateString, RequestEndDateString), strict: true);
+        Assert.Equivalent(expected, actual, strict: true);
     }
 
     [Fact]
@@ -40,6 +47,30 @@ public class TimetableServiceTests
             _service.GetLessons(RequestBeginDateString, "aaa"));
     }
 
+    [Fact]
+    public void ExcludeEndDate()
+    {
+        var schedule = A.Captured<DbSchedule>();
+        A.CallTo(() => _dao.SaveSchedule(schedule._)).DoesNothing();
+        _service.PlanLessons("2025-06-02T12:00:00.0000000Z", "2025-06-16", 7, StudentUuid, 30);
+        Assert.Collection(schedule.Values, s =>
+        {
+            Assert.Equal(TimeSpan.FromDays(7), s.Period);
+            Assert.Equal(LessonDuration, s.LessonDuration);
+            Assert.Equal(StudentId, s.StudentId);
+            Assert.Collection(s.Lessons,
+                l => Assert.Equal(new DateTime(2025, 6, 2, 12, 0, 0), l.StartTime),
+                l => Assert.Equal(new DateTime(2025, 6, 9, 12, 0, 0), l.StartTime));
+        });
+    }
+
+    [Fact]
+    public void ConfirmLesson()
+    {
+        _service.ConfirmLesson("13");
+        A.CallTo(() => _dao.ConfirmLesson(13)).MustHaveHappenedOnceExactly();
+    }
+
     private readonly ILessonDao _dao = A.Fake<ILessonDao>();
     private readonly ITimetableService _service;
 
@@ -49,4 +80,7 @@ public class TimetableServiceTests
     private static readonly DateOnly RequestEndDate = new(2026, 1, 1);
     private static readonly DateTime LessonStart = new(2025, 5, 31, 14, 0, 0);
     private static readonly DateTime LessonEnd = new(2025, 5, 31, 14, 30, 0);
+    private static readonly TimeSpan LessonDuration = TimeSpan.FromMinutes(30);
+    private const string StudentUuid = "123";
+    private const int StudentId = 123;
 }
