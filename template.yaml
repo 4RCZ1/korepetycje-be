@@ -24,3 +24,33 @@ Resources:
           Properties:
             Path: /api/lesson
             Method: get
+  PlanLessonsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/Endpoints/
+      Handler: Endpoints::Endpoints.PlanLessonsFunction::PlanLessons
+      Runtime: dotnet8
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Events:
+        GetLessons:
+          Type: Api
+          Properties:
+            Path: /api/plan-lessons
+            Method: post
+  ConfirmLessonFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/Endpoints/
+      Handler: Endpoints::Endpoints.ConfirmLessonFunction::ConfirmLesson
+      Runtime: dotnet8
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Events:
+        GetLessons:
+          Type: Api
+          Properties:
+            Path: /api/lesson/{lessonUuid}/confirm
+            Method: put
