@@ -1,4 +1,4 @@
-namespace Timetable.Interfaces;
+namespace Endpoints.Interfaces;
 
 public class LessonDto
 {
