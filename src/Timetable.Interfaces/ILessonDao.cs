@@ -1,6 +1,10 @@
+using Database.Entities;
+
 namespace Timetable.Interfaces;
 
 public interface ILessonDao
 {
-    IList<Lesson> GetLessonsInRange(DateOnly startDate, DateOnly endDate);
+    IList<DbLesson> GetLessonsInRange(DateOnly startDate, DateOnly endDate);
+    void ConfirmLesson(int lessonId);
+    void SaveSchedule(DbSchedule schedule);
 }
