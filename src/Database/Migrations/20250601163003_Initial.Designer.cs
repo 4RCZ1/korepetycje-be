@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Database.Migrations
 {
     [DbContext(typeof(OurDbContext))]
-    [Migration("20250531161647_Initial")]
+    [Migration("20250601163003_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -27,13 +27,12 @@ namespace Database.Migrations
 
             modelBuilder.Entity("Database.Interfaces.DbLesson", b =>
                 {
-                    b.Property<int>("ScheduleId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("schedule_id");
+                        .HasColumnName("lesson_id");
 
-                    b.Property<int>("Ordinal")
-                        .HasColumnType("integer")
-                        .HasColumnName("ordinal");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<TimeSpan?>("CustomDuration")
                         .HasColumnType("interval")
@@ -47,17 +46,27 @@ namespace Database.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("is_confirmed");
 
+                    b.Property<int>("ScheduleId")
+                        .HasColumnType("integer")
+                        .HasColumnName("schedule_id");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("start_time");
+
                     b.Property<string>("TutorInfo")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
                         .HasColumnName("tutor_info");
 
-                    b.HasKey("ScheduleId", "Ordinal");
+                    b.HasKey("Id");
+
+                    b.HasIndex("ScheduleId");
 
                     b.ToTable("lesson");
                 });
 
-            modelBuilder.Entity("HelloWorld.Models.DbSchedule", b =>
+            modelBuilder.Entity("Database.Interfaces.DbSchedule", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -65,14 +74,6 @@ namespace Database.Migrations
                         .HasColumnName("schedule_id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("BeginTime")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("begin_time");
-
-                    b.Property<int>("EndOrdinal")
-                        .HasColumnType("integer")
-                        .HasColumnName("end_ordinal");
 
                     b.Property<TimeSpan>("LessonDuration")
                         .HasColumnType("interval")
@@ -93,7 +94,7 @@ namespace Database.Migrations
                     b.ToTable("schedule");
                 });
 
-            modelBuilder.Entity("HelloWorld.Models.DbStudent", b =>
+            modelBuilder.Entity("Database.Interfaces.DbStudent", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -127,7 +128,7 @@ namespace Database.Migrations
 
             modelBuilder.Entity("Database.Interfaces.DbLesson", b =>
                 {
-                    b.HasOne("HelloWorld.Models.DbSchedule", "Schedule")
+                    b.HasOne("Database.Interfaces.DbSchedule", "Schedule")
                         .WithMany("Lessons")
                         .HasForeignKey("ScheduleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -136,9 +137,9 @@ namespace Database.Migrations
                     b.Navigation("Schedule");
                 });
 
-            modelBuilder.Entity("HelloWorld.Models.DbSchedule", b =>
+            modelBuilder.Entity("Database.Interfaces.DbSchedule", b =>
                 {
-                    b.HasOne("HelloWorld.Models.DbStudent", "Student")
+                    b.HasOne("Database.Interfaces.DbStudent", "Student")
                         .WithMany("Schedules")
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -147,12 +148,12 @@ namespace Database.Migrations
                     b.Navigation("Student");
                 });
 
-            modelBuilder.Entity("HelloWorld.Models.DbSchedule", b =>
+            modelBuilder.Entity("Database.Interfaces.DbSchedule", b =>
                 {
                     b.Navigation("Lessons");
                 });
 
-            modelBuilder.Entity("HelloWorld.Models.DbStudent", b =>
+            modelBuilder.Entity("Database.Interfaces.DbStudent", b =>
                 {
                     b.Navigation("Schedules");
                 });

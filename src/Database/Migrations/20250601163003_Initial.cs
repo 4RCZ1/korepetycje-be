@@ -34,9 +34,7 @@ namespace Database.Migrations
                     schedule_id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     student_id = table.Column<int>(type: "integer", nullable: false),
-                    begin_time = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     period = table.Column<TimeSpan>(type: "interval", nullable: false),
-                    end_ordinal = table.Column<int>(type: "integer", nullable: false),
                     lesson_duration = table.Column<TimeSpan>(type: "interval", nullable: false)
                 },
                 constraints: table =>
@@ -54,8 +52,10 @@ namespace Database.Migrations
                 name: "lesson",
                 columns: table => new
                 {
+                    lesson_id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     schedule_id = table.Column<int>(type: "integer", nullable: false),
-                    ordinal = table.Column<int>(type: "integer", nullable: false),
+                    start_time = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     custom_duration = table.Column<TimeSpan>(type: "interval", nullable: true),
                     tutor_info = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
                     is_confirmed = table.Column<bool>(type: "boolean", nullable: false),
@@ -63,7 +63,7 @@ namespace Database.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_lesson", x => new { x.schedule_id, x.ordinal });
+                    table.PrimaryKey("PK_lesson", x => x.lesson_id);
                     table.ForeignKey(
                         name: "FK_lesson_schedule_schedule_id",
                         column: x => x.schedule_id,
@@ -71,6 +71,11 @@ namespace Database.Migrations
                         principalColumn: "schedule_id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_lesson_schedule_id",
+                table: "lesson",
+                column: "schedule_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_schedule_student_id",
