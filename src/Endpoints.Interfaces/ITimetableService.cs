@@ -7,7 +7,7 @@ public interface ITimetableService
         string startTime,
         string endDate,
         int periodInDays,
-        string studentUuid,
+        string studentExternalId,
         int durationInMinutes);
-    void ConfirmLesson(string lessonUuid);
+    void ConfirmLesson(string lessonExternalId);
 }
