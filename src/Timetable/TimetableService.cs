@@ -18,8 +18,8 @@ public class TimetableService : ITimetableService
             new LessonDto
             {
                 StartTime = lesson.StartTime,
-                EndTime = lesson.StartTime + lesson.Schedule!.LessonDuration,
-                Info = string.Empty,
+                EndTime = lesson.StartTime + (lesson.CustomDuration ?? lesson.Schedule!.LessonDuration),
+                Info = String.Empty
             }).ToList();
     }
 
@@ -49,7 +49,7 @@ public class TimetableService : ITimetableService
             LessonDuration = TimeSpan.FromMinutes(durationInMinutes),
             Lessons = lessons,
         };
-        _dao.SaveSchedule(schedule);
+        _dao.CreateSchedule(schedule);
     }
 
     public void ConfirmLesson(string lessonExternalId)
