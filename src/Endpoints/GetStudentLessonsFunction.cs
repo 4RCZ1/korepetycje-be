@@ -1,21 +1,19 @@
 ﻿using System.Text.Json;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
-using Amazon.Lambda.Serialization.SystemTextJson;
 
-[assembly: LambdaSerializer(typeof(DefaultLambdaJsonSerializer))]
 
 namespace Endpoints;
 
 public class GetStudentLessonsFunction
 {
     
-    public async Task<APIGatewayProxyResponse> GetLessonsHandler(
+    public async Task<APIGatewayProxyResponse> GetStudentLessonsHandler(
         APIGatewayProxyRequest request, ILambdaContext context)
     {
         var service = await ServiceFactory.CreateTimetableService();
-        var lessons = service.GetStudentLessons(
-            request.PathParameters["studentId"]);
+        var studentExternalId = request.PathParameters["studentExternalId"];
+        var lessons = service.GetStudentLessons(studentExternalId);
 
         return new APIGatewayProxyResponse
         {
@@ -24,7 +22,7 @@ public class GetStudentLessonsFunction
             Headers = new Dictionary<string, string>
             {
                 { "Content-Type", "application/json" },
-            },
+            }
         };
     }
 }

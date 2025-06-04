@@ -31,6 +31,7 @@ public class LessonDao : ILessonDao
         var lessons = context.Lessons
             .AsNoTracking()
             .Include(l => l.Schedule)
+            .Include(l => l.Timeslot)
             .Where(l => l.Schedule!.StudentId == studentId)
             .ToList();
         return lessons;
@@ -61,24 +62,51 @@ public class LessonDao : ILessonDao
 
     public bool IsTermTaken(List<DbTimeslot> tsToTake, List<DbTimeslot> tsTaken)
     {
-        var colliding = tsToTake
+        var colliding = GetCollidingTimeslots(tsToTake, tsTaken);
+        return colliding.Any();
+    }
+
+    public List<DbTimeslot> GetCollidingTimeslots(List<DbTimeslot> tsToTake, List<DbTimeslot> tsTaken)
+    {
+        return tsToTake
             .Where(ts => tsTaken
                 .Any(taken => (taken.StartTime >= ts.StartTime && taken.StartTime <= ts.EndTime)
                               || (taken.StartTime <= ts.StartTime && taken.EndTime >= ts.StartTime)))
             .ToList();
-        return colliding.Any();
     }
 
     public void AddFreeTerm(DateTime startTime, DateTime endTime)
     {
         using var context = new OurDbContext(_connection);
-        context.Add(new DbTimeslot()
+        var timeslotToAdd = new DbTimeslot()
         {
             StartTime = startTime,
             EndTime = endTime,
             IsFree = true
-        });
+        };
+        var timeslotsTaken = context.Timeslots
+            .AsNoTracking()
+            .Where(ts => ts.IsFree == false)
+            .ToList();
+        if (IsTermTaken(new List<DbTimeslot>(){timeslotToAdd}, timeslotsTaken))
+            throw new ApplicationException("There are colliding timeslots!");
+        
+        var timeslotsFree = context.Timeslots
+            .AsNoTracking()
+            .Where(ts => ts.IsFree == true)
+            .ToList();
+        
+        var colliding = GetCollidingTimeslots(timeslotsFree, new List<DbTimeslot>(){timeslotToAdd});
+        
+        if (colliding.Any())
+        {
+            var timeslotsToRemove = context.Timeslots
+                .Where(ts => colliding.Select(t => t.Id).Contains(ts.Id))
+                .ToList();
+            context.RemoveRange(timeslotsToRemove);
+        }
+
+        context.Add(timeslotToAdd);
+        context.SaveChanges();
     }
-
-
 }

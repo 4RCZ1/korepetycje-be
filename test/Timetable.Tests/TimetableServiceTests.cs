@@ -25,7 +25,7 @@ public class TimetableServiceTests
                     EndTime = LessonEnd
                 },
                 Schedule = new DbSchedule { LessonDuration = LessonDuration },
-            },
+            }
         ];
         A.CallTo(() => _dao.GetLessonsInRange(RequestBeginDate, RequestEndDate))
             .Returns(lessons);
@@ -37,7 +37,7 @@ public class TimetableServiceTests
                 StartTime = LessonStart,
                 EndTime = LessonEnd,
                 Info = string.Empty,
-            },
+            }
         ];
         Assert.Equivalent(expected, actual, strict: true);
     }

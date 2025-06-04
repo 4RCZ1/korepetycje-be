@@ -96,7 +96,7 @@ public class TimetableService : ITimetableService
     {
         try
         {
-            return DateTime.ParseExact(s, "O", CultureInfo.InvariantCulture);
+            return DateTime.ParseExact(s, "O", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
         }
         catch (FormatException)
         {
