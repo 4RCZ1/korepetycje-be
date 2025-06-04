@@ -25,6 +25,17 @@ public class LessonDao : ILessonDao
         return lessons;
     }
 
+    public IList<DbLesson> GetStudentLessons(int studentId)
+    {
+        using var context = new OurDbContext(_connection);
+        var lessons = context.Lessons
+            .AsNoTracking()
+            .Include(l => l.Schedule)
+            .Where(l => l.Schedule!.StudentId == studentId)
+            .ToList();
+        return lessons;
+    }
+
     public void ConfirmLesson(int lessonId)
     {
         using var context = new OurDbContext(_connection);

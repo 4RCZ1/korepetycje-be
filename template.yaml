@@ -24,6 +24,21 @@ Resources:
           Properties:
             Path: /api/lesson
             Method: get
+  GetStudentLessonsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/Endpoints/
+      Handler: Endpoints::Endpoints.GetStudentLessonsFunction::GetStudentLessonsHandler
+      Runtime: dotnet8
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Events:
+        GetLessons:
+          Type: Api
+          Properties:
+            Path: /api/lesson/{studentId}
+            Method: get
   PlanLessonsFunction:
     Type: AWS::Serverless::Function
     Properties:

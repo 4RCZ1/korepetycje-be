@@ -23,6 +23,15 @@ public class TimetableService : ITimetableService
             }).ToList();
     }
 
+    public IList<LessonDto> GetStudentLessons(string studentExternalId)
+    {
+        return _dao.GetStudentLessons(DecodeStudentExternalId(studentExternalId))
+            .Select(l => new LessonDto{
+                StartTime = l.Term.StartTime,
+                EndTime = l.Term.EndTime,
+                Info = l.TutorInfo ?? String.Empty
+            }).ToList();
+    }
     public void PlanLessons(
         string startTime,
         string endDate,
