@@ -8,6 +8,8 @@ public class OurDbContext : DbContext
     public DbSet<DbLesson> Lessons { get; set; }
     public DbSet<DbStudent> Students { get; set; }
     public DbSet<DbSchedule> Schedules { get; set; }
+    public DbSet<DbTimeslot> Timeslots { get; set; }
+    public DbSet<DbLessonSuggestion> LessonSuggestions { get; set; }
 
     public OurDbContext(string connection)
     {

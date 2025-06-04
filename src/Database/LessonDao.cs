@@ -46,19 +46,28 @@ public class LessonDao : ILessonDao
     public void CreateSchedule(DbSchedule schedule)
     {
         using var context = new OurDbContext(_connection);
-        var starts = schedule.Lessons.Select(l => l.Timeslot.StartTime).ToList();
-        var ends = schedule.Lessons.Select(l => l.Timeslot.EndTime).ToList();
-        var isTermTaken = context.Lessons
-            .Include(l => l.Schedule)
-            .Include(l => l.Timeslot)
-            .Any(l => (starts
-                          .Any(s => s >= l.Timeslot.StartTime && s <= l.Timeslot.EndTime))
-                      || (ends.Any(e => e >= l.Timeslot.StartTime) && starts.Any(s => s <= l.Timeslot.StartTime)));
-        if (isTermTaken)
+        var timeslotsToTake = schedule.Lessons.Select(l => l.Timeslot).ToList();
+        
+        if (IsTermTaken(timeslotsToTake))
             throw new ApplicationException("There are colliding lessons!");
         
         context.Add(schedule);
         context.SaveChanges();
+    }
+
+    public bool IsTermTaken(List<DbTimeslot> tsToTake)
+    {
+        using var context = new OurDbContext(_connection);
+        var tsTaken = context.Timeslots
+            .Where(ts => ts.IsFree == false)
+            .ToList();
+        
+        var colliding = tsToTake
+            .Where(ts => tsTaken
+                .Any(taken => (taken.StartTime >= ts.StartTime && taken.StartTime <= ts.EndTime)
+                              || (taken.StartTime <= ts.StartTime && taken.EndTime >= ts.StartTime)))
+            .ToList();
+        return colliding.Any();
     }
 
     public void AddFreeTerm(DateTime startTime, DateTime endTime)
