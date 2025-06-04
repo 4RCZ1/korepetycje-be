@@ -22,7 +22,7 @@ namespace Database.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Database.Interfaces.DbLesson", b =>
+            modelBuilder.Entity("Database.Entities.DbLesson", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -47,9 +47,9 @@ namespace Database.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("schedule_id");
 
-                    b.Property<DateTime>("StartTime")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("start_time");
+                    b.Property<int>("TermId")
+                        .HasColumnType("integer")
+                        .HasColumnName("term_id");
 
                     b.Property<string>("TutorInfo")
                         .HasMaxLength(200)
@@ -60,10 +60,12 @@ namespace Database.Migrations
 
                     b.HasIndex("ScheduleId");
 
-                    b.ToTable("lesson");
+                    b.HasIndex("TermId");
+
+                    b.ToTable("lesson", (string)null);
                 });
 
-            modelBuilder.Entity("Database.Interfaces.DbSchedule", b =>
+            modelBuilder.Entity("Database.Entities.DbSchedule", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -88,10 +90,10 @@ namespace Database.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("schedule");
+                    b.ToTable("schedule", (string)null);
                 });
 
-            modelBuilder.Entity("Database.Interfaces.DbStudent", b =>
+            modelBuilder.Entity("Database.Entities.DbStudent", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -120,23 +122,57 @@ namespace Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("student");
+                    b.ToTable("student", (string)null);
                 });
 
-            modelBuilder.Entity("Database.Interfaces.DbLesson", b =>
+            modelBuilder.Entity("Database.Entities.DbTerm", b =>
                 {
-                    b.HasOne("Database.Interfaces.DbSchedule", "Schedule")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("term_id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("end_time");
+
+                    b.Property<bool>("IsFree")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_free");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("start_time");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("terms", (string)null);
+                });
+
+            modelBuilder.Entity("Database.Entities.DbLesson", b =>
+                {
+                    b.HasOne("Database.Entities.DbSchedule", "Schedule")
                         .WithMany("Lessons")
                         .HasForeignKey("ScheduleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Database.Entities.DbTerm", "Term")
+                        .WithMany()
+                        .HasForeignKey("TermId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Schedule");
+
+                    b.Navigation("Term");
                 });
 
-            modelBuilder.Entity("Database.Interfaces.DbSchedule", b =>
+            modelBuilder.Entity("Database.Entities.DbSchedule", b =>
                 {
-                    b.HasOne("Database.Interfaces.DbStudent", "Student")
+                    b.HasOne("Database.Entities.DbStudent", "Student")
                         .WithMany("Schedules")
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -145,12 +181,12 @@ namespace Database.Migrations
                     b.Navigation("Student");
                 });
 
-            modelBuilder.Entity("Database.Interfaces.DbSchedule", b =>
+            modelBuilder.Entity("Database.Entities.DbSchedule", b =>
                 {
                     b.Navigation("Lessons");
                 });
 
-            modelBuilder.Entity("Database.Interfaces.DbStudent", b =>
+            modelBuilder.Entity("Database.Entities.DbStudent", b =>
                 {
                     b.Navigation("Schedules");
                 });

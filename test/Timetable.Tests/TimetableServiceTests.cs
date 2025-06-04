@@ -19,7 +19,11 @@ public class TimetableServiceTests
         [
             new()
             {
-                StartTime = LessonStart,
+                Term = new DbTerm()
+                {
+                    StartTime = LessonStart,
+                    EndTime = LessonEnd
+                },
                 Schedule = new DbSchedule { LessonDuration = LessonDuration },
             },
         ];
@@ -51,7 +55,7 @@ public class TimetableServiceTests
     public void ExcludeEndDate()
     {
         var schedule = A.Captured<DbSchedule>();
-        A.CallTo(() => _dao.SaveSchedule(schedule._)).DoesNothing();
+        A.CallTo(() => _dao.CreateSchedule(schedule._)).DoesNothing();
         _service.PlanLessons(
             "2025-06-02T12:00:00.0000000Z", "2025-06-16", 7, StudentExternalId, 30);
         Assert.Collection(schedule.Values, s =>
@@ -60,8 +64,8 @@ public class TimetableServiceTests
             Assert.Equal(LessonDuration, s.LessonDuration);
             Assert.Equal(StudentId, s.StudentId);
             Assert.Collection(s.Lessons,
-                l => Assert.Equal(new DateTime(2025, 6, 2, 12, 0, 0), l.StartTime),
-                l => Assert.Equal(new DateTime(2025, 6, 9, 12, 0, 0), l.StartTime));
+                l => Assert.Equal(new DateTime(2025, 6, 2, 12, 0, 0), l.Term.StartTime),
+                l => Assert.Equal(new DateTime(2025, 6, 9, 12, 0, 0), l.Term.StartTime));
         });
     }
 

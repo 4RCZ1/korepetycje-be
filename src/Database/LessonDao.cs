@@ -6,6 +6,7 @@ namespace Database;
 
 public class LessonDao : ILessonDao
 {
+    private readonly string _connection;
     public LessonDao(string connection)
     {
         _connection = connection;
@@ -16,9 +17,10 @@ public class LessonDao : ILessonDao
         using var context = new OurDbContext(_connection);
         var lessons = context.Lessons
             .AsNoTracking()    
-            .Include(l => l.Schedule)    
-            .Where(l=>DateOnly.FromDateTime(l.StartTime.Date)>=startDate
-                      &&DateOnly.FromDateTime((l.StartTime+(l.CustomDuration ?? l.Schedule!.LessonDuration)).Date)<=endDate)
+            .Include(l => l.Schedule)
+            .Include(l => l.Term)
+            .Where(l=>DateOnly.FromDateTime(l.Term.StartTime.Date)>=startDate
+                      &&DateOnly.FromDateTime(l.Term.EndTime.Date)<=endDate)
             .ToList();
         return lessons;
     }
@@ -33,16 +35,14 @@ public class LessonDao : ILessonDao
     public void CreateSchedule(DbSchedule schedule)
     {
         using var context = new OurDbContext(_connection);
-        var starts = schedule.Lessons.Select(l => l.StartTime).ToList();
-        var ends = schedule.Lessons.Select(l => (l.StartTime+schedule.LessonDuration)).ToList();
+        var starts = schedule.Lessons.Select(l => l.Term.StartTime).ToList();
+        var ends = schedule.Lessons.Select(l => l.Term.EndTime).ToList();
         var isTermTaken = context.Lessons
             .Include(l => l.Schedule)
+            .Include(l => l.Term)
             .Any(l => (starts
-                .Any(s => s >= l.StartTime &&
-                            s <= l.StartTime + (l.CustomDuration ?? l.Schedule!.LessonDuration)))
-            || (ends.Any(e => e<=l.StartTime + (l.CustomDuration ?? l.Schedule!.LessonDuration)
-            && e >= l.StartTime)));
-        //rozkmiń proszę, czy na pewno ma to  i pokrywa corner casy, ale chyba jest git
+                          .Any(s => s >= l.Term.StartTime && s <= l.Term.EndTime))
+                      || (ends.Any(e => e >= l.Term.StartTime) && starts.Any(s => s <= l.Term.StartTime)));
         if (isTermTaken)
             throw new ApplicationException("There are colliding lessons!");
         
@@ -50,5 +50,5 @@ public class LessonDao : ILessonDao
         context.SaveChanges();
     }
 
-    private readonly string _connection;
+
 }

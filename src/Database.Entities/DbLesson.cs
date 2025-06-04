@@ -13,10 +13,10 @@ public class DbLesson
     [Required]
     [Column("schedule_id")]
     public int ScheduleId { get; set; }
-
-    [Required]
-    [Column("start_time")]
-    public DateTime StartTime { get; set; }
+    
+    [Column("term_id")]
+    public int? TermId { get; set; }
+    
 
     [Column("custom_duration")]
     public TimeSpan? CustomDuration { get; set; }
@@ -32,6 +32,9 @@ public class DbLesson
     [Required]
     [Column("has_occurred")]
     public bool HasOccurred { get; set; }
+    
+    [ForeignKey("TermId")]
+    public DbTerm? Term { get; set; }
 
     [ForeignKey(nameof(ScheduleId))]
     public DbSchedule? Schedule { get; set; }
