@@ -9,4 +9,5 @@ public interface ILessonDao
     void CreateSchedule(DbSchedule schedule);
     IList<DbLesson> GetStudentLessons(int studentId);
     void AddFreeTerm(DateTime startTime, DateTime endTime);
+    bool IsTermTaken(List<DbTimeslot> tsToTake, List<DbTimeslot> tsTaken);
 }

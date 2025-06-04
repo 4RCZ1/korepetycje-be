@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database.Entities", "src\Da
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Endpoints.Interfaces", "src\Endpoints.Interfaces\Endpoints.Interfaces.csproj", "{2C2A8F4D-D448-49C0-8CBC-57A29C7AFD2B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database.Tests", "test\Database.Tests\Database.Tests.csproj", "{391F37BD-846D-414B-BF17-78EE38D37D95}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,5 +50,9 @@ Global
 		{2C2A8F4D-D448-49C0-8CBC-57A29C7AFD2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C2A8F4D-D448-49C0-8CBC-57A29C7AFD2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2C2A8F4D-D448-49C0-8CBC-57A29C7AFD2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{391F37BD-846D-414B-BF17-78EE38D37D95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{391F37BD-846D-414B-BF17-78EE38D37D95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{391F37BD-846D-414B-BF17-78EE38D37D95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{391F37BD-846D-414B-BF17-78EE38D37D95}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

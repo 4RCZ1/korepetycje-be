@@ -47,21 +47,20 @@ public class LessonDao : ILessonDao
     {
         using var context = new OurDbContext(_connection);
         var timeslotsToTake = schedule.Lessons.Select(l => l.Timeslot).ToList();
+        var timeslotsTaken = context.Timeslots
+            .AsNoTracking()
+            .Where(ts => ts.IsFree == false)
+            .ToList();
         
-        if (IsTermTaken(timeslotsToTake))
+        if (IsTermTaken(timeslotsToTake, timeslotsTaken))
             throw new ApplicationException("There are colliding lessons!");
         
         context.Add(schedule);
         context.SaveChanges();
     }
 
-    public bool IsTermTaken(List<DbTimeslot> tsToTake)
+    public bool IsTermTaken(List<DbTimeslot> tsToTake, List<DbTimeslot> tsTaken)
     {
-        using var context = new OurDbContext(_connection);
-        var tsTaken = context.Timeslots
-            .Where(ts => ts.IsFree == false)
-            .ToList();
-        
         var colliding = tsToTake
             .Where(ts => tsTaken
                 .Any(taken => (taken.StartTime >= ts.StartTime && taken.StartTime <= ts.EndTime)
