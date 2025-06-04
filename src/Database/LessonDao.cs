@@ -61,5 +61,16 @@ public class LessonDao : ILessonDao
         context.SaveChanges();
     }
 
+    public void AddFreeTerm(DateTime startTime, DateTime endTime)
+    {
+        using var context = new OurDbContext(_connection);
+        context.Add(new DbTerm()
+        {
+            StartTime = startTime,
+            EndTime = endTime,
+            IsFree = true
+        });
+    }
+
 
 }

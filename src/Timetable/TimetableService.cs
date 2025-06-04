@@ -32,6 +32,7 @@ public class TimetableService : ITimetableService
                 Info = l.TutorInfo ?? String.Empty
             }).ToList();
     }
+    
     public void PlanLessons(
         string startTime,
         string endDate,
@@ -65,6 +66,11 @@ public class TimetableService : ITimetableService
         _dao.CreateSchedule(schedule);
     }
 
+    public void AddFreeTerm(string startTime, string endTime)
+    {   
+        _dao.AddFreeTerm(ParseDateTime(startTime), ParseDateTime(endTime)); 
+    }
+
     public void ConfirmLesson(string lessonExternalId)
     {
         _dao.ConfirmLesson(int.Parse(lessonExternalId));
@@ -86,6 +92,16 @@ public class TimetableService : ITimetableService
             throw new InvalidRequestException();
         }
     }
-
+    private static DateTime ParseDateTime(string s)
+    {
+        try
+        {
+            return DateTime.ParseExact(s, "O", CultureInfo.InvariantCulture);
+        }
+        catch (FormatException)
+        {
+            throw new InvalidRequestException();
+        }
+    }
     private readonly ILessonDao _dao;
 }

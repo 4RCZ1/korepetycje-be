@@ -11,4 +11,5 @@ public interface ITimetableService
         int durationInMinutes);
     void ConfirmLesson(string lessonExternalId);
     IList<LessonDto> GetStudentLessons(string studentExternalId);
+    void AddFreeTerm(string startTime, string endTime);
 }
