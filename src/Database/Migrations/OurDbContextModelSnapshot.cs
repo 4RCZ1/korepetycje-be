@@ -47,9 +47,10 @@ namespace Database.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("schedule_id");
 
-                    b.Property<int>("TermId")
+                    b.Property<int?>("TimeslotId")
+                        .IsRequired()
                         .HasColumnType("integer")
-                        .HasColumnName("term_id");
+                        .HasColumnName("timeslot_id");
 
                     b.Property<string>("TutorInfo")
                         .HasMaxLength(200)
@@ -60,9 +61,9 @@ namespace Database.Migrations
 
                     b.HasIndex("ScheduleId");
 
-                    b.HasIndex("TermId");
+                    b.HasIndex("TimeslotId");
 
-                    b.ToTable("lesson", (string)null);
+                    b.ToTable("lesson");
                 });
 
             modelBuilder.Entity("Database.Entities.DbSchedule", b =>
@@ -90,7 +91,7 @@ namespace Database.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("schedule", (string)null);
+                    b.ToTable("schedule");
                 });
 
             modelBuilder.Entity("Database.Entities.DbStudent", b =>
@@ -122,15 +123,15 @@ namespace Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("student", (string)null);
+                    b.ToTable("student");
                 });
 
-            modelBuilder.Entity("Database.Entities.DbTerm", b =>
+            modelBuilder.Entity("Database.Entities.DbTimeslot", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("term_id");
+                        .HasColumnName("timeslot_id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
@@ -148,7 +149,7 @@ namespace Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("terms", (string)null);
+                    b.ToTable("timeslots");
                 });
 
             modelBuilder.Entity("Database.Entities.DbLesson", b =>
@@ -159,15 +160,15 @@ namespace Database.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Database.Entities.DbTerm", "Term")
+                    b.HasOne("Database.Entities.DbTimeslot", "Timeslot")
                         .WithMany()
-                        .HasForeignKey("TermId")
+                        .HasForeignKey("TimeslotId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Schedule");
 
-                    b.Navigation("Term");
+                    b.Navigation("Timeslot");
                 });
 
             modelBuilder.Entity("Database.Entities.DbSchedule", b =>

@@ -19,7 +19,7 @@ public class TimetableServiceTests
         [
             new()
             {
-                Term = new DbTerm()
+                Timeslot = new DbTimeslot()
                 {
                     StartTime = LessonStart,
                     EndTime = LessonEnd
@@ -64,8 +64,8 @@ public class TimetableServiceTests
             Assert.Equal(LessonDuration, s.LessonDuration);
             Assert.Equal(StudentId, s.StudentId);
             Assert.Collection(s.Lessons,
-                l => Assert.Equal(new DateTime(2025, 6, 2, 12, 0, 0), l.Term.StartTime),
-                l => Assert.Equal(new DateTime(2025, 6, 9, 12, 0, 0), l.Term.StartTime));
+                l => Assert.Equal(new DateTime(2025, 6, 2, 12, 0, 0), l.Timeslot.StartTime),
+                l => Assert.Equal(new DateTime(2025, 6, 9, 12, 0, 0), l.Timeslot.StartTime));
         });
     }
 

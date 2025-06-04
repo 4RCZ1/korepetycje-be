@@ -14,8 +14,9 @@ public class DbLesson
     [Column("schedule_id")]
     public int ScheduleId { get; set; }
     
-    [Column("term_id")]
-    public int? TermId { get; set; }
+    [Required]
+    [Column("timeslot_id")]
+    public int? TimeslotId { get; set; }
     
 
     [Column("custom_duration")]
@@ -33,8 +34,8 @@ public class DbLesson
     [Column("has_occurred")]
     public bool HasOccurred { get; set; }
     
-    [ForeignKey("TermId")]
-    public DbTerm? Term { get; set; }
+    [ForeignKey(nameof(TimeslotId))]
+    public required DbTimeslot Timeslot { get; set; }
 
     [ForeignKey(nameof(ScheduleId))]
     public DbSchedule? Schedule { get; set; }

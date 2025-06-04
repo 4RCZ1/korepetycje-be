@@ -18,9 +18,9 @@ public class LessonDao : ILessonDao
         var lessons = context.Lessons
             .AsNoTracking()    
             .Include(l => l.Schedule)
-            .Include(l => l.Term)
-            .Where(l=>DateOnly.FromDateTime(l.Term.StartTime.Date)>=startDate
-                      &&DateOnly.FromDateTime(l.Term.EndTime.Date)<=endDate)
+            .Include(l => l.Timeslot)
+            .Where(l=>DateOnly.FromDateTime(l.Timeslot.StartTime.Date)>=startDate
+                      &&DateOnly.FromDateTime(l.Timeslot.EndTime.Date)<=endDate)
             .ToList();
         return lessons;
     }
@@ -46,14 +46,14 @@ public class LessonDao : ILessonDao
     public void CreateSchedule(DbSchedule schedule)
     {
         using var context = new OurDbContext(_connection);
-        var starts = schedule.Lessons.Select(l => l.Term.StartTime).ToList();
-        var ends = schedule.Lessons.Select(l => l.Term.EndTime).ToList();
+        var starts = schedule.Lessons.Select(l => l.Timeslot.StartTime).ToList();
+        var ends = schedule.Lessons.Select(l => l.Timeslot.EndTime).ToList();
         var isTermTaken = context.Lessons
             .Include(l => l.Schedule)
-            .Include(l => l.Term)
+            .Include(l => l.Timeslot)
             .Any(l => (starts
-                          .Any(s => s >= l.Term.StartTime && s <= l.Term.EndTime))
-                      || (ends.Any(e => e >= l.Term.StartTime) && starts.Any(s => s <= l.Term.StartTime)));
+                          .Any(s => s >= l.Timeslot.StartTime && s <= l.Timeslot.EndTime))
+                      || (ends.Any(e => e >= l.Timeslot.StartTime) && starts.Any(s => s <= l.Timeslot.StartTime)));
         if (isTermTaken)
             throw new ApplicationException("There are colliding lessons!");
         
@@ -64,7 +64,7 @@ public class LessonDao : ILessonDao
     public void AddFreeTerm(DateTime startTime, DateTime endTime)
     {
         using var context = new OurDbContext(_connection);
-        context.Add(new DbTerm()
+        context.Add(new DbTimeslot()
         {
             StartTime = startTime,
             EndTime = endTime,

@@ -17,8 +17,8 @@ public class TimetableService : ITimetableService
         return _dao.GetLessonsInRange(ParseDate(startDate), ParseDate(endDate)).Select(lesson =>
             new LessonDto
             {
-                StartTime = lesson.Term.StartTime,
-                EndTime = lesson.Term.EndTime,
+                StartTime = lesson.Timeslot.StartTime,
+                EndTime = lesson.Timeslot.EndTime,
                 Info = lesson.TutorInfo ?? String.Empty
             }).ToList();
     }
@@ -27,8 +27,8 @@ public class TimetableService : ITimetableService
     {
         return _dao.GetStudentLessons(DecodeStudentExternalId(studentExternalId))
             .Select(l => new LessonDto{
-                StartTime = l.Term.StartTime,
-                EndTime = l.Term.EndTime,
+                StartTime = l.Timeslot.StartTime,
+                EndTime = l.Timeslot.EndTime,
                 Info = l.TutorInfo ?? String.Empty
             }).ToList();
     }
@@ -49,7 +49,7 @@ public class TimetableService : ITimetableService
         {
             lessons.Add(new DbLesson
             {
-                Term = new DbTerm
+                Timeslot = new DbTimeslot
                 {
                     StartTime = t,
                     EndTime = t + TimeSpan.FromMinutes(durationInMinutes),

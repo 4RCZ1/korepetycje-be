@@ -2,8 +2,8 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Database.Entities;
-[Table ("terms")]
-public class DbTerm
+[Table ("timeslots")]
+public class DbTimeslot
 {
     [Key]
     [Column("timeslot_id")]
