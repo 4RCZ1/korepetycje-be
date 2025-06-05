@@ -29,10 +29,10 @@ public class TimetableService : ITimetableService
             .Select(l => new LessonDto{
                 StartTime = l.Timeslot.StartTime,
                 EndTime = l.Timeslot.EndTime,
-                Info = l.TutorInfo ?? String.Empty
+                Info = string.Empty
             }).ToList();
     }
-    
+
     public void PlanLessons(
         string startTime,
         string endDate,
@@ -67,8 +67,8 @@ public class TimetableService : ITimetableService
     }
 
     public void AddFreeTerm(string startTime, string endTime)
-    {   
-        _dao.AddFreeTerm(ParseDateTime(startTime), ParseDateTime(endTime)); 
+    {
+        _dao.AddFreeTerm(ParseDateTime(startTime), ParseDateTime(endTime));
     }
 
     public void ConfirmLesson(string lessonExternalId)
