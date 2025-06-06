@@ -19,7 +19,7 @@ public class AddFreeTimeslotsFunction
     {
         var service = await ServiceFactory.CreateTimetableService();
         var body = JsonSerializer.Deserialize<RequestBody>(request.Body);
-        service.AddFreeTerm(body.StartTime, body.EndTime);
+        service.AddFreeTerm(body.StartTime, body.EndTime); // todo: implement time series
         return new APIGatewayProxyResponse
         {
             StatusCode = 200,

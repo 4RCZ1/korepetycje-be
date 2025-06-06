@@ -2,12 +2,11 @@
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 
-
 namespace Endpoints;
 
 public class GetStudentLessonsFunction
 {
-    
+    // todo: require date ranges
     public async Task<APIGatewayProxyResponse> GetStudentLessonsHandler(
         APIGatewayProxyRequest request, ILambdaContext context)
     {
