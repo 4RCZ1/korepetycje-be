@@ -3,12 +3,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Database.Entities;
 
-// todo: this table is not created on DB update - fix or remove
-[Table("lesson_suggestions")]
+[Table("lesson_suggestion")]
 public class DbLessonSuggestion
 {
     [Key]
-    [Column("id")]
+    [Column("lesson_suggestion_id")]
     public int Id { get; set; }
 
     [Required]
