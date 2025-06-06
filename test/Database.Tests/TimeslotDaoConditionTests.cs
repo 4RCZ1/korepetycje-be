@@ -1,3 +1,4 @@
+using Database.Entities;
 using Xunit;
 using Assert = Xunit.Assert;
 
@@ -8,41 +9,49 @@ public class TimeslotDaoConditionTests
     [Fact]
     public void CollisionForPartialOverlap()
     {
-        Assert.True(IntervalsOverlap(1, 3, 2, 4));
-        Assert.True(IntervalsOverlap(2, 4, 1, 3));
+        RunTestBothWays(1, 3, 2, 4, true);
     }
 
     [Fact]
     public void CollisionForContainment()
     {
-        Assert.True(IntervalsOverlap(1, 4, 2, 3));
-        Assert.True(IntervalsOverlap(2, 3, 1, 4));
+        RunTestBothWays(1, 4, 2, 3, true);
     }
 
     [Fact]
     public void NoCollisionForNoOverlap()
     {
-        Assert.False(IntervalsOverlap(1, 2, 4, 5));
-        Assert.False(IntervalsOverlap(4, 5, 1, 2));
+        RunTestBothWays(1, 2, 4, 5, false);
     }
 
     [Fact]
     public void EdgeCase()
     {
-        Assert.False(IntervalsOverlap(1, 2, 2, 3));
-        Assert.False(IntervalsOverlap(2, 3, 1, 2));
+        RunTestBothWays(1, 2, 2, 3, false);
     }
 
-    private bool IntervalsOverlap(int start1, int end1, int start2, int end2)
+    private static void RunTestBothWays(int start1, int end1, int start2, int end2, bool overlapExpected)
     {
-        return _overlap(Instant(start1), Instant(end1), Instant(start2), Instant(end2));
+        RunTest(start1, end1, start2, end2, overlapExpected);
+        RunTest(start2, end2, start1, end1, overlapExpected);
+    }
+
+    private static void RunTest(int start1, int end1, int start2, int end2, bool overlapExpected)
+    {
+        var s1 = Instant(start1);
+        var e1 = Instant(end1);
+        var s2 = Instant(start2);
+        var e2 = Instant(end2);
+        Assert.Equal(overlapExpected,
+            TimeslotDaoConditions.LessonOverlap(s1, e1).Compile().Invoke(
+                new DbLesson
+                {
+                    Timeslot = new DbTimeslot { StartTime = s2, EndTime = e2 }
+                }));
     }
 
     private static DateTime Instant(int i)
     {
-        return new DateTime(2025, 5, 5, 12, 0, 0) + i * TimeSpan.FromMinutes(30 * i);
+        return new DateTime(2025, 5, 5, 12, 0, 0) + TimeSpan.FromMinutes(30 * i);
     }
-
-    private readonly Func<DateTime, DateTime, DateTime, DateTime, bool> _overlap =
-        TimeslotDaoConditions.Overlap.Compile();
 }
