@@ -12,15 +12,14 @@ public class LessonDao : ILessonDao
         _connection = connection;
     }
 
-    public IList<DbLesson> GetLessonsInRange(DateOnly startDate, DateOnly endDate)
+    public IList<DbLesson> GetLessonsInRange(DateTime startTime, DateTime endTime)
     {
         using var context = new OurDbContext(_connection);
         var lessons = context.Lessons
-            .AsNoTracking()    
+            .AsNoTracking()
             .Include(l => l.Schedule)
             .Include(l => l.Timeslot)
-            .Where(l=>DateOnly.FromDateTime(l.Timeslot.StartTime.Date)>=startDate
-                      &&DateOnly.FromDateTime(l.Timeslot.EndTime.Date)<=endDate)
+            .Where(TimeslotDaoConditions.LessonOverlap(startTime, endTime))
             .ToList();
         return lessons;
     }
@@ -52,10 +51,10 @@ public class LessonDao : ILessonDao
             .AsNoTracking()
             .Where(ts => ts.IsFree == false)
             .ToList();
-        
+
         if (IsTermTaken(timeslotsToTake, timeslotsTaken))
             throw new ApplicationException("There are colliding lessons!");
-        
+
         context.Add(schedule);
         context.SaveChanges();
     }
@@ -90,14 +89,14 @@ public class LessonDao : ILessonDao
             .ToList();
         if (IsTermTaken(new List<DbTimeslot>(){timeslotToAdd}, timeslotsTaken))
             throw new ApplicationException("There are colliding timeslots!");
-        
+
         var timeslotsFree = context.Timeslots
             .AsNoTracking()
             .Where(ts => ts.IsFree == true)
             .ToList();
-        
+
         var colliding = GetCollidingTimeslots(timeslotsFree, new List<DbTimeslot>(){timeslotToAdd});
-        
+
         if (colliding.Any())
         {
             var timeslotsToRemove = context.Timeslots

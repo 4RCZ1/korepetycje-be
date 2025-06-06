@@ -2,7 +2,7 @@ namespace Endpoints.Interfaces;
 
 public interface ITimetableService
 {
-    IList<LessonDto> GetLessons(string startDate, string endDate);
+    IList<LessonDto> GetLessons(string startTime, string endTime);
     void PlanLessons(
         string startTime,
         string endDate,

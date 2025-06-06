@@ -27,9 +27,9 @@ public class TimetableServiceTests
                 Schedule = new DbSchedule { LessonDuration = LessonDuration },
             }
         ];
-        A.CallTo(() => _dao.GetLessonsInRange(RequestBeginDate, RequestEndDate))
+        A.CallTo(() => _dao.GetLessonsInRange(RequestStartTime, RequestEndTime))
             .Returns(lessons);
-        var actual = _service.GetLessons(RequestBeginDateString, RequestEndDateString);
+        var actual = _service.GetLessons(RequestStartTimeString, RequestEndTimeString);
         List<LessonDto> expected =
         [
             new()
@@ -46,9 +46,9 @@ public class TimetableServiceTests
     public void ThrowForWrongDateFormat()
     {
         Assert.Throws<InvalidRequestException>(() =>
-            _service.GetLessons("aaa", RequestEndDateString));
+            _service.GetLessons("aaa", RequestEndTimeString));
         Assert.Throws<InvalidRequestException>(() =>
-            _service.GetLessons(RequestBeginDateString, "aaa"));
+            _service.GetLessons(RequestStartTimeString, "aaa"));
     }
 
     [Fact]
@@ -79,10 +79,10 @@ public class TimetableServiceTests
     private readonly ILessonDao _dao = A.Fake<ILessonDao>();
     private readonly ITimetableService _service;
 
-    private const string RequestBeginDateString = "2025-01-01";
-    private const string RequestEndDateString = "2026-01-01";
-    private static readonly DateOnly RequestBeginDate = new(2025, 1, 1);
-    private static readonly DateOnly RequestEndDate = new(2026, 1, 1);
+    private const string RequestStartTimeString = "2025-01-01T00:00:00.0000000Z";
+    private const string RequestEndTimeString = "2026-01-01T00:00:00.0000000Z";
+    private static readonly DateTime RequestStartTime = new(2025, 1, 1, 0, 0, 0);
+    private static readonly DateTime RequestEndTime = new(2026, 1, 1, 0, 0, 0);
     private static readonly DateTime LessonStart = new(2025, 5, 31, 14, 0, 0);
     private static readonly DateTime LessonEnd = new(2025, 5, 31, 14, 30, 0);
     private static readonly TimeSpan LessonDuration = TimeSpan.FromMinutes(30);

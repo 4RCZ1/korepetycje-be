@@ -13,21 +13,23 @@ public class TimetableService : ITimetableService
     }
 
     // todo: merge the following two methods
-    public IList<LessonDto> GetLessons(string startDate, string endDate)
+    public IList<LessonDto> GetLessons(string startTime, string endTime)
     {
-        return _dao.GetLessonsInRange(ParseDate(startDate), ParseDate(endDate)).Select(lesson =>
-            new LessonDto
-            {
-                StartTime = lesson.Timeslot.StartTime,
-                EndTime = lesson.Timeslot.EndTime,
-                Info = lesson.TutorInfo ?? string.Empty
-            }).ToList();
+        return _dao.GetLessonsInRange(ParseDateTime(startTime), ParseDateTime(endTime))
+            .Select(lesson =>
+                new LessonDto
+                {
+                    StartTime = lesson.Timeslot.StartTime,
+                    EndTime = lesson.Timeslot.EndTime,
+                    Info = lesson.TutorInfo ?? string.Empty
+                }).ToList();
     }
 
     public IList<LessonDto> GetStudentLessons(string studentExternalId)
     {
         return _dao.GetStudentLessons(DecodeStudentExternalId(studentExternalId))
-            .Select(l => new LessonDto{
+            .Select(l => new LessonDto
+            {
                 StartTime = l.Timeslot.StartTime,
                 EndTime = l.Timeslot.EndTime,
                 Info = string.Empty

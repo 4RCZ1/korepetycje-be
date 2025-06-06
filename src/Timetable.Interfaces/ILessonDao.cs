@@ -4,7 +4,7 @@ namespace Timetable.Interfaces;
 
 public interface ILessonDao
 {
-    IList<DbLesson> GetLessonsInRange(DateOnly startDate, DateOnly endDate);
+    IList<DbLesson> GetLessonsInRange(DateTime startTime, DateTime endTime);
     void ConfirmLesson(int lessonId);
     void CreateSchedule(DbSchedule schedule);
     IList<DbLesson> GetStudentLessons(int studentId);

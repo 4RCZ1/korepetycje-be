@@ -4,7 +4,7 @@ using Amazon.Lambda.Core;
 using Amazon.Lambda.Serialization.SystemTextJson;
 using Endpoints.Interfaces;
 
-[assembly: LambdaSerializer(typeof(DefaultLambdaJsonSerializer))]
+[assembly: LambdaSerializer(typeof(CamelCaseLambdaJsonSerializer))]
 
 namespace Endpoints;
 
@@ -14,17 +14,16 @@ public class GetLessonsFunction
         APIGatewayProxyRequest request, ILambdaContext context)
     {
         var service = await ServiceFactory.CreateTimetableService();
-        var studentExternalId = request.QueryStringParameters["student-external-id"];
-        if (studentExternalId == null)
+        if (request.QueryStringParameters.TryGetValue("studentExternalId", out var value))
         {
-            return OkJson(service.GetLessons(
-                request.QueryStringParameters["start-date"],
-                request.QueryStringParameters["end-date"]));
+            // todo: handle date ranges
+            return OkJson(service.GetStudentLessons(value));
         }
         else
         {
-            // todo: handle date ranges
-            return OkJson(service.GetStudentLessons(studentExternalId));
+            return OkJson(service.GetLessons(
+                request.QueryStringParameters["startTime"],
+                request.QueryStringParameters["endTime"]));
         }
     }
 
