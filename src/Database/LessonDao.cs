@@ -59,13 +59,13 @@ public class LessonDao : ILessonDao
         context.SaveChanges();
     }
 
-    public bool IsTermTaken(List<DbTimeslot> tsToTake, List<DbTimeslot> tsTaken)
+    private bool IsTermTaken(List<DbTimeslot> tsToTake, List<DbTimeslot> tsTaken)
     {
         var colliding = GetCollidingTimeslots(tsToTake, tsTaken);
         return colliding.Any();
     }
 
-    public List<DbTimeslot> GetCollidingTimeslots(List<DbTimeslot> tsToTake, List<DbTimeslot> tsTaken)
+    private List<DbTimeslot> GetCollidingTimeslots(List<DbTimeslot> tsToTake, List<DbTimeslot> tsTaken)
     {
         return tsToTake
             .Where(ts => tsTaken
