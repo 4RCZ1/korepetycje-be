@@ -82,5 +82,5 @@ Resources:
         GetLessons:
           Type: Api
           Properties:
-            Path: /api/add-free
+            Path: /api/add-free-timeslots
             Method: post
