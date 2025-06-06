@@ -6,7 +6,7 @@ public interface ITimetableService
     IList<LessonDto> GetStudentLessons(string studentExternalId, string startTime, string endTime);
     void PlanLessons(
         string startTime,
-        string endDate,
+        string endTime,
         int periodInDays,
         string studentExternalId,
         int durationInMinutes);

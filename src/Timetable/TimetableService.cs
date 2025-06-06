@@ -43,14 +43,14 @@ public class TimetableService : ITimetableService
 
     public void PlanLessons(
         string startTime,
-        string endDate,
+        string endTime,
         int periodInDays,
         string studentExternalId,
         int durationInMinutes)
     {
         var start = DateTime.ParseExact(
             startTime, "O", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
-        var end = ParseDate(endDate).ToDateTime(new TimeOnly(0, 0, 0), DateTimeKind.Utc);
+        var end = ParseDateTime(endTime);
         var period = TimeSpan.FromDays(periodInDays);
         var lessons = new List<DbLesson>();
         for (var t = start; t < end; t += period)

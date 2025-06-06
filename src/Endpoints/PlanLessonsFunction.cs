@@ -9,7 +9,7 @@ public class PlanLessonsFunction
     private class RequestBody
     {
         public required string BeginTime { get; set; }
-        public required string EndDate { get; set; } // todo: change to (timezoned?) EndTime
+        public required string EndTime { get; set; }
         public required int? PeriodInDays { get; set; }
         public required string StudentExternalId { get; set; }
         public required int DurationInMinutes { get; set; }
@@ -22,7 +22,7 @@ public class PlanLessonsFunction
         var body = JsonSerializer.Deserialize<RequestBody>(request.Body);
         service.PlanLessons(
             body.BeginTime,
-            body.EndDate,
+            body.EndTime,
             body.PeriodInDays.Value, // todo: allow null for non-repeating lessons
             body.StudentExternalId,
             body.DurationInMinutes);
