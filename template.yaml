@@ -69,11 +69,11 @@ Resources:
           Properties:
             Path: /api/lesson/{lessonExternalId}/confirm
             Method: put
-  AddFreeTimeslot:
+  AddFreeTimeslots:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ./src/Endpoints/
-      Handler: Endpoints::Endpoints.AddFreeTimeslotFunction::AddFreeTimeslot
+      Handler: Endpoints::Endpoints.AddFreeTimeslotsFunction::AddFreeTimeslots
       Runtime: dotnet8
       Architectures:
         - x86_64

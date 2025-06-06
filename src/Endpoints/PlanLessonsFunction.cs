@@ -2,12 +2,10 @@ using System.Text.Json;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 
-
 namespace Endpoints;
 
 public class PlanLessonsFunction
 {
-    
     private class RequestBody
     {
         public required string BeginTime { get; set; }
