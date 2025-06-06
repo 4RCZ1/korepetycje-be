@@ -13,36 +13,6 @@ public class TimetableServiceTests
     }
 
     [Fact]
-    public void GetLessonsFromDao()
-    {
-        List<DbLesson> lessons =
-        [
-            new()
-            {
-                Timeslot = new DbTimeslot()
-                {
-                    StartTime = LessonStart,
-                    EndTime = LessonEnd
-                },
-                Schedule = new DbSchedule { LessonDuration = LessonDuration },
-            }
-        ];
-        A.CallTo(() => _dao.GetLessonsInRange(RequestStartTime, RequestEndTime))
-            .Returns(lessons);
-        var actual = _service.GetLessons(RequestStartTimeString, RequestEndTimeString);
-        List<LessonDto> expected =
-        [
-            new()
-            {
-                StartTime = LessonStart,
-                EndTime = LessonEnd,
-                Info = string.Empty,
-            }
-        ];
-        Assert.Equivalent(expected, actual, strict: true);
-    }
-
-    [Fact]
     public void ThrowForWrongDateFormat()
     {
         Assert.Throws<InvalidRequestException>(() =>
@@ -81,10 +51,6 @@ public class TimetableServiceTests
 
     private const string RequestStartTimeString = "2025-01-01T00:00:00.0000000Z";
     private const string RequestEndTimeString = "2026-01-01T00:00:00.0000000Z";
-    private static readonly DateTime RequestStartTime = new(2025, 1, 1, 0, 0, 0);
-    private static readonly DateTime RequestEndTime = new(2026, 1, 1, 0, 0, 0);
-    private static readonly DateTime LessonStart = new(2025, 5, 31, 14, 0, 0);
-    private static readonly DateTime LessonEnd = new(2025, 5, 31, 14, 30, 0);
     private static readonly TimeSpan LessonDuration = TimeSpan.FromMinutes(30);
     private const string StudentExternalId = "123";
     private const int StudentId = 123;

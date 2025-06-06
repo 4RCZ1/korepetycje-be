@@ -6,7 +6,6 @@ namespace Database;
 
 public class LessonDao : ILessonDao
 {
-    private readonly string _connection;
     public LessonDao(string connection)
     {
         _connection = connection;
@@ -15,13 +14,26 @@ public class LessonDao : ILessonDao
     public IList<DbLesson> GetLessonsInRange(DateTime startTime, DateTime endTime)
     {
         using var context = new OurDbContext(_connection);
-        var lessons = context.Lessons
-            .AsNoTracking()
-            .Include(l => l.Schedule)
-            .Include(l => l.Timeslot)
+        return GetLessons(context)
             .Where(TimeslotDaoConditions.LessonOverlap(startTime, endTime))
             .ToList();
-        return lessons;
+    }
+
+    public IList<DbLesson> GetStudentLessonsInRange(int studentId, DateTime startTime, DateTime endTime)
+    {
+        using var context = new OurDbContext(_connection);
+        return GetLessons(context)
+            .Where(lesson => lesson.Schedule!.StudentId == studentId)
+            .Where(TimeslotDaoConditions.LessonOverlap(startTime, endTime))
+            .ToList();
+    }
+
+    private static IQueryable<DbLesson> GetLessons(OurDbContext context)
+    {
+        return context.Lessons
+            .AsNoTracking()
+            .Include(l => l.Schedule)
+            .Include(l => l.Timeslot);
     }
 
     public IList<DbLesson> GetStudentLessons(int studentId)
@@ -108,4 +120,6 @@ public class LessonDao : ILessonDao
         context.Add(timeslotToAdd);
         context.SaveChanges();
     }
+
+    private readonly string _connection;
 }

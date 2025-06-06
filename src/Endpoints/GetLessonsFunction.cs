@@ -14,10 +14,12 @@ public class GetLessonsFunction
         APIGatewayProxyRequest request, ILambdaContext context)
     {
         var service = await ServiceFactory.CreateTimetableService();
-        if (request.QueryStringParameters.TryGetValue("studentExternalId", out var value))
+        if (request.QueryStringParameters.TryGetValue("studentExternalId", out var studentExternalId))
         {
-            // todo: handle date ranges
-            return OkJson(service.GetStudentLessons(value));
+            return OkJson(service.GetStudentLessons(
+                studentExternalId,
+                request.QueryStringParameters["startTime"],
+                request.QueryStringParameters["endTime"]));
         }
         else
         {

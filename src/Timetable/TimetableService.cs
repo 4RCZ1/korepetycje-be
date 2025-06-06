@@ -12,7 +12,6 @@ public class TimetableService : ITimetableService
         _dao = dao;
     }
 
-    // todo: merge the following two methods
     public IList<LessonDto> GetLessons(string startTime, string endTime)
     {
         return _dao.GetLessonsInRange(ParseDateTime(startTime), ParseDateTime(endTime))
@@ -25,9 +24,15 @@ public class TimetableService : ITimetableService
                 }).ToList();
     }
 
-    public IList<LessonDto> GetStudentLessons(string studentExternalId)
+    public IList<LessonDto> GetStudentLessons(
+        string studentExternalId,
+        string startTime,
+        string endTime)
     {
-        return _dao.GetStudentLessons(DecodeStudentExternalId(studentExternalId))
+        return _dao.GetStudentLessonsInRange(
+                DecodeStudentExternalId(studentExternalId),
+                ParseDateTime(startTime),
+                ParseDateTime(endTime))
             .Select(l => new LessonDto
             {
                 StartTime = l.Timeslot.StartTime,
