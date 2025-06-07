@@ -19,14 +19,15 @@ public class DbStudent : ISoftDelete
     [MaxLength(50)]
     [Column("surname")]
     public required string Surname { get; set; }
-
-    [Required]
-    [MaxLength(200)]
-    [Column("address")]
-    public required string Address { get; set; }
-
+    
+    [Column("address_id")]
+    public int? AddressId { get; set; }
+    
     public bool IsDeleted { get; set; }
     public DateTimeOffset? DeletedAt { get; set; }
     
     public ICollection<DbSchedule> Schedules { get; } = new List<DbSchedule>();
+    
+    [ForeignKey(nameof(AddressId))]
+    public DbAddress? Address { get; set; }
 }

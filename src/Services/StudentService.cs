@@ -13,11 +13,17 @@ public class StudentService: IStudentService
     
     public void AddStudent(StudentDto studentToAdd)
     {
+        DbAddress addressToAdd = new DbAddress()
+        {
+            AddressName = "",
+            AddressData = studentToAdd.Address ?? ""
+        };
         DbStudent student = new DbStudent()
         {
             Name = studentToAdd.Name,
             Surname = studentToAdd.Surname,
-            Address = studentToAdd.Address
+            Address = addressToAdd,
+            AddressId = addressToAdd.Id
         };
         _dao.AddStudent(student);
     }
@@ -30,18 +36,24 @@ public class StudentService: IStudentService
             ExternalId = studentDao.Id.ToString(),
             Name = studentDao.Name,
             Surname = studentDao.Surname,
-            Address = studentDao.Address
+            Address = studentDao.Address.AddressData
         };
         return student;
     }
 
     public void UpdateStudent(string externalStudentId, StudentDto studentToAdd)
     {
+        DbAddress addressToAdd = new DbAddress()
+        {
+            AddressName = "",
+            AddressData = studentToAdd.Address ?? ""
+        };
         DbStudent student = new DbStudent()
         {
             Name = studentToAdd.Name ?? "",
             Surname = studentToAdd.Surname ?? "",
-            Address = studentToAdd.Address ?? ""
+            AddressId = addressToAdd.Id,
+            Address = addressToAdd
         };
         _dao.UpdateStudent(int.Parse(externalStudentId), student);
     }

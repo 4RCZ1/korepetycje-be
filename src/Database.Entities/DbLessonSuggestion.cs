@@ -20,7 +20,14 @@ public class DbLessonSuggestion
 
     [Column("lesson_id")]
     public int? LessonId { get; set; }
+    
+    [Column("timeslot_id")]
+    public int TimeslotId { get; set; }
 
     [ForeignKey(nameof(LessonId))]
     public DbLesson? Lesson { get; set; }
+    
+    [Required]
+    [ForeignKey(nameof(TimeslotId))]
+    public required DbTimeslot Timeslot { get; set; }
 }

@@ -22,6 +22,7 @@ public class OurDbContext : DbContext, ITransaction
     public DbSet<DbSchedule> Schedules { get; set; }
     public DbSet<DbTimeslot> Timeslots { get; set; }
     public DbSet<DbLessonSuggestion> LessonSuggestions { get; set; }
+    public DbSet<DbAttendance> Attendances { get; set; }
 
     public ILessonDao LessonDao { get; }
 

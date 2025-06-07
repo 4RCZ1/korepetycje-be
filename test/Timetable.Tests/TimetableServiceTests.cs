@@ -34,7 +34,6 @@ public class TimetableServiceTests
         Assert.Collection(schedule.Values, s =>
         {
             Assert.Equal(TimeSpan.FromDays(7), s.Period);
-            Assert.Equal(LessonDuration, s.LessonDuration);
             Assert.Equal(StudentId, s.StudentId);
             Assert.Collection(s.Lessons,
                 l => Assert.Equal(new DateTime(2025, 6, 2, 12, 0, 0), l.Timeslot.StartTime),

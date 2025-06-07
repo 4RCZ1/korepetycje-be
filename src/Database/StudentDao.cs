@@ -55,7 +55,8 @@ public class StudentDao : IStudentDao
         }
         studentToUpdate.Name = string.IsNullOrEmpty(student.Name) ? studentToUpdate.Name : student.Name;
         studentToUpdate.Surname = string.IsNullOrEmpty(student.Surname) ? studentToUpdate.Surname : student.Surname;
-        studentToUpdate.Address = string.IsNullOrEmpty(student.Address) ? studentToUpdate.Address : student.Address;
+        studentToUpdate.Address = student.Address;
+        studentToUpdate.AddressId = student.AddressId;
         context.SaveChanges();
     }
 

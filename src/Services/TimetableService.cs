@@ -70,7 +70,6 @@ public class TimetableService : ITimetableService
         {
             StudentId = DecodeStudentExternalId(studentExternalId),
             Period = period,
-            LessonDuration = TimeSpan.FromMinutes(durationInMinutes),
             Lessons = lessons,
         };
         using var transaction = _transactor.BeginTransaction();

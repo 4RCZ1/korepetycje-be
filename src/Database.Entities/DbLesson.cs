@@ -18,20 +18,9 @@ public class DbLesson
     [Column("timeslot_id")]
     public int? TimeslotId { get; set; }
 
-    [Column("custom_duration")]
-    public TimeSpan? CustomDuration { get; set; }
-
     [MaxLength(200)]
     [Column("tutor_info")]
     public string? TutorInfo { get; set; }
-
-    [Required]
-    [Column("is_confirmed")]
-    public bool IsConfirmed { get; set; }
-
-    [Required]
-    [Column("has_occurred")]
-    public bool HasOccurred { get; set; }
 
     [ForeignKey(nameof(TimeslotId))]
     public required DbTimeslot Timeslot { get; set; }

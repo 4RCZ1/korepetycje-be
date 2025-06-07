@@ -18,10 +18,6 @@ public class DbSchedule
     [Column("period")]
     public TimeSpan Period { get; set; }
 
-    [Required]
-    [Column("lesson_duration")]
-    public TimeSpan LessonDuration { get; set; }
-
     [ForeignKey(nameof(StudentId))]
     public DbStudent? Student { get; set; }
 
