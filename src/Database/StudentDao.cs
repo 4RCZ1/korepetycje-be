@@ -53,10 +53,7 @@ public class StudentDao : IStudentDao
         {
             throw new ApplicationException("Something went wrong!", ex);
         }
-        studentToUpdate.Name = string.IsNullOrEmpty(student.Name) ? studentToUpdate.Name : student.Name;
-        studentToUpdate.Surname = string.IsNullOrEmpty(student.Surname) ? studentToUpdate.Surname : student.Surname;
-        studentToUpdate.Address = student.Address;
-        studentToUpdate.AddressId = student.AddressId;
+
         context.SaveChanges();
     }
 

@@ -36,26 +36,25 @@ public class StudentService: IStudentService
             ExternalId = studentDao.Id.ToString(),
             Name = studentDao.Name,
             Surname = studentDao.Surname,
-            Address = studentDao.Address.AddressData
+            Address = studentDao.Address?.AddressData
         };
         return student;
     }
 
     public void UpdateStudent(string externalStudentId, StudentDto studentToAdd)
     {
-        DbAddress addressToAdd = new DbAddress()
+        var studentId = int.Parse(externalStudentId);
+        var studentToUpdate = _dao.GetStudent(studentId);
+
+        studentToUpdate.Name = string.IsNullOrEmpty(studentToAdd.Name) ? studentToUpdate.Name : studentToAdd.Name;
+        studentToUpdate.Surname = string.IsNullOrEmpty(studentToAdd.Surname) ? studentToUpdate.Surname : studentToAdd.Surname;
+        if (!studentToAdd.Address.Equals(studentToUpdate.Address?.AddressData))
         {
-            AddressName = "",
-            AddressData = studentToAdd.Address ?? ""
-        };
-        DbStudent student = new DbStudent()
-        {
-            Name = studentToAdd.Name ?? "",
-            Surname = studentToAdd.Surname ?? "",
-            AddressId = addressToAdd.Id,
-            Address = addressToAdd
-        };
-        _dao.UpdateStudent(int.Parse(externalStudentId), student);
+            studentToUpdate.Address.AddressData = studentToAdd.Address;
+            studentToUpdate.Address.AddressName = "NOWY ADRES";
+        }
+        
+        _dao.UpdateStudent(studentId, studentToUpdate);
     }
 
     public void DeleteStudent(string studentExternalId)
