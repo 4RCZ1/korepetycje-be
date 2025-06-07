@@ -23,7 +23,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\Timetable.Interfaces\Timetable.Interfaces.csproj" />
-      <ProjectReference Include="..\..\src\Timetable\Timetable.csproj" />
+      <ProjectReference Include="..\..\src\Services\Services.csproj" />
     </ItemGroup>
 
 </Project>

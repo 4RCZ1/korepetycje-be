@@ -4,7 +4,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Endpoints", "src\Endpoints\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Timetable.Interfaces", "src\Timetable.Interfaces\Timetable.Interfaces.csproj", "{610CF6C7-3337-44CA-8AF5-434A33D0A410}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Timetable", "src\Timetable\Timetable.csproj", "{E5EF0DB8-313C-4DD3-A3C6-9615F39DF762}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "src\Services\Services.csproj", "{E5EF0DB8-313C-4DD3-A3C6-9615F39DF762}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Timetable.Tests", "test\Timetable.Tests\Timetable.Tests.csproj", "{56B8692C-C15B-4894-8923-E2C5FDB18F2D}"
 EndProject

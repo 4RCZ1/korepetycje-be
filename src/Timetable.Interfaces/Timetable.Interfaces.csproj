@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Database.Entities\Database.Entities.csproj" />
+      <ProjectReference Include="..\Endpoints.Interfaces\Endpoints.Interfaces.csproj" />
     </ItemGroup>
 
 </Project>

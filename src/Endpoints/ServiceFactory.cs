@@ -4,7 +4,7 @@ using Amazon.SecretsManager;
 using Amazon.SecretsManager.Model;
 using Database;
 using Endpoints.Interfaces;
-using Timetable;
+using Services;
 
 namespace Endpoints;
 
@@ -14,6 +14,12 @@ internal static class ServiceFactory
     {
         var connection = await Connection;
         return new TimetableService(new Transactor(connection));
+    }
+
+    public static async Task<IStudentService> CreateStudentService()
+    {
+        var connection = await GetConnectionString();
+        return new StudentService(new StudentDao(connection));
     }
 
     private static async Task<string> GetConnectionString()

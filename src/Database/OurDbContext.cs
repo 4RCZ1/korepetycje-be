@@ -29,11 +29,18 @@ public class OurDbContext : DbContext, ITransaction
     {
         SaveChanges();
     }
-
+    
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
-        optionsBuilder.UseNpgsql(_connection);
+        optionsBuilder.UseNpgsql(_connection)
+            .AddInterceptors(new SoftDeleteInterceptor());
+    }
+    
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<DbStudent>()
+            .HasQueryFilter(x => x.IsDeleted == false);
     }
 
     private readonly string _connection;

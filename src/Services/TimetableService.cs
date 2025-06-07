@@ -3,7 +3,7 @@ using Database.Entities;
 using Endpoints.Interfaces;
 using Timetable.Interfaces;
 
-namespace Timetable;
+namespace Services;
 
 public class TimetableService : ITimetableService
 {
