@@ -27,7 +27,7 @@ public class TimetableServiceTests
         var schedule = A.Captured<DbSchedule>();
         A.CallTo(() => _dao.CreateSchedule(schedule._)).DoesNothing();
         _service.PlanLessons(
-            "2025-06-02T12:00:00.0000000Z", "2025-06-16", 7, StudentExternalId, 30);
+            "2025-06-02T12:00:00.0000000Z", "2025-06-16T00:00:00.0000000Z", 7, StudentExternalId, 30);
         Assert.Collection(schedule.Values, s =>
         {
             Assert.Equal(TimeSpan.FromDays(7), s.Period);
