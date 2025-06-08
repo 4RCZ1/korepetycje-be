@@ -12,7 +12,7 @@ internal static class ServiceFactory
 {
     public static async Task<ITimetableService> CreateTimetableService()
     {
-        var connection = await GetConnectionString();
+        var connection = await Connection;
         return new TimetableService(new LessonDao(connection));
     }
 
@@ -38,4 +38,6 @@ internal static class ServiceFactory
         return JsonSerializer.Deserialize<IDictionary<string, string>>(response.SecretString)
                ?? throw new Exception("AWS secret deserialized to null.");
     }
+
+    private static readonly Task<string> Connection = GetConnectionString();
 }
