@@ -243,7 +243,8 @@ Resources:
                       {"name": "ENV_PIPELINE_EXECUTION_ROLE", "value": "${TestingPipelineExecutionRole}"},
                       {"name": "ENV_CLOUDFORMATION_EXECUTION_ROLE", "value": "${TestingCloudFormationExecutionRole}"},
                       {"name": "ENV_BUCKET", "value": "${TestingArtifactBucket}"},
-                      {"name": "ENV_IMAGE_REPOSITORY", "value": "${TestingImageRepository}"}
+                      {"name": "ENV_IMAGE_REPOSITORY", "value": "${TestingImageRepository}"},
+                      {"name": "ENV_ENVIRONMENT", "value": "dev"}
                     ]
                 InputArtifacts:
                   - Name: BuildArtifactAsZip
@@ -291,7 +292,10 @@ Resources:
                       {"name": "ENV_PIPELINE_EXECUTION_ROLE", "value": "${ProdPipelineExecutionRole}"},
                       {"name": "ENV_CLOUDFORMATION_EXECUTION_ROLE", "value": "${ProdCloudFormationExecutionExeRole}"},
                       {"name": "ENV_BUCKET", "value": "${ProdArtifactBucket}"},
-                      {"name": "ENV_IMAGE_REPOSITORY", "value": "${ProdImageRepository}"}
+                      {"name": "ENV_IMAGE_REPOSITORY", "value": "${ProdImageRepository}"},
+                      {"name": "ENV_ENVIRONMENT", "value": "prod"},
+                      {"name": "ENV_PROD_RDS_SECRET_ARN", "value": "rds!db-prod-12345678-abcd-1234-efgh-123456789012"},
+                      {"name": "ENV_PROD_HOST_SECRET_ARN", "value": "prod/dbhost"}
                     ]
                 InputArtifacts:
                   - Name: BuildArtifactAsZip
