@@ -3,12 +3,75 @@ Transform: AWS::Serverless-2016-10-31
 Description: >
   Sample SAM Template for sam-app
 
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - feature
+      - prod
+    Description: Environment name (dev, feature, or prod)
+  DevRDSSecretArn:
+    Type: String
+    Default: "rds!db-038b4d1d-cb2e-4fa9-95f9-50e04af2e276"
+    Description: ARN of the RDS managed secret for dev/feature environments
+  ProdRDSSecretArn:
+    Type: String
+    Default: "rds!db-prod-12345678-abcd-1234-efgh-123456789012"
+    Description: ARN of the RDS managed secret for production environment
+  DevHostSecretArn:
+    Type: String
+    Default: "dev/dbhost"
+    Description: ARN of the host secret for dev/feature environments
+  ProdHostSecretArn:
+    Type: String
+    Default: "prod/dbhost"
+    Description: ARN of the host secret for production environment
+
+Conditions:
+  IsDevOrFeature: !Or
+    - !Equals [!Ref Environment, dev]
+    - !Equals [!Ref Environment, feature]
+  IsProd: !Equals [!Ref Environment, prod]
+
 Globals:
   Function:
     Timeout: 10
     MemorySize: 512
 
-Resources:
+Resources:  # IAM Role for Lambda functions with SecretsManager access to environment-specific secrets
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: SecretsManagerAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                  - secretsmanager:DescribeSecret
+                Resource:
+                  - !If
+                    - IsDevOrFeature
+                    - !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${DevRDSSecretArn}*"
+                    - !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${ProdRDSSecretArn}*"
+                  - !If
+                    - IsDevOrFeature
+                    - !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${DevHostSecretArn}*"
+                    - !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${ProdHostSecretArn}*"
+
   GetLessonsFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -18,12 +81,17 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Environment:
+        Variables:
+          ENVIRONMENT: !Ref Environment
       Events:
         GetLessons:
           Type: Api
           Properties:
             Path: /api/lesson
             Method: get
+
   PlanLessonsFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -33,12 +101,17 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Environment:
+        Variables:
+          ENVIRONMENT: !Ref Environment
       Events:
         GetLessons:
           Type: Api
           Properties:
             Path: /api/plan-lessons
             Method: post
+
   ConfirmLessonFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -48,12 +121,17 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Environment:
+        Variables:
+          ENVIRONMENT: !Ref Environment
       Events:
         GetLessons:
           Type: Api
           Properties:
             Path: /api/lesson/{lessonExternalId}/confirm
             Method: put
+
   AddFreeTimeslots:
     Type: AWS::Serverless::Function
     Properties:
@@ -63,6 +141,10 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Environment:
+        Variables:
+          ENVIRONMENT: !Ref Environment
       Events:
         GetLessons:
           Type: Api

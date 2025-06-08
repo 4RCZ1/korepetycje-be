@@ -22,3 +22,4 @@ phases:
                     --no-fail-on-empty-changeset
                     --role-arn ${TESTING_CLOUDFORMATION_EXECUTION_ROLE}
                     --no-confirm-changeset
+                    --parameter-overrides Environment=feature
