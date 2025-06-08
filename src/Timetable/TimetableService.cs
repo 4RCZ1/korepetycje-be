@@ -97,17 +97,6 @@ public class TimetableService : ITimetableService
         return int.Parse(externalId);
     }
 
-    private static DateOnly ParseDate(string s)
-    {
-        try
-        {
-            return DateOnly.ParseExact(s, "O", CultureInfo.InvariantCulture);
-        }
-        catch (FormatException)
-        {
-            throw new InvalidRequestException();
-        }
-    }
     private static DateTime ParseDateTime(string s)
     {
         try

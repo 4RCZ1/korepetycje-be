@@ -8,6 +8,5 @@ public interface ILessonDao
     IList<DbLesson> GetStudentLessonsInRange(int studentId, DateTime startTime, DateTime endTime);
     void ConfirmLesson(int lessonId);
     void CreateSchedule(DbSchedule schedule);
-    IList<DbLesson> GetStudentLessons(int studentId);
     void AddFreeTerm(DateTime startTime, DateTime endTime);
 }

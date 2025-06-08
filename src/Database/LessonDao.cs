@@ -13,36 +13,25 @@ public class LessonDao : ILessonDao
 
     public IList<DbLesson> GetLessonsInRange(DateTime startTime, DateTime endTime)
     {
-        return GetLessons(_context)
+        return GetLessons()
             .Where(TimeslotDaoConditions.LessonOverlap(startTime, endTime))
             .ToList();
     }
 
     public IList<DbLesson> GetStudentLessonsInRange(int studentId, DateTime startTime, DateTime endTime)
     {
-        return GetLessons(_context)
+        return GetLessons()
             .Where(lesson => lesson.Schedule!.StudentId == studentId)
             .Where(TimeslotDaoConditions.LessonOverlap(startTime, endTime))
             .ToList();
     }
 
-    private static IQueryable<DbLesson> GetLessons(OurDbContext context)
+    private IQueryable<DbLesson> GetLessons()
     {
-        return context.Lessons
+        return _context.Lessons
             .AsNoTracking()
             .Include(l => l.Schedule)
             .Include(l => l.Timeslot);
-    }
-
-    public IList<DbLesson> GetStudentLessons(int studentId)
-    {
-        var lessons = _context.Lessons
-            .AsNoTracking()
-            .Include(l => l.Schedule)
-            .Include(l => l.Timeslot)
-            .Where(l => l.Schedule!.StudentId == studentId)
-            .ToList();
-        return lessons;
     }
 
     public void ConfirmLesson(int lessonId)
