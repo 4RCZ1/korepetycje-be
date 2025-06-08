@@ -9,7 +9,9 @@ public class TimetableServiceTests
 {
     public TimetableServiceTests()
     {
-        _service = new TimetableService(_dao);
+        A.CallTo(() => _transactor.BeginTransaction()).Returns(_transaction).Once();
+        A.CallTo(() => _transaction.LessonDao).Returns(_dao);
+        _service = new TimetableService(_transactor);
     }
 
     [Fact]
@@ -46,6 +48,8 @@ public class TimetableServiceTests
         A.CallTo(() => _dao.ConfirmLesson(13)).MustHaveHappenedOnceExactly();
     }
 
+    private readonly ITransactor _transactor = A.Fake<ITransactor>();
+    private readonly ITransaction _transaction = A.Fake<ITransaction>();
     private readonly ILessonDao _dao = A.Fake<ILessonDao>();
     private readonly ITimetableService _service;
 

@@ -7,14 +7,15 @@ namespace Timetable;
 
 public class TimetableService : ITimetableService
 {
-    public TimetableService(ILessonDao dao)
+    public TimetableService(ITransactor transactor)
     {
-        _dao = dao;
+        _transactor = transactor;
     }
 
     public IList<LessonDto> GetLessons(string startTime, string endTime)
     {
-        return _dao.GetLessonsInRange(ParseDateTime(startTime), ParseDateTime(endTime))
+        using var t = _transactor.BeginTransaction();
+        return t.LessonDao.GetLessonsInRange(ParseDateTime(startTime), ParseDateTime(endTime))
             .Select(lesson =>
                 new LessonDto
                 {
@@ -29,7 +30,8 @@ public class TimetableService : ITimetableService
         string startTime,
         string endTime)
     {
-        return _dao.GetStudentLessonsInRange(
+        using var t = _transactor.BeginTransaction();
+        return t.LessonDao.GetStudentLessonsInRange(
                 DecodeStudentExternalId(studentExternalId),
                 ParseDateTime(startTime),
                 ParseDateTime(endTime))
@@ -71,17 +73,23 @@ public class TimetableService : ITimetableService
             LessonDuration = TimeSpan.FromMinutes(durationInMinutes),
             Lessons = lessons,
         };
-        _dao.CreateSchedule(schedule);
+        using var transaction = _transactor.BeginTransaction();
+        transaction.LessonDao.CreateSchedule(schedule);
+        transaction.Commit();
     }
 
     public void AddFreeTerm(string startTime, string endTime)
     {
-        _dao.AddFreeTerm(ParseDateTime(startTime), ParseDateTime(endTime));
+        using var t = _transactor.BeginTransaction();
+        t.LessonDao.AddFreeTerm(ParseDateTime(startTime), ParseDateTime(endTime));
+        t.Commit();
     }
 
     public void ConfirmLesson(string lessonExternalId)
     {
-        _dao.ConfirmLesson(int.Parse(lessonExternalId));
+        using var t = _transactor.BeginTransaction();
+        t.LessonDao.ConfirmLesson(int.Parse(lessonExternalId));
+        t.Commit();
     }
 
     private static int DecodeStudentExternalId(string externalId)
@@ -111,5 +119,6 @@ public class TimetableService : ITimetableService
             throw new InvalidRequestException();
         }
     }
-    private readonly ILessonDao _dao;
+
+    private readonly ITransactor _transactor;
 }

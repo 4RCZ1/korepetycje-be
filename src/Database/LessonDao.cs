@@ -6,23 +6,21 @@ namespace Database;
 
 public class LessonDao : ILessonDao
 {
-    public LessonDao(string connection)
+    public LessonDao(OurDbContext context)
     {
-        _connection = connection;
+        _context = context;
     }
 
     public IList<DbLesson> GetLessonsInRange(DateTime startTime, DateTime endTime)
     {
-        using var context = new OurDbContext(_connection);
-        return GetLessons(context)
+        return GetLessons(_context)
             .Where(TimeslotDaoConditions.LessonOverlap(startTime, endTime))
             .ToList();
     }
 
     public IList<DbLesson> GetStudentLessonsInRange(int studentId, DateTime startTime, DateTime endTime)
     {
-        using var context = new OurDbContext(_connection);
-        return GetLessons(context)
+        return GetLessons(_context)
             .Where(lesson => lesson.Schedule!.StudentId == studentId)
             .Where(TimeslotDaoConditions.LessonOverlap(startTime, endTime))
             .ToList();
@@ -38,8 +36,7 @@ public class LessonDao : ILessonDao
 
     public IList<DbLesson> GetStudentLessons(int studentId)
     {
-        using var context = new OurDbContext(_connection);
-        var lessons = context.Lessons
+        var lessons = _context.Lessons
             .AsNoTracking()
             .Include(l => l.Schedule)
             .Include(l => l.Timeslot)
@@ -50,16 +47,13 @@ public class LessonDao : ILessonDao
 
     public void ConfirmLesson(int lessonId)
     {
-        using var context = new OurDbContext(_connection);
-        context.Lessons.Where(l => l.Id == lessonId).SingleOrDefault().IsConfirmed = true;
-        context.SaveChanges();
+        _context.Lessons.Where(l => l.Id == lessonId).SingleOrDefault().IsConfirmed = true;
     }
 
     public void CreateSchedule(DbSchedule schedule)
     {
-        using var context = new OurDbContext(_connection);
         var timeslotsToTake = schedule.Lessons.Select(l => l.Timeslot).ToList();
-        var timeslotsTaken = context.Timeslots
+        var timeslotsTaken = _context.Timeslots
             .AsNoTracking()
             .Where(ts => ts.IsFree == false)
             .ToList();
@@ -67,8 +61,7 @@ public class LessonDao : ILessonDao
         if (IsTermTaken(timeslotsToTake, timeslotsTaken))
             throw new ApplicationException("There are colliding lessons!");
 
-        context.Add(schedule);
-        context.SaveChanges();
+        _context.Add(schedule);
     }
 
     private bool IsTermTaken(List<DbTimeslot> tsToTake, List<DbTimeslot> tsTaken)
@@ -88,21 +81,20 @@ public class LessonDao : ILessonDao
 
     public void AddFreeTerm(DateTime startTime, DateTime endTime)
     {
-        using var context = new OurDbContext(_connection);
         var timeslotToAdd = new DbTimeslot()
         {
             StartTime = startTime,
             EndTime = endTime,
             IsFree = true
         };
-        var timeslotsTaken = context.Timeslots
+        var timeslotsTaken = _context.Timeslots
             .AsNoTracking()
             .Where(ts => ts.IsFree == false)
             .ToList();
-        if (IsTermTaken(new List<DbTimeslot>(){timeslotToAdd}, timeslotsTaken))
+        if (IsTermTaken(new List<DbTimeslot>() { timeslotToAdd }, timeslotsTaken))
             throw new ApplicationException("There are colliding timeslots!");
 
-        var timeslotsFree = context.Timeslots
+        var timeslotsFree = _context.Timeslots
             .AsNoTracking()
             .Where(ts => ts.IsFree == true)
             .ToList();
@@ -111,15 +103,14 @@ public class LessonDao : ILessonDao
 
         if (colliding.Any())
         {
-            var timeslotsToRemove = context.Timeslots
+            var timeslotsToRemove = _context.Timeslots
                 .Where(ts => colliding.Select(t => t.Id).Contains(ts.Id))
                 .ToList();
-            context.RemoveRange(timeslotsToRemove);
+            _context.RemoveRange(timeslotsToRemove);
         }
 
-        context.Add(timeslotToAdd);
-        context.SaveChanges();
+        _context.Add(timeslotToAdd);
     }
 
-    private readonly string _connection;
+    private readonly OurDbContext _context;
 }

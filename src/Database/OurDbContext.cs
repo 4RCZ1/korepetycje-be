@@ -1,24 +1,33 @@
 ﻿using Database.Entities;
 using Microsoft.EntityFrameworkCore;
+using Timetable.Interfaces;
 
 namespace Database;
 
-public class OurDbContext : DbContext
+public class OurDbContext : DbContext, ITransaction
 {
+    public OurDbContext(string connection)
+    {
+        _connection = connection;
+        LessonDao = new LessonDao(this);
+    }
+
+    public OurDbContext()
+        : this(string.Empty)
+    {
+    }
+
     public DbSet<DbLesson> Lessons { get; set; }
     public DbSet<DbStudent> Students { get; set; }
     public DbSet<DbSchedule> Schedules { get; set; }
     public DbSet<DbTimeslot> Timeslots { get; set; }
     public DbSet<DbLessonSuggestion> LessonSuggestions { get; set; }
 
-    public OurDbContext(string connection)
-    {
-        _connection = connection;
-    }
+    public ILessonDao LessonDao { get; }
 
-    public OurDbContext()
+    public void Commit()
     {
-        _connection = "";
+        SaveChanges();
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

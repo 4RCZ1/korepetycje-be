@@ -13,7 +13,7 @@ internal static class ServiceFactory
     public static async Task<ITimetableService> CreateTimetableService()
     {
         var connection = await Connection;
-        return new TimetableService(new LessonDao(connection));
+        return new TimetableService(new Transactor(connection));
     }
 
     private static async Task<string> GetConnectionString()
