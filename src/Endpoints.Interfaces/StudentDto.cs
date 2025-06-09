@@ -2,7 +2,7 @@
 
 public class StudentDto
 {
-    public string ExternalId { get; set; }
+    public required string ExternalId { get; set; }
     
     public string? Name { get; set; }
 

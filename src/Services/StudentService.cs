@@ -20,8 +20,8 @@ public class StudentService: IStudentService
         };
         DbStudent student = new DbStudent()
         {
-            Name = studentToAdd.Name,
-            Surname = studentToAdd.Surname,
+            Name = studentToAdd.Name ?? "",
+            Surname = studentToAdd.Surname ?? "",
             Address = addressToAdd,
             AddressId = addressToAdd.Id
         };
@@ -48,13 +48,17 @@ public class StudentService: IStudentService
 
         studentToUpdate.Name = string.IsNullOrEmpty(studentToAdd.Name) ? studentToUpdate.Name : studentToAdd.Name;
         studentToUpdate.Surname = string.IsNullOrEmpty(studentToAdd.Surname) ? studentToUpdate.Surname : studentToAdd.Surname;
-        if (!studentToAdd.Address.Equals(studentToUpdate.Address?.AddressData))
+        if (!(studentToAdd.Address ?? "").Equals(studentToUpdate.Address?.AddressData)
+            && studentToAdd.Address != null)
         {
-            studentToUpdate.Address.AddressData = studentToAdd.Address;
-            studentToUpdate.Address.AddressName = "NOWY ADRES";
+            studentToUpdate.Address = new DbAddress()
+                {
+                    AddressData = studentToAdd.Address,
+                    AddressName = studentToAdd.Address
+                };
         }
         
-        _dao.UpdateStudent(studentId, studentToUpdate);
+        _dao.UpdateStudent(studentToUpdate);
     }
 
     public void DeleteStudent(string studentExternalId)

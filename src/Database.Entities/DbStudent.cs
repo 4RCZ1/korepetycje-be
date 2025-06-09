@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Database.Entities;
 
 [Table("student")]
-public class DbStudent : ISoftDelete
+public class DbStudent : SoftDelete
 {
     [Key]
     [Column("student_id")]
@@ -22,9 +22,6 @@ public class DbStudent : ISoftDelete
     
     [Column("address_id")]
     public int? AddressId { get; set; }
-    
-    public bool IsDeleted { get; set; }
-    public DateTimeOffset? DeletedAt { get; set; }
     
     public ICollection<DbSchedule> Schedules { get; } = new List<DbSchedule>();
     

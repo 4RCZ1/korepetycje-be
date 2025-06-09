@@ -16,7 +16,7 @@ public class AddStudentFunction
             throw new NullReferenceException("Request body is null");
         }
         var body = JsonSerializer.Deserialize<StudentDto>(request.Body);
-        service.AddStudent(body);
+        if (body != null) service.AddStudent(body);
         return new APIGatewayProxyResponse
         {
             StatusCode = 200,

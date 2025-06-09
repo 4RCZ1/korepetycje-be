@@ -55,7 +55,6 @@ public class TimetableServiceTests
 
     private const string RequestStartTimeString = "2025-01-01T00:00:00.0000000Z";
     private const string RequestEndTimeString = "2026-01-01T00:00:00.0000000Z";
-    private static readonly TimeSpan LessonDuration = TimeSpan.FromMinutes(30);
     private const string StudentExternalId = "123";
     private const int StudentId = 123;
 }

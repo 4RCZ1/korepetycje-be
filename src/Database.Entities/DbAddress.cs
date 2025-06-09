@@ -10,7 +10,7 @@ public class DbAddress
     public int Id { get; set; }
     
     [Required]
-    [MaxLength(50)]
+    [MaxLength(200)]
     [Column("address_name")]
     public required string AddressName { get; set; }
     

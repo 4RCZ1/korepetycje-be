@@ -17,7 +17,7 @@ public class UpdateStudentFunction
         }
         var externalStudentId = request.PathParameters["studentExternalId"];
         var body = JsonSerializer.Deserialize<StudentDto>(request.Body);
-        service.UpdateStudent(externalStudentId, body);
+        if (body != null) service.UpdateStudent(externalStudentId, body);
         return new APIGatewayProxyResponse
         {
             StatusCode = 200,

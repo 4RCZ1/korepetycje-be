@@ -1,5 +1,4 @@
 ﻿using Database.Entities;
-using Endpoints.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Timetable.Interfaces;
 
@@ -28,32 +27,22 @@ public class StudentDao : IStudentDao
         using var context = new OurDbContext(_connection);
         var student = context.Students
             .AsNoTracking()
-            .Where(s => s.Id == studentId)?
-            .SingleOrDefault();
+            .SingleOrDefault(s => s.Id == studentId);
         if(student is null)
             throw new ApplicationException("No student found");
         return student;
 
     }
 
-    public void UpdateStudent(int studentId, DbStudent student)
+    public void UpdateStudent(DbStudent student)
     {
         using var context = new OurDbContext(_connection);
-        DbStudent studentToUpdate;
-        try
-        {
-            studentToUpdate = context.Students.Where(s => s.Id == studentId)
-                .SingleOrDefault();
-        }
-        catch (ArgumentNullException ex)
-        {
-            throw new ApplicationException("Student not found!", ex);
-        }
-        catch (Exception ex)
-        {
-            throw new ApplicationException("Something went wrong!", ex);
-        }
-
+        DbStudent? studentToUpdate;
+        studentToUpdate = context.Students
+            .SingleOrDefault(s => s.Id == student.Id);
+        if(studentToUpdate is null)
+            throw new ApplicationException("No student found");
+        studentToUpdate = student;
         context.SaveChanges();
     }
 

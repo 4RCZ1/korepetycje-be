@@ -1,6 +1,6 @@
 ﻿namespace Database.Entities;
 
-public interface ISoftDelete
+public class SoftDelete
 {
         public bool IsDeleted { get; set; }
         public DateTimeOffset? DeletedAt { get; set; }
