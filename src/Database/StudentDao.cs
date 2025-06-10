@@ -6,59 +6,30 @@ namespace Database;
 
 public class StudentDao : IStudentDao
 {
+    private readonly OurDbContext _context;
 
-    public void AddStudent(DbStudent student)
+    public StudentDao(OurDbContext context)
     {
-        using var context = new OurDbContext(_connection);
-
-        try
-        {
-            context.Students.Add(student);
-            context.SaveChanges();
-        }
-        catch (Exception e)
-        {
-            throw new ApplicationException("Something went wrong!", e);
-        }
+        _context = context;
     }
 
-    public DbStudent GetStudent(int studentId)
+    public DbStudent? GetStudent(int studentId)
     {
-        using var context = new OurDbContext(_connection);
-        var student = context.Students
+        return _context.Students
             .AsNoTracking()
+            .Include(s => s.Address)
             .SingleOrDefault(s => s.Id == studentId);
-        if(student is null)
-            throw new ApplicationException("No student found");
-        return student;
-
     }
 
-    public void UpdateStudent(DbStudent student)
+    public void SaveStudent(DbStudent student)
     {
-        using var context = new OurDbContext(_connection);
-        DbStudent? studentToUpdate;
-        studentToUpdate = context.Students
-            .SingleOrDefault(s => s.Id == student.Id);
-        if(studentToUpdate is null)
-            throw new ApplicationException("No student found");
-        studentToUpdate = student;
-        context.SaveChanges();
+        _context.Students.Update(student);
     }
 
     public void DeleteStudent(int studentId)
     {
-        using var context = new OurDbContext(_connection);
-        
-        var studentToDelete = context.Students.Where(s => s.Id == studentId).SingleOrDefault();
-        if (studentToDelete is null)
-            throw new ApplicationException("No student found");
-        context.Students.Remove(studentToDelete);
-        context.SaveChanges();
+        var studentToDelete = _context.Students.SingleOrDefault(s => s.Id == studentId);
+        if (studentToDelete is not null)
+            _context.Students.Remove(studentToDelete);
     }
-    public StudentDao(string connection)
-    {
-        _connection = connection;
-    }
-    private readonly string _connection;
 }

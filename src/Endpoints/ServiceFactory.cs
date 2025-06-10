@@ -18,8 +18,8 @@ internal static class ServiceFactory
 
     public static async Task<IStudentService> CreateStudentService()
     {
-        var connection = await GetConnectionString();
-        return new StudentService(new StudentDao(connection));
+        var connection = await Connection;
+        return new StudentService(new Transactor(connection));
     }
 
     private static async Task<string> GetConnectionString()

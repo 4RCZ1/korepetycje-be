@@ -10,6 +10,7 @@ public class OurDbContext : DbContext, ITransaction
     {
         _connection = connection;
         LessonDao = new LessonDao(this);
+        StudentDao = new StudentDao(this);
     }
 
     public OurDbContext()
@@ -25,19 +26,20 @@ public class OurDbContext : DbContext, ITransaction
     public DbSet<DbAttendance> Attendances { get; set; }
 
     public ILessonDao LessonDao { get; }
+    public IStudentDao StudentDao { get; }
 
     public void Commit()
     {
         SaveChanges();
     }
-    
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
         optionsBuilder.UseNpgsql(_connection)
             .AddInterceptors(new SoftDeleteInterceptor());
     }
-    
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<DbStudent>()

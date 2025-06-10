@@ -14,5 +14,5 @@ public class Transactor : ITransactor
         return new OurDbContext(_connection);
     }
 
-    private string _connection;
+    private readonly string _connection;
 }

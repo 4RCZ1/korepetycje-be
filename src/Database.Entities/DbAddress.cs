@@ -2,18 +2,19 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Database.Entities;
+
 [Table("address")]
 public class DbAddress
 {
     [Key]
-    [Column("id")]
+    [Column("address_id")]
     public int Id { get; set; }
-    
+
     [Required]
     [MaxLength(200)]
     [Column("address_name")]
     public required string AddressName { get; set; }
-    
+
     [Required]
     [MaxLength(200)]
     [Column("address_data")]

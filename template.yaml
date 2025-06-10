@@ -151,6 +151,7 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
           Properties:
             Path: /api/add-free-timeslots
             Method: post
+
   AddStudent:
     Type: AWS::Serverless::Function
     Properties:
@@ -164,7 +165,7 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
         GetLessons:
           Type: Api
           Properties:
-            Path: /api/student/add
+            Path: /api/student
             Method: post
   GetStudent:
     Type: AWS::Serverless::Function
@@ -179,7 +180,7 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
         GetLessons:
           Type: Api
           Properties:
-            Path: /api/student/{studentExternalId}/get
+            Path: /api/student/{studentExternalId}
             Method: get
   UpdateStudentFunction:
     Type: AWS::Serverless::Function
@@ -194,8 +195,8 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
         GetLessons:
           Type: Api
           Properties:
-            Path: /api/student/{studentExternalId}/update
-            Method: put
+            Path: /api/student/{studentExternalId}
+            Method: patch
   DeleteStudentFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -209,5 +210,5 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
         GetLessons:
           Type: Api
           Properties:
-            Path: /api/student/{studentExternalId}/delete
+            Path: /api/student/{studentExternalId}
             Method: delete

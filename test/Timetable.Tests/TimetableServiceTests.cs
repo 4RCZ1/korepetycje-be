@@ -1,5 +1,4 @@
 using Database.Entities;
-using Endpoints.Interfaces;
 using FakeItEasy;
 using Services;
 using Timetable.Interfaces;
@@ -42,16 +41,29 @@ public class TimetableServiceTests
     }
 
     [Fact]
-    public void ConfirmLesson()
+    public void ConfirmAttendance()
     {
-        _service.ConfirmLesson("13");
-        A.CallTo(() => _dao.ConfirmLesson(13)).MustHaveHappenedOnceExactly();
+        var attendance = new DbAttendance { IsConfirmed = false };
+        A.CallTo(() => _dao.GetAttendance(101, 201)).Returns(attendance);
+        _service.ConfirmLesson("101", "201");
+        A.CallTo(() => _dao.SaveAttendance(A<DbAttendance>.That.Matches(a => a.IsConfirmed)))
+            .MustHaveHappenedOnceExactly();
+        A.CallTo(() => _transaction.Commit()).MustHaveHappenedOnceExactly();
+    }
+
+    [Fact]
+    public void IgnoreRemovedAttendances()
+    {
+        A.CallTo(() => _dao.GetAttendance(101, 201)).Returns(null);
+        _service.ConfirmLesson("101", "201");
+        A.CallTo(() => _dao.SaveAttendance(A<DbAttendance>._))
+            .MustNotHaveHappened();
     }
 
     private readonly ITransactor _transactor = A.Fake<ITransactor>();
     private readonly ITransaction _transaction = A.Fake<ITransaction>();
     private readonly ILessonDao _dao = A.Fake<ILessonDao>();
-    private readonly ITimetableService _service;
+    private readonly TimetableService _service;
 
     private const string RequestStartTimeString = "2025-01-01T00:00:00.0000000Z";
     private const string RequestEndTimeString = "2026-01-01T00:00:00.0000000Z";

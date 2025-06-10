@@ -32,7 +32,7 @@ public class TimetableService : ITimetableService
     {
         using var t = _transactor.BeginTransaction();
         return t.LessonDao.GetStudentLessonsInRange(
-                DecodeStudentExternalId(studentExternalId),
+                DecodeExternalId(studentExternalId),
                 ParseDateTime(startTime),
                 ParseDateTime(endTime))
             .Select(l => new LessonDto
@@ -68,7 +68,7 @@ public class TimetableService : ITimetableService
         }
         var schedule = new DbSchedule
         {
-            StudentId = DecodeStudentExternalId(studentExternalId),
+            StudentId = DecodeExternalId(studentExternalId),
             Period = period,
             Lessons = lessons,
         };
@@ -84,14 +84,20 @@ public class TimetableService : ITimetableService
         t.Commit();
     }
 
-    public void ConfirmLesson(string lessonExternalId)
+    public void ConfirmLesson(string lessonExternalId, string studentExternalId)
     {
         using var t = _transactor.BeginTransaction();
-        t.LessonDao.ConfirmLesson(int.Parse(lessonExternalId));
+        var attendance = t.LessonDao.GetAttendance(DecodeExternalId(lessonExternalId),
+            DecodeExternalId(studentExternalId));
+        if (attendance is not null)
+        {
+            attendance.IsConfirmed = true;
+            t.LessonDao.SaveAttendance(attendance);
+        }
         t.Commit();
     }
 
-    private static int DecodeStudentExternalId(string externalId)
+    private static int DecodeExternalId(string externalId)
     {
         return int.Parse(externalId);
     }

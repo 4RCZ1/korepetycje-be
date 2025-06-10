@@ -10,6 +10,6 @@ public interface ITimetableService
         int periodInDays,
         string studentExternalId,
         int durationInMinutes);
-    void ConfirmLesson(string lessonExternalId);
+    void ConfirmLesson(string lessonExternalId, string studentExternalId);
     void AddFreeTerm(string startTime, string endTime);
 }

@@ -4,67 +4,76 @@ using Timetable.Interfaces;
 
 namespace Services;
 
-public class StudentService: IStudentService
+public class StudentService : IStudentService
 {
-    public StudentService(IStudentDao dao)
+    public StudentService(ITransactor transactor)
     {
-        _dao = dao;
+        _transactor = transactor;
     }
-    
+
     public void AddStudent(StudentDto studentToAdd)
     {
-        DbAddress addressToAdd = new DbAddress()
+        var addressToAdd = new DbAddress
         {
-            AddressName = "",
-            AddressData = studentToAdd.Address ?? ""
+            AddressName = "", // todo: fill out
+            AddressData = studentToAdd.Address ?? "" // todo: validate, "" is likely not acceptable
         };
-        DbStudent student = new DbStudent()
+        var student = new DbStudent
         {
             Name = studentToAdd.Name ?? "",
             Surname = studentToAdd.Surname ?? "",
             Address = addressToAdd,
-            AddressId = addressToAdd.Id
         };
-        _dao.AddStudent(student);
+        using var t = _transactor.BeginTransaction();
+        t.StudentDao.SaveStudent(student);
+        t.Commit();
     }
 
     public StudentDto GetStudent(string studentExternalId)
     {
-        var studentDao = _dao.GetStudent(int.Parse(studentExternalId));
-        var student = new StudentDto()
+        using var t = _transactor.BeginTransaction();
+        var student = t.StudentDao.GetStudent(int.Parse(studentExternalId));
+        if (student is null)
+            throw new InvalidRequestException();
+        return new StudentDto
         {
-            ExternalId = studentDao.Id.ToString(),
-            Name = studentDao.Name,
-            Surname = studentDao.Surname,
-            Address = studentDao.Address?.AddressData
+            ExternalId = student.Id.ToString(),
+            Name = student.Name,
+            Surname = student.Surname,
+            Address = student.Address?.AddressData
         };
-        return student;
     }
 
-    public void UpdateStudent(string externalStudentId, StudentDto studentToAdd)
+    public void UpdateStudent(string externalStudentId, StudentDto student)
     {
+        using var t = _transactor.BeginTransaction();
         var studentId = int.Parse(externalStudentId);
-        var studentToUpdate = _dao.GetStudent(studentId);
-
-        studentToUpdate.Name = string.IsNullOrEmpty(studentToAdd.Name) ? studentToUpdate.Name : studentToAdd.Name;
-        studentToUpdate.Surname = string.IsNullOrEmpty(studentToAdd.Surname) ? studentToUpdate.Surname : studentToAdd.Surname;
-        if (!(studentToAdd.Address ?? "").Equals(studentToUpdate.Address?.AddressData)
-            && studentToAdd.Address != null)
+        var studentToUpdate = t.StudentDao.GetStudent(studentId);
+        if (studentToUpdate is null)
+            throw new InvalidRequestException();
+        if (student.Name is not null)
+            studentToUpdate.Name = student.Name;
+        if (student.Surname is not null)
+            studentToUpdate.Surname = student.Surname;
+        if (student.Address is not null)
         {
-            studentToUpdate.Address = new DbAddress()
-                {
-                    AddressData = studentToAdd.Address,
-                    AddressName = studentToAdd.Address
-                };
+            studentToUpdate.Address = new DbAddress
+            {
+                AddressData = student.Address,
+                AddressName = student.Address, // todo: is address name really needed then?
+            };
         }
-        
-        _dao.UpdateStudent(studentToUpdate);
+
+        t.StudentDao.SaveStudent(studentToUpdate);
+        t.Commit();
     }
 
     public void DeleteStudent(string studentExternalId)
     {
-        _dao.DeleteStudent(int.Parse(studentExternalId));
+        using var t = _transactor.BeginTransaction();
+        t.StudentDao.DeleteStudent(int.Parse(studentExternalId));
+        t.Commit();
     }
-    
-    private readonly IStudentDao _dao;
+
+    private readonly ITransactor _transactor;
 }

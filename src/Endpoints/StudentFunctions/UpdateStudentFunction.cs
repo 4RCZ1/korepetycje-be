@@ -16,8 +16,9 @@ public class UpdateStudentFunction
             throw new NullReferenceException("Request body is null");
         }
         var externalStudentId = request.PathParameters["studentExternalId"];
-        var body = JsonSerializer.Deserialize<StudentDto>(request.Body);
-        if (body != null) service.UpdateStudent(externalStudentId, body);
+        var student = JsonSerializer.Deserialize<StudentDto>(request.Body);
+        if (student != null)
+            service.UpdateStudent(externalStudentId, student);
         return new APIGatewayProxyResponse
         {
             StatusCode = 200,

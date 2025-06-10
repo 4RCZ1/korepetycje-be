@@ -1,7 +1,6 @@
 ﻿using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 
-
 namespace Endpoints.StudentFunctions;
 
 public class GetStudentFunction

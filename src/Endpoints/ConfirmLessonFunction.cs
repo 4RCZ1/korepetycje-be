@@ -10,7 +10,8 @@ public class ConfirmLessonFunction
     {
         var service = await ServiceFactory.CreateTimetableService();
         var lessonExternalId = request.PathParameters["lessonExternalId"];
-        service.ConfirmLesson(lessonExternalId);
+        const string studentExternalId = "1"; // todo: get from authentication token instead
+        service.ConfirmLesson(lessonExternalId, studentExternalId);
         return new APIGatewayProxyResponse
         {
             StatusCode = 200,

@@ -11,6 +11,17 @@ public class LessonDao : ILessonDao
         _context = context;
     }
 
+    public DbAttendance? GetAttendance(int lessonId, int studentId)
+    {
+        return _context.Attendances.AsNoTracking().SingleOrDefault(
+            a => a.LessonId == lessonId && a.StudentId == studentId);
+    }
+
+    public void SaveAttendance(DbAttendance attendance)
+    {
+        _context.Attendances.Update(attendance);
+    }
+
     public IList<DbLesson> GetLessonsInRange(DateTime startTime, DateTime endTime)
     {
         return GetLessons()
@@ -32,11 +43,6 @@ public class LessonDao : ILessonDao
             .AsNoTracking()
             .Include(l => l.Schedule)
             .Include(l => l.Timeslot);
-    }
-
-    public void ConfirmLesson(int lessonId)
-    {
-        throw new NotImplementedException();
     }
 
     public void CreateSchedule(DbSchedule schedule)

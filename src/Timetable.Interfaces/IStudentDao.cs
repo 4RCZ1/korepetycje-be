@@ -1,12 +1,10 @@
 ﻿using Database.Entities;
-using Endpoints.Interfaces;
 
 namespace Timetable.Interfaces;
 
 public interface IStudentDao
 {
-    void AddStudent(DbStudent studentToAdd);
-    DbStudent GetStudent(int studentId);
-    void UpdateStudent(DbStudent student);
+    DbStudent? GetStudent(int studentId);
+    void SaveStudent(DbStudent student);
     void DeleteStudent(int studentId);
 }
