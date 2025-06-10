@@ -36,7 +36,7 @@ public class LessonDao : ILessonDao
 
     public void ConfirmLesson(int lessonId)
     {
-        _context.Lessons.Where(l => l.Id == lessonId).SingleOrDefault().IsConfirmed = true;
+        throw new NotImplementedException();
     }
 
     public void CreateSchedule(DbSchedule schedule)
@@ -44,7 +44,6 @@ public class LessonDao : ILessonDao
         var timeslotsToTake = schedule.Lessons.Select(l => l.Timeslot).ToList();
         var timeslotsTaken = _context.Timeslots
             .AsNoTracking()
-            .Where(ts => ts.IsFree == false)
             .ToList();
 
         if (IsTermTaken(timeslotsToTake, timeslotsTaken))
@@ -74,18 +73,15 @@ public class LessonDao : ILessonDao
         {
             StartTime = startTime,
             EndTime = endTime,
-            IsFree = true
         };
         var timeslotsTaken = _context.Timeslots
             .AsNoTracking()
-            .Where(ts => ts.IsFree == false)
             .ToList();
         if (IsTermTaken(new List<DbTimeslot>() { timeslotToAdd }, timeslotsTaken))
             throw new ApplicationException("There are colliding timeslots!");
 
         var timeslotsFree = _context.Timeslots
             .AsNoTracking()
-            .Where(ts => ts.IsFree == true)
             .ToList();
 
         var colliding = GetCollidingTimeslots(timeslotsFree, new List<DbTimeslot>(){timeslotToAdd});
