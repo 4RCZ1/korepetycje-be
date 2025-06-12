@@ -22,6 +22,11 @@ public class LessonDao : ILessonDao
         _context.Attendances.Update(attendance);
     }
 
+    public DbLesson? GetLessonById(int lessonId)
+    {
+        return _context.Lessons.AsNoTracking().SingleOrDefault(l => l.Id == lessonId);
+    }
+
     public IList<DbLesson> GetLessonsInRange(DateTime startTime, DateTime endTime)
     {
         return GetLessons()
@@ -32,7 +37,7 @@ public class LessonDao : ILessonDao
     public IList<DbLesson> GetStudentLessonsInRange(int studentId, DateTime startTime, DateTime endTime)
     {
         return GetLessons()
-            .Where(lesson => lesson.Schedule!.StudentId == studentId)
+            .Where(lesson => lesson.Attendances.Any(a => a.StudentId == studentId))
             .Where(TimeslotDaoConditions.LessonOverlap(startTime, endTime))
             .ToList();
     }
@@ -42,12 +47,32 @@ public class LessonDao : ILessonDao
         return _context.Lessons
             .AsNoTracking()
             .Include(l => l.Schedule)
-            .Include(l => l.Timeslot);
+            .Include(l => l.Timeslot)
+            .Include(l => l.Attendances);
+    }
+
+    public void RemoveLessonsCascading(IList<int> lessonIds)
+    {
+        var lessonsToRemove = _context.Lessons.Where(l => lessonIds.Contains(l.Id));
+        var timeslotsToCascade = _context.Timeslots
+            .Where(t => lessonsToRemove.Any(l => l.TimeslotId == t.Id));
+        _context.Lessons.RemoveRange(lessonsToRemove);
+        _context.Timeslots.RemoveRange(timeslotsToCascade);
+    }
+
+    public DbSchedule? GetScheduleById(int scheduleId)
+    {
+        return _context.Schedules
+            .AsNoTracking()
+            .Include(s => s.Lessons)
+            .ThenInclude(l => l.Timeslot)
+            .Include(s => s.Lessons.OrderBy(l => l.Timeslot!.StartTime))
+            .SingleOrDefault(s => s.Id == scheduleId);
     }
 
     public void CreateSchedule(DbSchedule schedule)
     {
-        var timeslotsToTake = schedule.Lessons.Select(l => l.Timeslot).ToList();
+        List<DbTimeslot> timeslotsToTake = schedule.Lessons.Select(l => l.Timeslot).ToList()!;
         var timeslotsTaken = _context.Timeslots
             .AsNoTracking()
             .ToList();
@@ -62,6 +87,13 @@ public class LessonDao : ILessonDao
     {
         var colliding = GetCollidingTimeslots(tsToTake, tsTaken);
         return colliding.Any();
+    }
+
+    public void RemoveSchedule(int scheduleId)
+    {
+        var schedule = _context.Schedules.SingleOrDefault(s => s.Id == scheduleId);
+        if (schedule is not null)
+            _context.Schedules.Remove(schedule);
     }
 
     private List<DbTimeslot> GetCollidingTimeslots(List<DbTimeslot> tsToTake, List<DbTimeslot> tsTaken)

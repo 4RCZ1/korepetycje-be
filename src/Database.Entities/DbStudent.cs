@@ -32,6 +32,4 @@ public class DbStudent : ISoftDelete
 
     [ForeignKey(nameof(AddressId))]
     public DbAddress? Address { get; set; }
-
-    public ICollection<DbSchedule> Schedules { get; } = new List<DbSchedule>();
 }

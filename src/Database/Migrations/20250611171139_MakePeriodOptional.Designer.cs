@@ -3,6 +3,7 @@ using System;
 using Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Database.Migrations
 {
     [DbContext(typeof(OurDbContext))]
-    partial class OurDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250611171139_MakePeriodOptional")]
+    partial class MakePeriodOptional
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -152,7 +155,13 @@ namespace Database.Migrations
                         .HasColumnType("interval")
                         .HasColumnName("period");
 
+                    b.Property<int>("StudentId")
+                        .HasColumnType("integer")
+                        .HasColumnName("student_id");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("StudentId");
 
                     b.ToTable("schedule");
                 });
@@ -222,7 +231,7 @@ namespace Database.Migrations
             modelBuilder.Entity("Database.Entities.DbAttendance", b =>
                 {
                     b.HasOne("Database.Entities.DbLesson", "Lesson")
-                        .WithMany("Attendances")
+                        .WithMany()
                         .HasForeignKey("LessonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -274,6 +283,17 @@ namespace Database.Migrations
                     b.Navigation("Timeslot");
                 });
 
+            modelBuilder.Entity("Database.Entities.DbSchedule", b =>
+                {
+                    b.HasOne("Database.Entities.DbStudent", "Student")
+                        .WithMany("Schedules")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Student");
+                });
+
             modelBuilder.Entity("Database.Entities.DbStudent", b =>
                 {
                     b.HasOne("Database.Entities.DbAddress", "Address")
@@ -283,14 +303,14 @@ namespace Database.Migrations
                     b.Navigation("Address");
                 });
 
-            modelBuilder.Entity("Database.Entities.DbLesson", b =>
-                {
-                    b.Navigation("Attendances");
-                });
-
             modelBuilder.Entity("Database.Entities.DbSchedule", b =>
                 {
                     b.Navigation("Lessons");
+                });
+
+            modelBuilder.Entity("Database.Entities.DbStudent", b =>
+                {
+                    b.Navigation("Schedules");
                 });
 #pragma warning restore 612, 618
         }

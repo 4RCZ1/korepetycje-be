@@ -23,8 +23,10 @@ public class DbLesson
     public string? TutorInfo { get; set; }
 
     [ForeignKey(nameof(TimeslotId))]
-    public required DbTimeslot Timeslot { get; set; }
+    public DbTimeslot? Timeslot { get; set; }
 
     [ForeignKey(nameof(ScheduleId))]
     public DbSchedule? Schedule { get; set; }
+
+    public ICollection<DbAttendance> Attendances { get; set; } = new List<DbAttendance>();
 }

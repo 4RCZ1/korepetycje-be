@@ -10,16 +10,8 @@ public class DbSchedule
     [Column("schedule_id")]
     public int Id { get; set; }
 
-    [Required]
-    [Column("student_id")]
-    public int StudentId { get; set; }
-
-    [Required]
     [Column("period")]
-    public TimeSpan Period { get; set; }
-
-    [ForeignKey(nameof(StudentId))]
-    public DbStudent? Student { get; set; }
+    public TimeSpan? Period { get; set; }
 
     public ICollection<DbLesson> Lessons { get; set; } = new List<DbLesson>();
 }
