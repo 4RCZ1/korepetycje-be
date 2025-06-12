@@ -112,6 +112,26 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
             Path: /api/plan-lessons
             Method: post
 
+  EditLessonFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/Endpoints/
+      Handler: Endpoints::Endpoints.EditLessonFunction::EditLesson
+      Runtime: dotnet8
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Environment:
+        Variables:
+          ENVIRONMENT: !Ref Environment
+      Events:
+        GetLessons:
+          Type: Api
+          Properties:
+            Path: /api/lesson/{lessonExternalId}
+            Method: patch
+
   ConfirmLessonFunction:
     Type: AWS::Serverless::Function
     Properties:

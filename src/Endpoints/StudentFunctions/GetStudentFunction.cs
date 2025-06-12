@@ -11,6 +11,6 @@ public class GetStudentFunction
         var service = await ServiceFactory.CreateStudentService();
         var studentExternalId = request.PathParameters["studentExternalId"];
         var student = service.GetStudent(studentExternalId);
-        return Response.OkJson(student);
+        return RestIo.OkJson(student);
     }
 }

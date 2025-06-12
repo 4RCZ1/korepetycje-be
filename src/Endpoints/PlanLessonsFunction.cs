@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 
@@ -8,27 +7,27 @@ public class PlanLessonsFunction
 {
     private class RequestBody
     {
-        public required string BeginTime { get; set; }
-        public required string EndTime { get; set; }
-        public required int? PeriodInDays { get; set; }
-        public required string StudentExternalId { get; set; }
-        public required int DurationInMinutes { get; set; }
+        public required DateTime FirstStartTime { get; set; }
+        public required DateTime FirstEndTime { get; set; }
+        public required int LessonCount { get; set; }
+        public required int PeriodInDays { get; set; }
+        public required IList<string> StudentIds { get; set; }
     }
 
-    public async Task<APIGatewayProxyResponse> PlanLessons(
+    public Task<APIGatewayProxyResponse> PlanLessons(
         APIGatewayProxyRequest request, ILambdaContext context)
     {
-        var service = await ServiceFactory.CreateTimetableService();
-        var body = JsonSerializer.Deserialize<RequestBody>(request.Body);
-        service.PlanLessons(
-            body.BeginTime,
-            body.EndTime,
-            body.PeriodInDays.Value, // todo: allow null for non-repeating lessons
-            body.StudentExternalId,
-            body.DurationInMinutes);
-        return new APIGatewayProxyResponse
+        return RestIo.HandleRestExceptions(async () =>
         {
-            StatusCode = 200,
-        };
+            var service = await ServiceFactory.CreateTimetableService();
+            var body = RestIo.ReadBody<RequestBody>(request);
+            service.PlanLessons(
+                body.FirstStartTime,
+                body.FirstEndTime,
+                body.LessonCount,
+                body.PeriodInDays,
+                body.StudentIds);
+            return string.Empty;
+        });
     }
 }
