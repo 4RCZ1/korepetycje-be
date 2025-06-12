@@ -21,6 +21,19 @@ public class StudentDao : IStudentDao
             .SingleOrDefault(s => s.Id == studentId);
     }
 
+    public List<DbStudent> GetStudents(int? lessonId = null)
+    {
+        if(lessonId is null)
+            return _context.Students.AsNoTracking().ToList();
+        return _context.Students
+            .AsNoTracking()
+            .Where(s =>_context.Attendances
+                .Where(a=>a.LessonId == lessonId)
+                .Select(a=>a.StudentId)
+                .Contains(s.Id))
+            .ToList();
+    }
+
     public void SaveStudent(DbStudent student)
     {
         _context.Students.Update(student);

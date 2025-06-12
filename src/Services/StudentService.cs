@@ -13,16 +13,16 @@ public class StudentService : IStudentService
 
     public void AddStudent(StudentDto studentToAdd)
     {
-        var addressToAdd = new DbAddress
-        {
-            AddressName = "", // todo: fill out
-            AddressData = studentToAdd.Address ?? "" // todo: validate, "" is likely not acceptable
-        };
+        var addressToAdd = studentToAdd.Address;
         var student = new DbStudent
         {
             Name = studentToAdd.Name ?? "",
             Surname = studentToAdd.Surname ?? "",
-            Address = addressToAdd,
+            Address = new DbAddress()
+            {
+                AddressName = addressToAdd?.AddressName ?? "NOWY ADRES",
+                AddressData = addressToAdd?.AddressData ?? "Uzupełnij dane"
+            }
         };
         using var t = _transactor.BeginTransaction();
         t.StudentDao.SaveStudent(student);
@@ -40,8 +40,46 @@ public class StudentService : IStudentService
             ExternalId = student.Id.ToString(),
             Name = student.Name,
             Surname = student.Surname,
-            Address = student.Address?.AddressData
+            Address = new AddressDto()
+            {
+                ExternalId = student.Address?.Id.ToString(),
+                AddressName = student.Address?.AddressName,
+                AddressData = student.Address?.AddressData,
+            }
         };
+    }
+    
+    public List<StudentDto> GetStudents(string? lessonExternalId = null)
+    {
+        using var t = _transactor.BeginTransaction();
+        List<DbStudent> students;
+        if (String.IsNullOrEmpty(lessonExternalId))
+            students = t.StudentDao.GetStudents();
+        else
+        {
+            int lessonId;
+            int.TryParse(lessonExternalId, out lessonId);
+            students = t.StudentDao.GetStudents(lessonId);
+        }
+        if (students is null)
+            throw new ApplicationException("No students found");
+        List<StudentDto> studentDtos = new List<StudentDto>();
+        foreach (var s in students)
+        {
+            studentDtos.Add(new StudentDto
+            {
+                ExternalId = s.Id.ToString(),
+                Name = s.Name,
+                Surname = s.Surname,
+                Address = new AddressDto()
+                {
+                    ExternalId = s.Address?.Id.ToString(),
+                    AddressName = s.Address?.AddressName,
+                    AddressData = s.Address?.AddressData,
+                }
+            });
+        }
+        return studentDtos;
     }
 
     public void UpdateStudent(string externalStudentId, StudentDto student)
@@ -51,19 +89,20 @@ public class StudentService : IStudentService
         var studentToUpdate = t.StudentDao.GetStudent(studentId);
         if (studentToUpdate is null)
             throw new BadRequestException("No student found.");
-        if (student.Name is not null)
-            studentToUpdate.Name = student.Name;
-        if (student.Surname is not null)
-            studentToUpdate.Surname = student.Surname;
+        studentToUpdate.Name = String.IsNullOrEmpty(student.Name) 
+           ? studentToUpdate.Name : student.Name;
+        studentToUpdate.Surname = String.IsNullOrEmpty(student.Surname) 
+            ? studentToUpdate.Surname : student.Surname;
         if (student.Address is not null)
         {
             studentToUpdate.Address = new DbAddress
             {
-                AddressData = student.Address,
-                AddressName = student.Address, // todo: is address name really needed then?
+                AddressData = String.IsNullOrEmpty(student.Address.AddressData) 
+                    ? studentToUpdate.Address!.AddressData : student.Address.AddressData,
+                AddressName = String.IsNullOrEmpty(student.Address.AddressName) 
+                    ? studentToUpdate.Address!.AddressName : student.Address.AddressName, 
             };
         }
-
         t.StudentDao.SaveStudent(studentToUpdate);
         t.Commit();
     }
