@@ -19,7 +19,7 @@ public class TimetableService : ITimetableService
             .Select(lesson =>
                 new LessonDto
                 {
-                    StartTime = lesson.Timeslot.StartTime,
+                    StartTime = lesson.Timeslot!.StartTime,
                     EndTime = lesson.Timeslot.EndTime,
                     Info = lesson.TutorInfo ?? string.Empty
                 }).ToList();
@@ -37,44 +37,101 @@ public class TimetableService : ITimetableService
                 ParseDateTime(endTime))
             .Select(l => new LessonDto
             {
-                StartTime = l.Timeslot.StartTime,
+                StartTime = l.Timeslot!.StartTime,
                 EndTime = l.Timeslot.EndTime,
                 Info = string.Empty
             }).ToList();
     }
 
     public void PlanLessons(
-        string startTime,
-        string endTime,
+        DateTime firstStart,
+        DateTime firstEnd,
+        int lessonCount,
         int periodInDays,
-        string studentExternalId,
-        int durationInMinutes)
+        IList<string> externalStudentIds)
     {
-        var start = DateTime.ParseExact(
-            startTime, "O", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
-        var end = ParseDateTime(endTime);
-        var period = TimeSpan.FromDays(periodInDays);
-        var lessons = new List<DbLesson>();
-        for (var t = start; t < end; t += period)
-        {
-            lessons.Add(new DbLesson
+        var plan = Scheduler.Plan(
+            new TimeRange { Start = firstStart, End = firstEnd },
+            lessonCount,
+            periodInDays);
+        var lessons = plan.Select(range => new DbLesson
             {
-                Timeslot = new DbTimeslot
-                {
-                    StartTime = t,
-                    EndTime = t + TimeSpan.FromMinutes(durationInMinutes),
-                }
-            });
-        }
+                Timeslot = new DbTimeslot { StartTime = range.Start, EndTime = range.End },
+                Attendances = externalStudentIds.Select(id => new DbAttendance
+                    {
+                        StudentId = DecodeExternalId(id),
+                        IsConfirmed = false,
+                        HasOccurred = false,
+                    })
+                    .ToList(),
+            })
+            .ToList();
         var schedule = new DbSchedule
         {
-            StudentId = DecodeExternalId(studentExternalId),
-            Period = period,
             Lessons = lessons,
+            Period = TimeSpan.FromDays(periodInDays),
         };
-        using var transaction = _transactor.BeginTransaction();
-        transaction.LessonDao.CreateSchedule(schedule);
-        transaction.Commit();
+        using var t = _transactor.BeginTransaction();
+        t.LessonDao.CreateSchedule(schedule);
+        t.Commit();
+    }
+
+    public void EditLesson(
+        string lessonExternalId,
+        DateTime newStartTime,
+        DateTime newEndTime,
+        bool editFutureLessons)
+    {
+        using var t = _transactor.BeginTransaction();
+        var editedLessonId = int.Parse(lessonExternalId);
+        var editedLesson = t.LessonDao.GetLessonById(editedLessonId);
+        if (editedLesson is null)
+            throw new BadRequestException("Lesson not found.");
+        var schedule = t.LessonDao.GetScheduleById(editedLesson.ScheduleId);
+        if (schedule is null)
+            throw new ApplicationException("Schedule not found.");
+        var lessonsToEdit = PickLessonsToEdit(schedule, editedLessonId, editFutureLessons);
+        var newLessonTimes = Scheduler.RescheduleSeries(
+            lessonsToEdit.Select(l => l.Timeslot!.AsRange()).ToList(),
+            newStartTime,
+            newEndTime);
+        t.LessonDao.RemoveLessonsCascading(lessonsToEdit.Select(l => l.Id).ToList());
+        if (lessonsToEdit.Count == schedule.Lessons.Count)
+            t.LessonDao.RemoveSchedule(schedule.Id);
+        t.LessonDao.CreateSchedule(new DbSchedule
+        {
+            Period = schedule.Period,
+            Lessons = UpdateLessonTimes(lessonsToEdit, newLessonTimes),
+        });
+        t.Commit();
+    }
+
+    private static List<DbLesson> PickLessonsToEdit(DbSchedule schedule, int editedLessonId, bool editFutureLessons)
+    {
+        if (editFutureLessons)
+        {
+            return schedule.Lessons.SkipWhile(l => l.Id != editedLessonId).ToList();
+        }
+        else
+        {
+            return schedule.Lessons.Where(l => l.Id == editedLessonId).ToList();
+        }
+    }
+
+private static ICollection<DbLesson> UpdateLessonTimes(
+        ICollection<DbLesson> lessons, IList<TimeRange> newTimes)
+    {
+        if (lessons.Count != newTimes.Count)
+        {
+            throw new ArgumentException(
+                $"Collection sizes {lessons.Count} and {newTimes.Count} mismatched.");
+        }
+
+        return lessons.Zip(newTimes, (lesson, range) => new DbLesson
+        {
+            TutorInfo = lesson.TutorInfo,
+            Timeslot = new DbTimeslot { StartTime = range.Start, EndTime = range.End },
+        }).ToList();
     }
 
     public void AddFreeTerm(string startTime, string endTime)
@@ -106,11 +163,12 @@ public class TimetableService : ITimetableService
     {
         try
         {
-            return DateTime.ParseExact(s, "O", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
+            return DateTime.ParseExact(
+                s, "O", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
         }
         catch (FormatException)
         {
-            throw new InvalidRequestException();
+            throw new BadRequestException("Invalid datetime.");
         }
     }
 

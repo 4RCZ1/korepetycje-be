@@ -34,7 +34,7 @@ public class StudentService : IStudentService
         using var t = _transactor.BeginTransaction();
         var student = t.StudentDao.GetStudent(int.Parse(studentExternalId));
         if (student is null)
-            throw new InvalidRequestException();
+            throw new BadRequestException("No student found.");
         return new StudentDto
         {
             ExternalId = student.Id.ToString(),
@@ -50,7 +50,7 @@ public class StudentService : IStudentService
         var studentId = int.Parse(externalStudentId);
         var studentToUpdate = t.StudentDao.GetStudent(studentId);
         if (studentToUpdate is null)
-            throw new InvalidRequestException();
+            throw new BadRequestException("No student found.");
         if (student.Name is not null)
             studentToUpdate.Name = student.Name;
         if (student.Surname is not null)
