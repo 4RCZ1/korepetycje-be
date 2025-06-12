@@ -1,8 +1,6 @@
-using System.Text.Json;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.Serialization.SystemTextJson;
-using Endpoints.Interfaces;
 
 [assembly: LambdaSerializer(typeof(CamelCaseLambdaJsonSerializer))]
 
@@ -16,29 +14,16 @@ public class GetLessonsFunction
         var service = await ServiceFactory.CreateTimetableServiceAsync();
         if (request.QueryStringParameters.TryGetValue("studentExternalId", out var studentExternalId))
         {
-            return OkJson(service.GetStudentLessons(
+            return RestIo.OkJson(service.GetStudentLessons(
                 studentExternalId,
                 request.QueryStringParameters["startTime"],
                 request.QueryStringParameters["endTime"]));
         }
         else
         {
-            return OkJson(service.GetLessons(
+            return RestIo.OkJson(service.GetLessons(
                 request.QueryStringParameters["startTime"],
                 request.QueryStringParameters["endTime"]));
         }
-    }
-
-    private static APIGatewayProxyResponse OkJson(IList<LessonDto> lessons)
-    {
-        return new APIGatewayProxyResponse
-        {
-            Body = JsonSerializer.Serialize(lessons),
-            StatusCode = 200,
-            Headers = new Dictionary<string, string>
-            {
-                { "Content-Type", "application/json" },
-            },
-        };
     }
 }

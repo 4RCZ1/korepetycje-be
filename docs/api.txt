@@ -1,0 +1,47 @@
+Encje:
+
+public class LessonDto
+{
+    public required string LessonId { get; set; }
+    public required DateTime StartTime { get; set; }
+    public required DateTime EndTime { get; set; }
+    public required string Address { get; set; } // todo: replace with DTO
+    public required string Description { get; set; }
+    public required IList<AttendanceDto> Attendances { get; set; }
+}
+
+public class AttendanceDto
+{
+    public required string StudentName { get; set; }
+    public required string StudentSurname { get; set; }
+    public required bool Confirmed { get; set; }
+}
+
+public class StudentDto
+{
+    public string? ExternalId { get; set; }
+    public string? Name { get; set; }
+    public string? Surname { get; set; }
+    public string? Address { get; set; }
+}
+
+
+Pobieranie lekcji:
+http://localhost:3000/api/lesson?startTime=2025-01-01T12:00:00.0000000Z&endTime=2026-01-01T12:00:00.0000000Z
+Może zwrócić:
+[
+    {
+        "lessonId": "501",
+        "startTime": "2025-06-14T08:39:04.254313Z",
+        "endTime": "2025-06-14T09:39:04.254313Z",
+        "address": "adres testowy",
+        "description": "info info",
+        "attendances": [
+            {
+                "studentName": "Jan",
+                "studentSurname": "Kowalski",
+                "confirmed": false
+            }
+        ]
+    }
+]

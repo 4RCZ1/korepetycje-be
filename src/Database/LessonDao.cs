@@ -48,7 +48,8 @@ public class LessonDao : ILessonDao
             .AsNoTracking()
             .Include(l => l.Schedule)
             .Include(l => l.Timeslot)
-            .Include(l => l.Attendances);
+            .Include(l => l.Attendances.OrderBy(a => a.StudentId))
+            .ThenInclude(a => a.Student);
     }
 
     public void RemoveLessonsCascading(IList<int> lessonIds)

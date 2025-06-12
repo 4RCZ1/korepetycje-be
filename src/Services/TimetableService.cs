@@ -16,13 +16,15 @@ public class TimetableService : ITimetableService
     {
         using var t = _transactor.BeginTransaction();
         return t.LessonDao.GetLessonsInRange(ParseDateTime(startTime), ParseDateTime(endTime))
-            .Select(lesson =>
-                new LessonDto
-                {
-                    StartTime = lesson.Timeslot!.StartTime,
-                    EndTime = lesson.Timeslot.EndTime,
-                    Info = lesson.TutorInfo ?? string.Empty
-                }).ToList();
+            .Select(lesson => new LessonDto
+            {
+                LessonId = EncodeExternalId(lesson.Id),
+                StartTime = lesson.Timeslot.StartTime,
+                EndTime = lesson.Timeslot.EndTime,
+                Address = MockLessonAddress,
+                Description = lesson.TutorInfo ?? string.Empty,
+                Attendances = ConvertAttendancesToDtos(lesson.Attendances),
+            }).ToList();
     }
 
     public IList<LessonDto> GetStudentLessons(
@@ -35,12 +37,26 @@ public class TimetableService : ITimetableService
                 DecodeExternalId(studentExternalId),
                 ParseDateTime(startTime),
                 ParseDateTime(endTime))
-            .Select(l => new LessonDto
+            .Select(lesson => new LessonDto
             {
-                StartTime = l.Timeslot!.StartTime,
-                EndTime = l.Timeslot.EndTime,
-                Info = string.Empty
+                LessonId = EncodeExternalId(lesson.Id),
+                StartTime = lesson.Timeslot.StartTime,
+                EndTime = lesson.Timeslot.EndTime,
+                Address = MockLessonAddress,
+                Description = string.Empty,
+                Attendances = ConvertAttendancesToDtos(lesson.Attendances),
             }).ToList();
+    }
+
+    private static IList<AttendanceDto> ConvertAttendancesToDtos(
+        ICollection<DbAttendance> attendances)
+    {
+        return attendances.Select(a => new AttendanceDto
+        {
+            StudentName = a.Student.Name,
+            StudentSurname = a.Student.Surname,
+            Confirmed = a.IsConfirmed,
+        }).ToList();
     }
 
     public void PlanLessons(
@@ -162,6 +178,11 @@ private static ICollection<DbLesson> UpdateLessonTimes(
         return int.Parse(externalId);
     }
 
+    private static string EncodeExternalId(int databaseId)
+    {
+        return databaseId.ToString();
+    }
+
     private static DateTime ParseDateTime(string s)
     {
         try
@@ -176,4 +197,5 @@ private static ICollection<DbLesson> UpdateLessonTimes(
     }
 
     private readonly ITransactor _transactor;
+    private const string MockLessonAddress = "adres testowy"; // todo: implement
 }
