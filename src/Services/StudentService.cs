@@ -13,18 +13,21 @@ public class StudentService : IStudentService
 
     public void AddStudent(StudentDto studentToAdd)
     {
-        var addressToAdd = studentToAdd.Address;
+        DbAddress? addressToAdd = null;
+        using var t = _transactor.BeginTransaction();
+        if(int.TryParse(studentToAdd?.Address?.ExternalId, out var addressId))
+            addressToAdd = t.AddressDao.GetAddress(addressId);
         var student = new DbStudent
         {
-            Name = studentToAdd.Name ?? "",
-            Surname = studentToAdd.Surname ?? "",
-            Address = new DbAddress()
+            Name = studentToAdd?.Name ?? "",
+            Surname = studentToAdd?.Surname ?? "",
+            Address = addressToAdd ?? new DbAddress()
             {
-                AddressName = addressToAdd?.AddressName ?? "NOWY ADRES",
-                AddressData = addressToAdd?.AddressData ?? "Uzupełnij dane"
+                AddressName = studentToAdd?.Address?.AddressName ?? "NOWY ADRES",
+                AddressData = studentToAdd?.Address?.AddressData ?? "Uzupełnij dane"
             }
         };
-        using var t = _transactor.BeginTransaction();
+        
         t.StudentDao.SaveStudent(student);
         t.Commit();
     }
@@ -93,7 +96,14 @@ public class StudentService : IStudentService
            ? studentToUpdate.Name : student.Name;
         studentToUpdate.Surname = String.IsNullOrEmpty(student.Surname) 
             ? studentToUpdate.Surname : student.Surname;
-        if (student.Address is not null)
+        DbAddress? addressToAdd = null;
+        if(int.TryParse(student?.Address?.ExternalId, out var addressId))
+            addressToAdd = t.AddressDao.GetAddress(addressId);
+        if (addressToAdd is not null)
+        {
+            studentToUpdate.Address = addressToAdd;
+        }
+        else
         {
             studentToUpdate.Address = new DbAddress
             {

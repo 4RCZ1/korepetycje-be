@@ -89,14 +89,14 @@ public class LessonDao : ILessonDao
         var colliding = GetCollidingTimeslots(tsToTake, tsTaken);
         return colliding.Count != 0;
     }
-
+    
     public void RemoveSchedule(int scheduleId)
     {
         var schedule = _context.Schedules.SingleOrDefault(s => s.Id == scheduleId);
         if (schedule is not null)
             _context.Schedules.Remove(schedule);
     }
-
+    
     public void AddFreeTerm(DateTime startTime, DateTime endTime)
     {
         var timeslotToAdd = new DbTimeslot

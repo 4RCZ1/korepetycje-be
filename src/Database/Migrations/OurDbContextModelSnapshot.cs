@@ -148,11 +148,17 @@ namespace Database.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<TimeSpan?>("Period")
+                    b.Property<int>("AddressId")
+                        .HasColumnType("integer")
+                        .HasColumnName("address_id");
+
+                    b.Property<TimeSpan>("Period")
                         .HasColumnType("interval")
                         .HasColumnName("period");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AddressId");
 
                     b.ToTable("schedule");
                 });
@@ -222,7 +228,7 @@ namespace Database.Migrations
             modelBuilder.Entity("Database.Entities.DbAttendance", b =>
                 {
                     b.HasOne("Database.Entities.DbLesson", "Lesson")
-                        .WithMany("Attendances")
+                        .WithMany()
                         .HasForeignKey("LessonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -274,6 +280,17 @@ namespace Database.Migrations
                     b.Navigation("Timeslot");
                 });
 
+            modelBuilder.Entity("Database.Entities.DbSchedule", b =>
+                {
+                    b.HasOne("Database.Entities.DbAddress", "Address")
+                        .WithMany()
+                        .HasForeignKey("AddressId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Address");
+                });
+
             modelBuilder.Entity("Database.Entities.DbStudent", b =>
                 {
                     b.HasOne("Database.Entities.DbAddress", "Address")
@@ -281,11 +298,6 @@ namespace Database.Migrations
                         .HasForeignKey("AddressId");
 
                     b.Navigation("Address");
-                });
-
-            modelBuilder.Entity("Database.Entities.DbLesson", b =>
-                {
-                    b.Navigation("Attendances");
                 });
 
             modelBuilder.Entity("Database.Entities.DbSchedule", b =>

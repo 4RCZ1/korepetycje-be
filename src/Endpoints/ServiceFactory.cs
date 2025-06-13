@@ -15,6 +15,12 @@ internal static class ServiceFactory
         var connection = await Connection;
         return new TimetableService(new Transactor(connection));
     }
+    
+    public static async Task<IAddressService> CreateAddressService()
+    {
+        var connection = await Connection;
+        return new AddressService(new Transactor(connection));
+    }
 
     public static async Task<IStudentService> CreateStudentServiceAsync()
     {

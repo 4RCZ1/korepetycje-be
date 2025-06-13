@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Database.Migrations
 {
     [DbContext(typeof(OurDbContext))]
-    [Migration("20250610170441_AttendancePkChange")]
-    partial class AttendancePkChange
+    [Migration("20250613230100_Initial2")]
+    partial class Initial2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -30,7 +30,7 @@ namespace Database.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("id");
+                        .HasColumnName("address_id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
@@ -151,17 +151,17 @@ namespace Database.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("AddressId")
+                        .HasColumnType("integer")
+                        .HasColumnName("address_id");
+
                     b.Property<TimeSpan>("Period")
                         .HasColumnType("interval")
                         .HasColumnName("period");
 
-                    b.Property<int>("StudentId")
-                        .HasColumnType("integer")
-                        .HasColumnName("student_id");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("StudentId");
+                    b.HasIndex("AddressId");
 
                     b.ToTable("schedule");
                 });
@@ -180,10 +180,12 @@ namespace Database.Migrations
                         .HasColumnName("address_id");
 
                     b.Property<DateTimeOffset?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -283,13 +285,13 @@ namespace Database.Migrations
 
             modelBuilder.Entity("Database.Entities.DbSchedule", b =>
                 {
-                    b.HasOne("Database.Entities.DbStudent", "Student")
-                        .WithMany("Schedules")
-                        .HasForeignKey("StudentId")
+                    b.HasOne("Database.Entities.DbAddress", "Address")
+                        .WithMany()
+                        .HasForeignKey("AddressId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Student");
+                    b.Navigation("Address");
                 });
 
             modelBuilder.Entity("Database.Entities.DbStudent", b =>
@@ -304,11 +306,6 @@ namespace Database.Migrations
             modelBuilder.Entity("Database.Entities.DbSchedule", b =>
                 {
                     b.Navigation("Lessons");
-                });
-
-            modelBuilder.Entity("Database.Entities.DbStudent", b =>
-                {
-                    b.Navigation("Schedules");
                 });
 #pragma warning restore 612, 618
         }

@@ -197,5 +197,4 @@ private static ICollection<DbLesson> UpdateLessonTimes(
     }
 
     private readonly ITransactor _transactor;
-    private const string MockLessonAddress = "adres testowy"; // todo: implement
 }

@@ -1,5 +1,4 @@
 using Database.Entities;
-using Endpoints.Interfaces;
 using FakeItEasy;
 using Services;
 using Timetable.Interfaces;
