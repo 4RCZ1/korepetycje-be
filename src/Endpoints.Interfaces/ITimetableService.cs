@@ -7,7 +7,7 @@ public interface ITimetableService
     void PlanLessons(
         DateTime firstStart,
         DateTime firstEnd,
-        int lessonCount,
+        DateTime scheduleEnd,
         int periodInDays,
         IList<string> externalStudentIds);
     void EditLesson(

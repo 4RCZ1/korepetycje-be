@@ -46,13 +46,13 @@ public class TimetableService : ITimetableService
     public void PlanLessons(
         DateTime firstStart,
         DateTime firstEnd,
-        int lessonCount,
+        DateTime scheduleEnd,
         int periodInDays,
         IList<string> externalStudentIds)
     {
         var plan = Scheduler.Plan(
             new TimeRange { Start = firstStart, End = firstEnd },
-            lessonCount,
+            scheduleEnd,
             periodInDays);
         var lessons = plan.Select(range => new DbLesson
             {
@@ -92,7 +92,7 @@ public class TimetableService : ITimetableService
             throw new ApplicationException("Schedule not found.");
         var lessonsToEdit = PickLessonsToEdit(schedule, editedLessonId, editFutureLessons);
         var newLessonTimes = Scheduler.RescheduleSeries(
-            lessonsToEdit.Select(l => l.Timeslot!.AsRange()).ToList(),
+            lessonsToEdit.Select(l => l.Timeslot.AsRange()).ToList(),
             newStartTime,
             newEndTime);
         t.LessonDao.RemoveLessonsCascading(lessonsToEdit.Select(l => l.Id).ToList());
@@ -106,15 +106,18 @@ public class TimetableService : ITimetableService
         t.Commit();
     }
 
-    private static List<DbLesson> PickLessonsToEdit(DbSchedule schedule, int editedLessonId, bool editFutureLessons)
+    private static List<DbLesson> PickLessonsToEdit(
+        DbSchedule schedule, int editedLessonId, bool editFutureLessons)
     {
+        // Sorting might not be strictly necessary here, however not sorting would be brittle.
+        var sortedLessons = schedule.Lessons.OrderBy(l => l.Timeslot.StartTime);
         if (editFutureLessons)
         {
-            return schedule.Lessons.SkipWhile(l => l.Id != editedLessonId).ToList();
+            return sortedLessons.SkipWhile(l => l.Id != editedLessonId).ToList();
         }
         else
         {
-            return schedule.Lessons.Where(l => l.Id == editedLessonId).ToList();
+            return sortedLessons.Where(l => l.Id == editedLessonId).ToList();
         }
     }
 

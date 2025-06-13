@@ -13,7 +13,7 @@ public class GetLessonsFunction
     public async Task<APIGatewayProxyResponse> GetLessonsHandler(
         APIGatewayProxyRequest request, ILambdaContext context)
     {
-        var service = await ServiceFactory.CreateTimetableService();
+        var service = await ServiceFactory.CreateTimetableServiceAsync();
         if (request.QueryStringParameters.TryGetValue("studentExternalId", out var studentExternalId))
         {
             return OkJson(service.GetStudentLessons(

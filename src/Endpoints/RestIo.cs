@@ -6,7 +6,7 @@ namespace Endpoints;
 
 public static class RestIo
 {
-    public static async Task<APIGatewayProxyResponse> HandleRestExceptions<T>(Func<Task<T>> f)
+    public static async Task<APIGatewayProxyResponse> HandleRestExceptionsAsync<T>(Func<Task<T>> f)
     {
         try
         {

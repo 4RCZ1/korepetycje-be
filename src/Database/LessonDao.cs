@@ -96,15 +96,6 @@ public class LessonDao : ILessonDao
             _context.Schedules.Remove(schedule);
     }
 
-    private List<DbTimeslot> GetCollidingTimeslots(List<DbTimeslot> tsToTake, List<DbTimeslot> tsTaken)
-    {
-        return tsToTake
-            .Where(ts => tsTaken
-                .Any(taken => (taken.StartTime >= ts.StartTime && taken.StartTime <= ts.EndTime)
-                              || (taken.StartTime <= ts.StartTime && taken.EndTime >= ts.StartTime)))
-            .ToList();
-    }
-
     public void AddFreeTerm(DateTime startTime, DateTime endTime)
     {
         var timeslotToAdd = new DbTimeslot()
@@ -133,6 +124,16 @@ public class LessonDao : ILessonDao
         }
 
         _context.Add(timeslotToAdd);
+    }
+
+    private static List<DbTimeslot> GetCollidingTimeslots(
+        List<DbTimeslot> tsToTake, List<DbTimeslot> tsTaken)
+    {
+        return tsToTake
+            .Where(ts => tsTaken
+                .Any(taken => (taken.StartTime >= ts.StartTime && taken.StartTime <= ts.EndTime)
+                              || (taken.StartTime <= ts.StartTime && taken.EndTime >= ts.StartTime)))
+            .ToList();
     }
 
     private readonly OurDbContext _context;

@@ -4,21 +4,24 @@ namespace Services;
 
 public class Scheduler
 {
-    public static IList<TimeRange> Plan(TimeRange firstEvent, int count, int periodInDays)
+    public static IList<TimeRange> Plan(TimeRange firstEvent, DateTime seriesEnd, int periodInDays)
     {
         var result = new List<TimeRange>();
+        var newEvent = firstEvent;
         var period = TimeSpan.FromDays(periodInDays);
-        for (var i = 0; i < count; ++i)
+        while (newEvent.Start < seriesEnd)
         {
-            result.Add(new TimeRange
+            result.Add(newEvent);
+            newEvent = new TimeRange
             {
-                Start = firstEvent.Start + i * period,
-                End = firstEvent.End + i * period,
-            });
+                Start = newEvent.Start + period,
+                End = newEvent.End + period,
+            };
         }
         return result;
     }
 
+    // Assumes the input is sorted.
     public static IList<TimeRange> RescheduleSeries(
         IList<TimeRange> series, DateTime firstStart, DateTime firstEnd)
     {

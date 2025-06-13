@@ -10,7 +10,7 @@ public class UpdateStudentFunction
     public async Task<APIGatewayProxyResponse> UpdateStudent(
         APIGatewayProxyRequest request, ILambdaContext context)
     {
-        var service = await ServiceFactory.CreateStudentService();
+        var service = await ServiceFactory.CreateStudentServiceAsync();
         if (request.Body is null)
         {
             throw new NullReferenceException("Request body is null");

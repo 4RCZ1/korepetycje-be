@@ -9,7 +9,7 @@ public class PlanLessonsFunction
     {
         public required DateTime FirstStartTime { get; set; }
         public required DateTime FirstEndTime { get; set; }
-        public required int LessonCount { get; set; }
+        public required DateTime ScheduleEndTime { get; set; }
         public required int PeriodInDays { get; set; }
         public required IList<string> StudentIds { get; set; }
     }
@@ -17,14 +17,14 @@ public class PlanLessonsFunction
     public Task<APIGatewayProxyResponse> PlanLessons(
         APIGatewayProxyRequest request, ILambdaContext context)
     {
-        return RestIo.HandleRestExceptions(async () =>
+        return RestIo.HandleRestExceptionsAsync(async () =>
         {
-            var service = await ServiceFactory.CreateTimetableService();
+            var service = await ServiceFactory.CreateTimetableServiceAsync();
             var body = RestIo.ReadBody<RequestBody>(request);
             service.PlanLessons(
                 body.FirstStartTime,
                 body.FirstEndTime,
-                body.LessonCount,
+                body.ScheduleEndTime,
                 body.PeriodInDays,
                 body.StudentIds);
             return string.Empty;

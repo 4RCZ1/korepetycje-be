@@ -7,19 +7,22 @@ public class SchedulerTests
     [Fact]
     public void PlanSingleEvent()
     {
-        var plan = Scheduler.Plan(FirstEvent, 1, Weekly);
-        Assert.Equal(
-            new List<TimeRange> { FirstEvent },
-            plan);
+        var plan = Scheduler.Plan(FirstEvent, SecondEvent.Start, Weekly);
+        Assert.Equivalent(new[] { FirstEvent }, plan, strict: true);
     }
 
     [Fact]
-    public void PlanMultipleEvents()
+    public void PlanSeries()
     {
-        var plan = Scheduler.Plan(FirstEvent, 3, Weekly);
-        Assert.Equal(
-            new List<TimeRange> { FirstEvent, SecondEvent, ThirdEvent },
-            plan);
+        var plan = Scheduler.Plan(FirstEvent, ThirdEvent.Start + TimeSpan.FromMinutes(5), Weekly);
+        Assert.Equivalent(new[] { FirstEvent, SecondEvent, ThirdEvent }, plan, strict: true);
+    }
+
+    [Fact]
+    public void PlanNothing()
+    {
+        var plan = Scheduler.Plan(FirstEvent, FirstEvent.Start, Weekly);
+        Assert.Empty(plan);
     }
 
     [Fact]

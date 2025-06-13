@@ -16,14 +16,14 @@ public class DbLesson
 
     [Required]
     [Column("timeslot_id")]
-    public int? TimeslotId { get; set; }
+    public int TimeslotId { get; set; }
 
     [MaxLength(200)]
     [Column("tutor_info")]
     public string? TutorInfo { get; set; }
 
     [ForeignKey(nameof(TimeslotId))]
-    public DbTimeslot? Timeslot { get; set; }
+    public required DbTimeslot Timeslot { get; set; }
 
     [ForeignKey(nameof(ScheduleId))]
     public DbSchedule? Schedule { get; set; }

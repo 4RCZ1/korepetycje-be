@@ -17,7 +17,7 @@ public class AddFreeTimeslotsFunction
     public async Task<APIGatewayProxyResponse> AddFreeTimeslots(
         APIGatewayProxyRequest request, ILambdaContext context)
     {
-        var service = await ServiceFactory.CreateTimetableService();
+        var service = await ServiceFactory.CreateTimetableServiceAsync();
         var body = JsonSerializer.Deserialize<RequestBody>(request.Body);
         service.AddFreeTerm(body.StartTime, body.EndTime); // todo: implement time series
         return new APIGatewayProxyResponse

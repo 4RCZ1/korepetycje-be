@@ -8,7 +8,7 @@ public class DeleteStudentFunction
     public async Task<APIGatewayProxyResponse> DeleteStudent(
         APIGatewayProxyRequest request, ILambdaContext context)
     {
-        var service = await ServiceFactory.CreateStudentService();
+        var service = await ServiceFactory.CreateStudentServiceAsync();
         var externalStudentId = request.PathParameters["studentExternalId"];
         service.DeleteStudent(externalStudentId);
         return new APIGatewayProxyResponse

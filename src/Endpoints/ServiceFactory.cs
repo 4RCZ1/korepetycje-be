@@ -10,27 +10,27 @@ namespace Endpoints;
 
 internal static class ServiceFactory
 {
-    public static async Task<ITimetableService> CreateTimetableService()
+    public static async Task<ITimetableService> CreateTimetableServiceAsync()
     {
         var connection = await Connection;
         return new TimetableService(new Transactor(connection));
     }
 
-    public static async Task<IStudentService> CreateStudentService()
+    public static async Task<IStudentService> CreateStudentServiceAsync()
     {
         var connection = await Connection;
         return new StudentService(new Transactor(connection));
     }
 
-    private static async Task<string> GetConnectionString()
+    private static async Task<string> GetConnectionStringAsync()
     {
-        var usernamePassword = await GetSecret("rds!db-038b4d1d-cb2e-4fa9-95f9-50e04af2e276");
-        var hostPort = await GetSecret("dev/dbhost");
+        var usernamePassword = await GetSecretAsync("rds!db-038b4d1d-cb2e-4fa9-95f9-50e04af2e276");
+        var hostPort = await GetSecretAsync("dev/dbhost");
         return $"Server={hostPort["endpoint"]};Database=postgres;Port={hostPort["port"]};" +
                $"User Id={usernamePassword["username"]};Password={usernamePassword["password"]}";
     }
 
-    private static async Task<IDictionary<string, string>> GetSecret(string secretName)
+    private static async Task<IDictionary<string, string>> GetSecretAsync(string secretName)
     {
         const string region = "eu-central-1";
 
@@ -45,5 +45,5 @@ internal static class ServiceFactory
                ?? throw new Exception("AWS secret deserialized to null.");
     }
 
-    private static readonly Task<string> Connection = GetConnectionString();
+    private static readonly Task<string> Connection = GetConnectionStringAsync();
 }

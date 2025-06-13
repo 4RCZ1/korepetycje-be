@@ -15,9 +15,9 @@ public class EditLessonFunction
     public Task<APIGatewayProxyResponse> EditLesson(
         APIGatewayProxyRequest request, ILambdaContext context)
     {
-        return RestIo.HandleRestExceptions(async () =>
+        return RestIo.HandleRestExceptionsAsync(async () =>
         {
-            var service = await ServiceFactory.CreateTimetableService();
+            var service = await ServiceFactory.CreateTimetableServiceAsync();
             var lessonExternalId = RestIo.GetPathParameter(request, "lessonExternalId");
             var body = RestIo.ReadBody<RequestBody>(request);
             service.EditLesson(
