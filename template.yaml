@@ -39,6 +39,9 @@ Globals:
   Function:
     Timeout: 10
     MemorySize: 512
+    Environment:
+      Variables:
+        KOREPETYCJE_POSTGRES: ""
 
 Resources:  # IAM Role for Lambda functions with SecretsManager access to environment-specific secrets
   LambdaExecutionRole:
