@@ -47,6 +47,7 @@ public class LessonDao : ILessonDao
         return _context.Lessons
             .AsNoTracking()
             .Include(l => l.Schedule)
+            .ThenInclude(s => s!.Address)
             .Include(l => l.Timeslot)
             .Include(l => l.Attendances.OrderBy(a => a.StudentId))
             .ThenInclude(a => a.Student);

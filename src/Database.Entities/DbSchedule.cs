@@ -13,7 +13,7 @@ public class DbSchedule
     [Required]
     [Column("address_id")]
     public int AddressId { get; set; }
-    
+
     [Column("period")]
     public TimeSpan? Period { get; set; }
 

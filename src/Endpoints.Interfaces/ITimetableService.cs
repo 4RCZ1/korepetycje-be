@@ -9,6 +9,7 @@ public interface ITimetableService
         DateTime firstEnd,
         DateTime scheduleEnd,
         int periodInDays,
+        string externalAddressId,
         IList<string> externalStudentIds);
     void EditLesson(
         string lessonExternalId,
