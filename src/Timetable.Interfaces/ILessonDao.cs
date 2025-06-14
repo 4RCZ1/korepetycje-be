@@ -12,6 +12,6 @@ public interface ILessonDao
     void RemoveLessonsCascading(IList<int> lessonIds);
     DbSchedule? GetScheduleById(int scheduleId);
     void CreateSchedule(DbSchedule schedule);
-    void RemoveSchedule(int scheduleId);
+    void RemoveEmptySchedules();
     void AddFreeTerm(DateTime startTime, DateTime endTime);
 }

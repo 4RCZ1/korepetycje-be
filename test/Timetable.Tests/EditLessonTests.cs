@@ -26,29 +26,16 @@ public class EditLessonTests
     {
         A.CallTo(() => _dao.GetScheduleById(ScheduleId))
             .Returns(ScheduleWith([LessonToday, LessonInAWeek]));
-        _service.EditLesson(
-            "12",
-            _newStartTime,
-            _newEndTime,
-            false);
-        A.CallTo(() => _dao.RemoveLessonsCascading(
-                A<IList<int>>.That.IsSameSequenceAs(new[] { 12 })))
+        _service.EditLesson("12", _newStartTime, _newEndTime, false);
+        A.CallTo(() => _dao.RemoveLessonsCascading(Ids(EditedLessonId)))
             .MustHaveHappenedOnceExactly();
         A.CallTo(() => _dao.CreateSchedule(A<DbSchedule>.That.Matches(
                 s => s.Lessons
                     .Select(l => l.Timeslot.StartTime)
                     .SequenceEqual(new[] { _newStartTime }))))
             .MustHaveHappenedOnceExactly();
+        A.CallTo(() => _dao.RemoveEmptySchedules()).MustHaveHappenedOnceExactly();
         A.CallTo(() => _transaction.Commit()).MustHaveHappenedOnceExactly();
-    }
-
-    [Fact]
-    public void RemoveEmptyLeftoverSchedule()
-    {
-        A.CallTo(() => _dao.GetScheduleById(ScheduleId))
-            .Returns(ScheduleWith([LessonToday]));
-        _service.EditLesson("12", _newStartTime, _newEndTime, false);
-        A.CallTo(() => _dao.RemoveSchedule(ScheduleId)).MustHaveHappenedOnceExactly();
     }
 
     [Fact]
@@ -57,8 +44,7 @@ public class EditLessonTests
         A.CallTo(() => _dao.GetScheduleById(ScheduleId))
             .Returns(ScheduleWith([LessonToday, LessonInAWeek]));
         _service.EditLesson("12", _newStartTime, _newEndTime, true);
-        A.CallTo(() => _dao.RemoveLessonsCascading(
-                A<IList<int>>.That.IsSameSequenceAs(new[] { 12, 13 })))
+        A.CallTo(() => _dao.RemoveLessonsCascading(Ids(12, 13)))
             .MustHaveHappenedOnceExactly();
         A.CallTo(() => _dao.CreateSchedule(A<DbSchedule>.That.Matches(s =>
                 s.Period == _week
@@ -76,8 +62,7 @@ public class EditLessonTests
         A.CallTo(() => _dao.GetScheduleById(ScheduleId))
             .Returns(ScheduleWith([LessonWeekAgo, LessonToday, LessonInAWeek]));
         _service.EditLesson("12", _newStartTime, _newEndTime, true);
-        A.CallTo(() => _dao.RemoveLessonsCascading(
-                A<IList<int>>.That.IsSameSequenceAs(new[] { 12, 13 })))
+        A.CallTo(() => _dao.RemoveLessonsCascading(Ids(12, 13)))
             .MustHaveHappenedOnceExactly();
         A.CallTo(() => _dao.CreateSchedule(A<DbSchedule>.That.Matches(s =>
                 s.Lessons.Select(l => l.Timeslot.StartTime)
@@ -93,6 +78,37 @@ public class EditLessonTests
         A.CallTo(() => _dao.GetLessonById(10101)).Returns(null);
         var action = () => _service.EditLesson("10101", _newStartTime, _newEndTime, false);
         Assert.Throws<BadRequestException>(action);
+    }
+
+    [Fact]
+    public void DeleteSingleLesson()
+    {
+        A.CallTo(() => _dao.GetScheduleById(ScheduleId))
+            .Returns(ScheduleWith([LessonWeekAgo, LessonToday, LessonInAWeek]));
+        _service.DeleteLesson("12", false);
+        A.CallTo(() => _dao.RemoveLessonsCascading(Ids(EditedLessonId)))
+            .MustHaveHappenedOnceExactly();
+        A.CallTo(() => _dao.RemoveEmptySchedules()).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _transaction.Commit()).MustHaveHappenedOnceExactly();
+    }
+
+    [Fact]
+    public void DeleteMultipleLessons()
+    {
+        A.CallTo(() => _dao.GetScheduleById(ScheduleId))
+            .Returns(ScheduleWith([LessonWeekAgo, LessonToday, LessonInAWeek]));
+        _service.DeleteLesson("12", true);
+        A.CallTo(() => _dao.RemoveLessonsCascading(Ids(EditedLessonId, 13)))
+            .MustHaveHappenedOnceExactly();
+    }
+
+    [Fact]
+    public void IgnoreNonexistentLessons()
+    {
+        A.CallTo(() => _dao.GetLessonById(10101)).Returns(null);
+        _service.DeleteLesson("10101", false);
+        A.CallTo(() => _dao.RemoveLessonsCascading(A<IList<int>>.That.Not.IsEmpty()))
+            .MustNotHaveHappened();
     }
 
     private DbLesson LessonWeekAgo => new()
@@ -137,6 +153,11 @@ public class EditLessonTests
             Period = _week,
             Lessons = lessons,
         };
+    }
+
+    private static IList<int> Ids(params int[] ids)
+    {
+        return A<IList<int>>.That.IsSameSequenceAs(ids);
     }
 
     private readonly DateTime _oldStartTime = new(2024, 1, 1, 6, 0, 0);

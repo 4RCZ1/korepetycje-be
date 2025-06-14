@@ -101,55 +101,74 @@ public class TimetableService : ITimetableService
         bool editFutureLessons)
     {
         using var t = _transactor.BeginTransaction();
-        var editedLessonId = int.Parse(lessonExternalId);
-        var editedLesson = t.LessonDao.GetLessonById(editedLessonId);
-        if (editedLesson is null)
+        var lessonId = int.Parse(lessonExternalId);
+        var lessonToEdit = t.LessonDao.GetLessonById(lessonId);
+        if (lessonToEdit is null)
             throw new BadRequestException("Lesson not found.");
-        var schedule = t.LessonDao.GetScheduleById(editedLesson.ScheduleId);
-        if (schedule is null)
-            throw new ApplicationException("Schedule not found.");
-        var lessonsToEdit = PickLessonsToEdit(schedule, editedLessonId, editFutureLessons);
-        var newLessonTimes = Scheduler.RescheduleSeries(
-            lessonsToEdit.Select(l => l.Timeslot.AsRange()).ToList(),
-            newStartTime,
-            newEndTime);
+        var schedule = GetScheduleForLesson(t.LessonDao, lessonToEdit);
+        var lessonsToEdit = PickLessons(schedule, lessonId, editFutureLessons);
         t.LessonDao.RemoveLessonsCascading(lessonsToEdit.Select(l => l.Id).ToList());
-        if (lessonsToEdit.Count == schedule.Lessons.Count)
-            t.LessonDao.RemoveSchedule(schedule.Id);
         t.LessonDao.CreateSchedule(new DbSchedule
         {
             AddressId = schedule.AddressId,
             Period = schedule.Period,
-            Lessons = UpdateLessonTimes(lessonsToEdit, newLessonTimes),
+            Lessons = UpdateLessonTimes(lessonsToEdit, newStartTime, newEndTime),
         });
+        t.LessonDao.RemoveEmptySchedules();
         t.Commit();
     }
 
-    private static List<DbLesson> PickLessonsToEdit(
-        DbSchedule schedule, int editedLessonId, bool editFutureLessons)
+    public void DeleteLesson(string externalLessonId, bool deleteFutureLessons)
     {
-        // Sorting might not be strictly necessary here, however not sorting would be brittle.
-        var sortedLessons = schedule.Lessons.OrderBy(l => l.Timeslot.StartTime);
-        if (editFutureLessons)
+        using var t = _transactor.BeginTransaction();
+        var lessonId = int.Parse(externalLessonId);
+        var lessonToDelete = t.LessonDao.GetLessonById(lessonId);
+        if (lessonToDelete is not null)
         {
-            return sortedLessons.SkipWhile(l => l.Id != editedLessonId).ToList();
-        }
-        else
-        {
-            return sortedLessons.Where(l => l.Id == editedLessonId).ToList();
+            var schedule = GetScheduleForLesson(t.LessonDao, lessonToDelete);
+            var lessonsToDelete = PickLessons(schedule, lessonId, deleteFutureLessons);
+            t.LessonDao.RemoveLessonsCascading(lessonsToDelete.Select(l => l.Id).ToList());
+            t.LessonDao.RemoveEmptySchedules();
+            t.Commit();
         }
     }
 
-private static ICollection<DbLesson> UpdateLessonTimes(
-        ICollection<DbLesson> lessons, IList<TimeRange> newTimes)
+    private static DbSchedule GetScheduleForLesson(ILessonDao dao, DbLesson lesson)
     {
-        if (lessons.Count != newTimes.Count)
+        var schedule = dao.GetScheduleById(lesson.ScheduleId);
+        return schedule ?? throw new ApplicationException("Schedule not found.");
+    }
+
+    private static List<DbLesson> PickLessons(
+        DbSchedule schedule, int lessonId, bool pickFutureLessons)
+    {
+        // Sorting might not be strictly necessary here, however not sorting would be brittle.
+        var sortedLessons = schedule.Lessons.OrderBy(l => l.Timeslot.StartTime);
+        if (pickFutureLessons)
+        {
+            return sortedLessons.SkipWhile(l => l.Id != lessonId).ToList();
+        }
+        else
+        {
+            return sortedLessons.Where(l => l.Id == lessonId).ToList();
+        }
+    }
+
+    private static ICollection<DbLesson> UpdateLessonTimes(
+        ICollection<DbLesson> lessons, DateTime newStartTime, DateTime newEndTime)
+    {
+        var newLessonTimes = Scheduler.RescheduleSeries(
+            lessons.Select(l => l.Timeslot.AsRange()).ToList(),
+            newStartTime,
+            newEndTime);
+
+        if (lessons.Count != newLessonTimes.Count)
         {
             throw new ArgumentException(
-                $"Collection sizes {lessons.Count} and {newTimes.Count} mismatched.");
+                $"Collection sizes {lessons.Count} and {newLessonTimes.Count} mismatched.");
         }
 
-        return lessons.Zip(newTimes, (lesson, range) => new DbLesson
+        return lessons.Zip(newLessonTimes, (lesson, range) => new DbLesson
         {
             TutorInfo = lesson.TutorInfo,
             Timeslot = new DbTimeslot { StartTime = range.Start, EndTime = range.End },
