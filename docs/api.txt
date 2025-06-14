@@ -27,8 +27,8 @@ public class StudentDto
 
 public class AddressDto
 {
-    public string? ExternalId { get; set; }    
-    public string? AddressName { get; set; }   
+    public string? ExternalId { get; set; }
+    public string? AddressName { get; set; }
     public string? AddressData { get; set; }
 }
 
@@ -75,6 +75,40 @@ private class PlanLessonsRequestBody
     public required string AddressId { get; set; }
     public required IList<string> StudentIds { get; set; }
 }
+
+
+Usuwanie lekcji:
+POST http://localhost:3000/api/delete-lesson
+Request body:
+{
+    "lessonId": "29",
+    "deleteFutureLessons": true
+}
+Schemat request body:
+private class DeleteLessonRequestBody
+{
+    public required string LessonId { get; set; }
+    public required bool DeleteFutureLessons { get; set; }
+}
+
+
+Zmiana czasu lekcji:
+PATCH localhost:3000/api/lesson/35
+Request body:
+{
+    "startTime": "2025-08-01T12:00:00.0000000Z",
+    "endTime": "2025-08-01T13:00:00.0000000Z",
+    "editFutureLessons": true
+}
+Schemat request body:
+private class EditLessonRequestBody
+{
+    public required DateTime StartTime { get; set; }
+    public required DateTime EndTime { get; set; }
+    public required bool EditFutureLessons { get; set; }
+}
+
+
 ___________
 STUDENT
 Pobieranie ucznia po ID:
@@ -105,7 +139,7 @@ Powyższe utworzy ucznia przypisując do niego istniejący już adres o ID 2
         "AddressData": "ulica"
     }
 }
-Powyższe utworzy nowego ucznia oraz utworzy nowy adres 
+Powyższe utworzy nowego ucznia oraz utworzy nowy adres
 Zwraca: kod sukcesu/błędu
 
 Update ucznia:

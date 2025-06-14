@@ -5,7 +5,7 @@ namespace Endpoints;
 
 public class EditLessonFunction
 {
-    private class RequestBody
+    private class EditLessonRequestBody
     {
         public required DateTime StartTime { get; set; }
         public required DateTime EndTime { get; set; }
@@ -19,7 +19,7 @@ public class EditLessonFunction
         {
             var service = await ServiceFactory.CreateTimetableServiceAsync();
             var lessonExternalId = RestIo.GetPathParameter(request, "lessonExternalId");
-            var body = RestIo.ReadBody<RequestBody>(request);
+            var body = RestIo.ReadBody<EditLessonRequestBody>(request);
             service.EditLesson(
                 lessonExternalId,
                 body.StartTime,
