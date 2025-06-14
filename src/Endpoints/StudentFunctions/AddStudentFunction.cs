@@ -7,7 +7,7 @@ namespace Endpoints.StudentFunctions;
 
 public class AddStudentFunction
 {
-    public async Task<APIGatewayProxyResponse> AddStudent(
+    public static async Task<APIGatewayProxyResponse> AddStudent(
         APIGatewayProxyRequest request, ILambdaContext context)
     {
         var service = await ServiceFactory.CreateStudentServiceAsync();
@@ -22,5 +22,5 @@ public class AddStudentFunction
             StatusCode = 200,
         };
     }
-    
+
 }

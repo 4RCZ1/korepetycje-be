@@ -5,7 +5,7 @@ namespace Endpoints;
 
 public class ConfirmLessonFunction
 {
-    public async Task<APIGatewayProxyResponse> ConfirmLesson(
+    public static async Task<APIGatewayProxyResponse> ConfirmLesson(
         APIGatewayProxyRequest request, ILambdaContext context)
     {
         var service = await ServiceFactory.CreateTimetableServiceAsync();

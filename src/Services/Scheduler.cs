@@ -2,7 +2,7 @@ using Database.Entities;
 
 namespace Services;
 
-public class Scheduler
+public static class Scheduler
 {
     public static IList<TimeRange> Plan(TimeRange firstEvent, DateTime seriesEnd, int periodInDays)
     {

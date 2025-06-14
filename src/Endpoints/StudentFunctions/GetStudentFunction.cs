@@ -5,7 +5,7 @@ namespace Endpoints.StudentFunctions;
 
 public class GetStudentFunction
 {
-    public async Task<APIGatewayProxyResponse> GetStudent(
+    public static async Task<APIGatewayProxyResponse> GetStudent(
         APIGatewayProxyRequest request, ILambdaContext context)
     {
         var service = await ServiceFactory.CreateStudentServiceAsync();

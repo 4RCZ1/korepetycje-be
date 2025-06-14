@@ -5,7 +5,7 @@ namespace Endpoints.StudentFunctions;
 
 public class DeleteStudentFunction
 {
-    public async Task<APIGatewayProxyResponse> DeleteStudent(
+    public static async Task<APIGatewayProxyResponse> DeleteStudent(
         APIGatewayProxyRequest request, ILambdaContext context)
     {
         var service = await ServiceFactory.CreateStudentServiceAsync();

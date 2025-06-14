@@ -8,7 +8,7 @@ namespace Endpoints;
 
 public class GetLessonsFunction
 {
-    public async Task<APIGatewayProxyResponse> GetLessonsHandler(
+    public static async Task<APIGatewayProxyResponse> GetLessonsHandler(
         APIGatewayProxyRequest request, ILambdaContext context)
     {
         var service = await ServiceFactory.CreateTimetableServiceAsync();

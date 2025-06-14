@@ -53,7 +53,7 @@ public class TimetableService : ITimetableService
     {
         return attendances.Select(a => new AttendanceDto
         {
-            StudentName = a.Student.Name,
+            StudentName = a.Student!.Name,
             StudentSurname = a.Student.Surname,
             Confirmed = a.IsConfirmed,
         }).ToList();

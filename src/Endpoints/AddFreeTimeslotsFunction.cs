@@ -4,7 +4,7 @@ using Amazon.Lambda.Core;
 
 namespace Endpoints;
 
-public class AddFreeTimeslotsFunction
+public static class AddFreeTimeslotsFunction
 {
     private class RequestBody
     {
@@ -14,7 +14,7 @@ public class AddFreeTimeslotsFunction
         public required int DurationInMinutes { get; set; }
     }
 
-    public async Task<APIGatewayProxyResponse> AddFreeTimeslots(
+    public static async Task<APIGatewayProxyResponse> AddFreeTimeslots(
         APIGatewayProxyRequest request, ILambdaContext context)
     {
         var service = await ServiceFactory.CreateTimetableServiceAsync();

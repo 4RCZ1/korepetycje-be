@@ -14,7 +14,7 @@ public class PlanLessonsFunction
         public required IList<string> StudentIds { get; set; }
     }
 
-    public Task<APIGatewayProxyResponse> PlanLessons(
+    public static Task<APIGatewayProxyResponse> PlanLessons(
         APIGatewayProxyRequest request, ILambdaContext context)
     {
         return RestIo.HandleRestExceptionsAsync(async () =>

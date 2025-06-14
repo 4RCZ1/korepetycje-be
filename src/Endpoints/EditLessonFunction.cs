@@ -12,7 +12,7 @@ public class EditLessonFunction
         public required bool EditFutureLessons { get; set; }
     }
 
-    public Task<APIGatewayProxyResponse> EditLesson(
+    public static Task<APIGatewayProxyResponse> EditLesson(
         APIGatewayProxyRequest request, ILambdaContext context)
     {
         return RestIo.HandleRestExceptionsAsync(async () =>
