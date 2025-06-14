@@ -5,16 +5,16 @@ namespace Endpoints;
 
 public class ConfirmLessonFunction
 {
-    public static async Task<APIGatewayProxyResponse> ConfirmLesson(
+    public static Task<APIGatewayProxyResponse> ConfirmLesson(
         APIGatewayProxyRequest request, ILambdaContext context)
     {
-        var service = await ServiceFactory.CreateTimetableServiceAsync();
-        var lessonExternalId = request.PathParameters["lessonExternalId"];
-        const string studentExternalId = "1"; // todo: get from authentication token instead
-        service.ConfirmLesson(lessonExternalId, studentExternalId);
-        return new APIGatewayProxyResponse
+        return RestIo.HandleRestExceptionsAsync(async () =>
         {
-            StatusCode = 200,
-        };
+            var service = await ServiceFactory.CreateTimetableServiceAsync();
+            var lessonExternalId = RestIo.GetPathParameter(request, "lessonId");
+            const string studentExternalId = "1"; // todo: get from authentication token instead
+            service.ConfirmLesson(lessonExternalId, studentExternalId);
+            return string.Empty;
+        });
     }
 }

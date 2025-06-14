@@ -1,6 +1,10 @@
 ﻿using System.Text.Json;
 using Amazon.Lambda.APIGatewayEvents;
+using Amazon.Lambda.Core;
+using Amazon.Lambda.Serialization.SystemTextJson;
 using Endpoints.Interfaces;
+
+[assembly: LambdaSerializer(typeof(CamelCaseLambdaJsonSerializer))]
 
 namespace Endpoints;
 
@@ -46,8 +50,7 @@ public static class RestIo
 
     public static string GetPathParameter(APIGatewayProxyRequest request, string name)
     {
-        var parameter = request.PathParameters[name];
-        if (parameter == null)
+        if (!request.PathParameters.TryGetValue(name, out var parameter))
             throw new BadRequestException($"Missing path parameter: {name}");
         return parameter;
     }
