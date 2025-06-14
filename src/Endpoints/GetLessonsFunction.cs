@@ -17,14 +17,14 @@ public class GetLessonsFunction
             {
                 return service.GetStudentLessons(
                     studentExternalId,
-                    request.QueryStringParameters["startTime"],
-                    request.QueryStringParameters["endTime"]);
+                    RestIo.GetQueryParameter(request, "startTime"),
+                    RestIo.GetQueryParameter(request, "endTime"));
             }
             else
             {
                 return service.GetLessons(
-                    request.QueryStringParameters["startTime"],
-                    request.QueryStringParameters["endTime"]);
+                    RestIo.GetQueryParameter(request, "startTime"),
+                    RestIo.GetQueryParameter(request, "endTime"));
             }
         });
     }
