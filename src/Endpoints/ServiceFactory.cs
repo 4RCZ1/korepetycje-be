@@ -16,7 +16,7 @@ internal static class ServiceFactory
         return new TimetableService(new Transactor(connection));
     }
     
-    public static async Task<IAddressService> CreateAddressService()
+    public static async Task<IAddressService> CreateAddressServiceAsync()
     {
         var connection = await Connection;
         return new AddressService(new Transactor(connection));

@@ -1,5 +1,7 @@
-﻿using Endpoints.Interfaces;
+﻿using Database.Entities;
+using Endpoints.Interfaces;
 using Timetable.Interfaces;
+using Endpoints;
 
 
 namespace Services;
@@ -23,6 +25,20 @@ public class AddressService : IAddressService
             AddressName = address?.AddressName,
             AddressData = address?.AddressData,
         };
+    }
+
+    public void AddAddress(AddressDto address)
+    {
+        if(String.IsNullOrEmpty(address.AddressName)||String.IsNullOrEmpty(address.AddressData))
+            throw new BadRequestException("All address details are required");
+        using var t = _transactor.BeginTransaction();
+        var addressToAdd =  new DbAddress()
+        {
+            AddressName = address?.AddressName ?? string.Empty,
+            AddressData = address?.AddressData ?? string.Empty
+        };
+        t.AddressDao.SaveAddress(addressToAdd);
+        t.Commit();
     }
     private readonly ITransactor _transactor;
 }

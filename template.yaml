@@ -265,3 +265,18 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
           Properties:
             Path: /api/address/{addressExternalId}
             Method: get
+  AddAddress:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/Endpoints/
+      Handler: Endpoints::Endpoints.AddressFunctions.AddAddressFunction::AddAddress
+      Runtime: dotnet8
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Events:
+        GetLessons:
+          Type: Api
+          Properties:
+            Path: /api/address
+            Method: post

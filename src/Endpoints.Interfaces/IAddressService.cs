@@ -3,4 +3,5 @@
 public interface IAddressService
 {
     AddressDto GetAddressById(string addressId);
+    void AddAddress(AddressDto address);
 }

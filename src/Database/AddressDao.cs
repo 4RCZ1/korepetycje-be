@@ -17,4 +17,9 @@ public class AddressDao : IAddressDao
     }
     
     private readonly OurDbContext _context;
+
+    public void SaveAddress(DbAddress address)
+    {
+        _context.Addresses.Add(address);
+    }
 }

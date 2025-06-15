@@ -8,7 +8,7 @@ public class GetAddressFunction
     public async Task<APIGatewayProxyResponse> GetAddress(
         APIGatewayProxyRequest request, ILambdaContext context)
     {
-        var service = await ServiceFactory.CreateAddressService();
+        var service = await ServiceFactory.CreateAddressServiceAsync();
         var addressExternalId = request.PathParameters["addressExternalId"];
         var address = service.GetAddressById(addressExternalId);
         return RestIo.OkJson(address);
