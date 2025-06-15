@@ -151,7 +151,7 @@ namespace Database.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("address_id");
 
-                    b.Property<TimeSpan>("Period")
+                    b.Property<TimeSpan?>("Period")
                         .HasColumnType("interval")
                         .HasColumnName("period");
 
@@ -227,7 +227,7 @@ namespace Database.Migrations
             modelBuilder.Entity("Database.Entities.DbAttendance", b =>
                 {
                     b.HasOne("Database.Entities.DbLesson", "Lesson")
-                        .WithMany()
+                        .WithMany("Attendances")
                         .HasForeignKey("LessonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -297,6 +297,11 @@ namespace Database.Migrations
                         .HasForeignKey("AddressId");
 
                     b.Navigation("Address");
+                });
+
+            modelBuilder.Entity("Database.Entities.DbLesson", b =>
+                {
+                    b.Navigation("Attendances");
                 });
 
             modelBuilder.Entity("Database.Entities.DbSchedule", b =>

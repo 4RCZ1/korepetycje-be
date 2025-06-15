@@ -96,12 +96,19 @@ public class StudentService : IStudentService
            ? studentToUpdate.Name : student.Name;
         studentToUpdate.Surname = String.IsNullOrEmpty(student.Surname) 
             ? studentToUpdate.Surname : student.Surname;
-        DbAddress? addressToAdd = null;
+        DbAddress? addressToUpdate = null;
+        //if the address id is included in the request body, the address will be updated, 
+        //if it is not included, a new address will be created
         if(int.TryParse(student?.Address?.ExternalId, out var addressId))
-            addressToAdd = t.AddressDao.GetAddress(addressId);
-        if (addressToAdd is not null)
+            addressToUpdate = t.AddressDao.GetAddress(addressId);
+        if (addressToUpdate is not null)
         {
-            studentToUpdate.Address = addressToAdd;
+            studentToUpdate!.Address!.AddressData = String.IsNullOrEmpty(student?.Address?.AddressData)
+                ? addressToUpdate.AddressData
+                : student.Address.AddressData;
+            studentToUpdate!.Address!.AddressName = String.IsNullOrEmpty(student?.Address?.AddressName)
+                ? addressToUpdate.AddressName
+                : student.Address.AddressName;
         }
         else
         {
