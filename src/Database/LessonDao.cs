@@ -97,36 +97,6 @@ public class LessonDao : ILessonDao
         _context.RemoveRange(emptySchedules);
     }
 
-    public void AddFreeTerm(DateTime startTime, DateTime endTime)
-    {
-        var timeslotToAdd = new DbTimeslot
-        {
-            StartTime = startTime,
-            EndTime = endTime,
-        };
-        var timeslotsTaken = _context.Timeslots
-            .AsNoTracking()
-            .ToList();
-        if (IsTermTaken([timeslotToAdd], timeslotsTaken))
-            throw new ApplicationException("There are colliding timeslots!");
-
-        var timeslotsFree = _context.Timeslots
-            .AsNoTracking()
-            .ToList();
-
-        var colliding = GetCollidingTimeslots(timeslotsFree, [timeslotToAdd]);
-
-        if (colliding.Count != 0)
-        {
-            var timeslotsToRemove = _context.Timeslots
-                .Where(ts => colliding.Select(t => t.Id).Contains(ts.Id))
-                .ToList();
-            _context.RemoveRange(timeslotsToRemove);
-        }
-
-        _context.Add(timeslotToAdd);
-    }
-
     private static List<DbTimeslot> GetCollidingTimeslots(
         List<DbTimeslot> tsToTake, List<DbTimeslot> tsTaken)
     {

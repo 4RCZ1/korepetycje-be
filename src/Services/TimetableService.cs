@@ -175,13 +175,6 @@ public class TimetableService : ITimetableService
         }).ToList();
     }
 
-    public void AddFreeTerm(string startTime, string endTime)
-    {
-        using var t = _transactor.BeginTransaction();
-        t.LessonDao.AddFreeTerm(ParseDateTime(startTime), ParseDateTime(endTime));
-        t.Commit();
-    }
-
     public void ConfirmLesson(string lessonExternalId, string studentExternalId)
     {
         using var t = _transactor.BeginTransaction();

@@ -18,5 +18,4 @@ public interface ITimetableService
         bool editFutureLessons);
     void DeleteLesson(string externalLessonId, bool deleteFutureLessons);
     void ConfirmLesson(string lessonExternalId, string studentExternalId);
-    void AddFreeTerm(string startTime, string endTime);
 }

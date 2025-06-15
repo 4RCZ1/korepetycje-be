@@ -175,26 +175,6 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
             Path: /api/lesson/{lessonExternalId}/confirm
             Method: put
 
-  AddFreeTimeslots:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: ./src/Endpoints/
-      Handler: Endpoints::Endpoints.AddFreeTimeslotsFunction::AddFreeTimeslots
-      Runtime: dotnet8
-      Architectures:
-        - x86_64
-      MemorySize: 512
-      Role: !GetAtt LambdaExecutionRole.Arn
-      Environment:
-        Variables:
-          ENVIRONMENT: !Ref Environment
-      Events:
-        GetLessons:
-          Type: Api
-          Properties:
-            Path: /api/add-free-timeslots
-            Method: post
-
   AddStudent:
     Type: AWS::Serverless::Function
     Properties:

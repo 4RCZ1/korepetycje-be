@@ -13,5 +13,4 @@ public interface ILessonDao
     DbSchedule? GetScheduleById(int scheduleId);
     void CreateSchedule(DbSchedule schedule);
     void RemoveEmptySchedules();
-    void AddFreeTerm(DateTime startTime, DateTime endTime);
 }
