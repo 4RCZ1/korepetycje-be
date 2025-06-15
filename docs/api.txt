@@ -22,7 +22,14 @@ public class StudentDto
     public string? ExternalId { get; set; }
     public string? Name { get; set; }
     public string? Surname { get; set; }
-    public string? Address { get; set; }
+    public AddressDto? Address { get; set; }
+}
+
+public class AddressDto
+{
+    public string? ExternalId { get; set; }    
+    public string? AddressName { get; set; }   
+    public string? AddressData { get; set; }
 }
 
 
@@ -68,3 +75,77 @@ private class PlanLessonsRequestBody
     public required string AddressId { get; set; }
     public required IList<string> StudentIds { get; set; }
 }
+___________
+STUDENT
+Pobieranie ucznia po ID:
+GET /api/student/{studentExternalId}
+Zwraca: StudentDTO
+
+Pobieranie uczniów:
+GET /api/student - dla pobrania wszystkich uczniów
+GET /api/student?lessonId=1 - dla pobrania uczniów powiązanych z lekcją o ID 1
+Zwraca: Listę StudentDto
+
+Tworzenie ucznia:
+POST /api/student
+Możliwe schematy Request Body :
+{
+    "Name": "Basia",
+    "Surname": "Be",
+    "Address": {
+        "ExternalId": "2"
+    }
+}
+Powyższe utworzy ucznia przypisując do niego istniejący już adres o ID 2
+{
+    "Name": "x",
+    "Surname": "y",
+    "Address": {
+        "AddressName": "nowy",
+        "AddressData": "ulica"
+    }
+}
+Powyższe utworzy nowego ucznia oraz utworzy nowy adres 
+Zwraca: kod sukcesu/błędu
+
+Update ucznia:
+PATCH /api/student/{studentExternalId}
+Możliwe schematy request body:
+{
+    "Name": "x",
+    "Surname": "y",
+    "Address": {
+        "AddressName": "nowy",
+        "AddressData": "ulica"
+    }
+}
+Body może zawierać dowolne informacje spośród powyższych, pominięte dane nie zostaną zmienione.
+UWAGA: Przy podaniu adresu jak poniżej:
+{
+    "Address": {
+        "ExternalId": "2",
+        "AddressName": "ZmianaNazwyIstniejącegoAdresu"
+    }
+}
+Zostanie zmodyfikowany adres o ID 2
+Natomiast przy podaniu adresu w poniższej formie:
+{
+    "Address": {
+        "AddressName": "NazwaNowegoAdresu",
+        "AddressData": "DaneNowegoAdresu"
+    }
+}
+Zostanie utworzony nowy adres.
+W sytuacji poniższej:
+{
+    "Address": {
+        "AddressName": "NazwaNowegoAdresu"
+    }
+}
+Zostanie utworzony nowy adres, a "AddressData" zostanie skopiowane z dotychczasowego adresu ucznia
+Zwraca: kod sukcesu/błędu
+_________
+ADDRESS
+Pobieranie adresu:
+GET /api/address/{addressExternalId}
+Zwraca: AddressDto
