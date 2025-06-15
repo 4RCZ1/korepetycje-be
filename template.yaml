@@ -132,7 +132,7 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
         GetLessons:
           Type: Api
           Properties:
-            Path: /api/lesson/{lessonExternalId}
+            Path: /api/lesson/{lessonId}
             Method: patch
 
   DeleteLessonFunction:
@@ -172,7 +172,7 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
         GetLessons:
           Type: Api
           Properties:
-            Path: /api/lesson/{lessonExternalId}/confirm
+            Path: /api/lesson/{lessonId}/confirm
             Method: put
 
   AddStudent:

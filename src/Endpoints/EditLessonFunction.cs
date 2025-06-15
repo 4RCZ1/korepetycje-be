@@ -16,7 +16,7 @@ public class EditLessonFunction
         return RestIo.HandleRestExceptionsAsync(async () =>
         {
             var service = await ServiceFactory.CreateTimetableServiceAsync();
-            var lessonExternalId = RestIo.GetPathParameter(request, "lessonExternalId");
+            var lessonExternalId = RestIo.GetPathParameter(request, "lessonId");
             var body = RestIo.ReadBody<EditLessonRequestBody>(request);
             service.EditLesson(
                 lessonExternalId,
