@@ -11,6 +11,6 @@ public class GetAddressFunction
         var service = await ServiceFactory.CreateAddressService();
         var addressExternalId = request.PathParameters["addressExternalId"];
         var address = service.GetAddressById(addressExternalId);
-        return Response.OkJson(address);
+        return RestIo.OkJson(address);
     }
 }

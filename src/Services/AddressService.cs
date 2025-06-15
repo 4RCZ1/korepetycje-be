@@ -16,7 +16,7 @@ public class AddressService : IAddressService
         using var t = _transactor.BeginTransaction();
         var address = t.AddressDao.GetAddress(int.Parse(addressExternalId));
         if (address is null)
-            throw new InvalidRequestException();
+            throw new BadRequestException("Address does not exist");
         return new AddressDto()
         {
             ExternalId = address?.Id.ToString(),
