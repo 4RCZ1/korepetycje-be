@@ -86,8 +86,7 @@ namespace Database.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("schedule_id");
 
-                    b.Property<int?>("TimeslotId")
-                        .IsRequired()
+                    b.Property<int>("TimeslotId")
                         .HasColumnType("integer")
                         .HasColumnName("timeslot_id");
 
@@ -148,11 +147,17 @@ namespace Database.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("AddressId")
+                        .HasColumnType("integer")
+                        .HasColumnName("address_id");
+
                     b.Property<TimeSpan?>("Period")
                         .HasColumnType("interval")
                         .HasColumnName("period");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AddressId");
 
                     b.ToTable("schedule");
                 });
@@ -272,6 +277,17 @@ namespace Database.Migrations
                     b.Navigation("Lesson");
 
                     b.Navigation("Timeslot");
+                });
+
+            modelBuilder.Entity("Database.Entities.DbSchedule", b =>
+                {
+                    b.HasOne("Database.Entities.DbAddress", "Address")
+                        .WithMany()
+                        .HasForeignKey("AddressId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Address");
                 });
 
             modelBuilder.Entity("Database.Entities.DbStudent", b =>

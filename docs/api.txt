@@ -27,7 +27,7 @@ public class StudentDto
 
 
 Pobieranie lekcji:
-http://localhost:3000/api/lesson?startTime=2025-01-01T12:00:00.0000000Z&endTime=2026-01-01T12:00:00.0000000Z
+GET http://localhost:3000/api/lesson?startTime=2025-01-01T12:00:00.0000000Z&endTime=2026-01-01T12:00:00.0000000Z
 Może zwrócić:
 [
     {
@@ -45,3 +45,26 @@ Może zwrócić:
         ]
     }
 ]
+
+
+Planowanie lekcji:
+POST http://localhost:3000/api/plan-lessons
+posiadający body:
+{
+    "firstStartTime": "2025-06-02T12:00:00.0000000Z",
+    "firstEndTime": "2025-06-02T14:00:00.0000000Z",
+    "scheduleEndTime": "2025-07-28T10:00:00.0000000Z",
+    "periodInDays": 7,
+    "addressId": "101",
+    "studentIds": ["201"]
+}
+Schemat body:
+private class PlanLessonsRequestBody
+{
+    public required DateTime FirstStartTime { get; set; }
+    public required DateTime FirstEndTime { get; set; }
+    public required DateTime ScheduleEndTime { get; set; }
+    public required int PeriodInDays { get; set; }
+    public required string AddressId { get; set; }
+    public required IList<string> StudentIds { get; set; }
+}

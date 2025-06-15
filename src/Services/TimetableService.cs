@@ -21,7 +21,7 @@ public class TimetableService : ITimetableService
                 LessonId = EncodeExternalId(lesson.Id),
                 StartTime = lesson.Timeslot.StartTime,
                 EndTime = lesson.Timeslot.EndTime,
-                Address = MockLessonAddress,
+                Address = lesson.Schedule!.Address!.AddressData,
                 Description = lesson.TutorInfo ?? string.Empty,
                 Attendances = ConvertAttendancesToDtos(lesson.Attendances),
             }).ToList();
@@ -42,7 +42,7 @@ public class TimetableService : ITimetableService
                 LessonId = EncodeExternalId(lesson.Id),
                 StartTime = lesson.Timeslot.StartTime,
                 EndTime = lesson.Timeslot.EndTime,
-                Address = MockLessonAddress,
+                Address = lesson.Schedule!.Address!.AddressData,
                 Description = string.Empty,
                 Attendances = ConvertAttendancesToDtos(lesson.Attendances),
             }).ToList();
@@ -64,6 +64,7 @@ public class TimetableService : ITimetableService
         DateTime firstEnd,
         DateTime scheduleEnd,
         int periodInDays,
+        string externalAddressId,
         IList<string> externalStudentIds)
     {
         var plan = Scheduler.Plan(
@@ -84,8 +85,9 @@ public class TimetableService : ITimetableService
             .ToList();
         var schedule = new DbSchedule
         {
-            Lessons = lessons,
+            AddressId = DecodeExternalId(externalAddressId),
             Period = TimeSpan.FromDays(periodInDays),
+            Lessons = lessons,
         };
         using var t = _transactor.BeginTransaction();
         t.LessonDao.CreateSchedule(schedule);
@@ -116,6 +118,7 @@ public class TimetableService : ITimetableService
             t.LessonDao.RemoveSchedule(schedule.Id);
         t.LessonDao.CreateSchedule(new DbSchedule
         {
+            AddressId = schedule.AddressId,
             Period = schedule.Period,
             Lessons = UpdateLessonTimes(lessonsToEdit, newLessonTimes),
         });
@@ -197,5 +200,4 @@ private static ICollection<DbLesson> UpdateLessonTimes(
     }
 
     private readonly ITransactor _transactor;
-    private const string MockLessonAddress = "adres testowy"; // todo: implement
 }

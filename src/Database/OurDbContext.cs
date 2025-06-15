@@ -11,6 +11,7 @@ public class OurDbContext : DbContext, ITransaction
         _connection = connection;
         LessonDao = new LessonDao(this);
         StudentDao = new StudentDao(this);
+        AddressDao = new AddressDao(this);
     }
 
     public OurDbContext()
@@ -24,9 +25,11 @@ public class OurDbContext : DbContext, ITransaction
     public DbSet<DbTimeslot> Timeslots { get; set; }
     public DbSet<DbLessonSuggestion> LessonSuggestions { get; set; }
     public DbSet<DbAttendance> Attendances { get; set; }
+    public DbSet<DbAddress> Addresses { get; set; }
 
     public ILessonDao LessonDao { get; }
     public IStudentDao StudentDao { get; }
+    public IAddressDao AddressDao { get; }
 
     public void Commit()
     {

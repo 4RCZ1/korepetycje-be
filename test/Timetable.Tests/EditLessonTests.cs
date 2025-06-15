@@ -62,6 +62,7 @@ public class EditLessonTests
             .MustHaveHappenedOnceExactly();
         A.CallTo(() => _dao.CreateSchedule(A<DbSchedule>.That.Matches(s =>
                 s.Period == _week
+                && s.AddressId == AddressId
                 && s.Lessons.Select(l => l.Timeslot.StartTime)
                     .SequenceEqual(new[] { _newStartTime, _newStartTime + _week })
                 && s.Lessons.Select(l => l.TutorInfo).SequenceEqual(new[] { "info 1", "info 2" })
@@ -132,6 +133,7 @@ public class EditLessonTests
         return new DbSchedule
         {
             Id = ScheduleId,
+            AddressId = AddressId,
             Period = _week,
             Lessons = lessons,
         };
@@ -143,7 +145,8 @@ public class EditLessonTests
     private readonly DateTime _newEndTime = new(2025, 5, 3, 14, 0, 0);
     private readonly TimeSpan _week = TimeSpan.FromDays(7);
     private const int EditedLessonId = 12;
-    private const int ScheduleId = 101;
+    private const int AddressId = 101;
+    private const int ScheduleId = 201;
 
     private readonly ITransactor _transactor = A.Fake<ITransactor>();
     private readonly ITransaction _transaction = A.Fake<ITransaction>();
