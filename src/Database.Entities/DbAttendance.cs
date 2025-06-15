@@ -14,9 +14,8 @@ public class DbAttendance
     [Column("student_id")]
     public int StudentId { get; set; }
 
-    [Required]
     [Column("is_confirmed")]
-    public bool IsConfirmed { get; set; }
+    public bool? IsConfirmed { get; set; }
 
     [Required]
     [Column("has_occurred")]

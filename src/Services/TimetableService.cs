@@ -77,7 +77,7 @@ public class TimetableService : ITimetableService
                 Attendances = externalStudentIds.Select(id => new DbAttendance
                     {
                         StudentId = DecodeExternalId(id),
-                        IsConfirmed = false,
+                        IsConfirmed = null,
                         HasOccurred = false,
                     })
                     .ToList(),
@@ -175,17 +175,25 @@ public class TimetableService : ITimetableService
         }).ToList();
     }
 
-    public void ConfirmLesson(string lessonExternalId, string studentExternalId)
+    public void ConfirmLesson(bool confirmed, string lessonExternalId, string studentExternalId)
     {
         using var t = _transactor.BeginTransaction();
-        var attendance = t.LessonDao.GetAttendance(DecodeExternalId(lessonExternalId),
+        var attendance = t.LessonDao.GetAttendance(
+            DecodeExternalId(lessonExternalId),
             DecodeExternalId(studentExternalId));
-        if (attendance is not null)
+        if (attendance is null)
+            return;
+        if (attendance.IsConfirmed is null)
         {
-            attendance.IsConfirmed = true;
+            attendance.IsConfirmed = confirmed;
             t.LessonDao.SaveAttendance(attendance);
+            t.Commit();
         }
-        t.Commit();
+        else
+        {
+            if (attendance.IsConfirmed != confirmed)
+                throw new BadRequestException("Cannot change attendance status again.");
+        }
     }
 
     private static int DecodeExternalId(string externalId)
