@@ -280,3 +280,18 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
           Properties:
             Path: /api/address
             Method: post
+  DeleteAddress:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/Endpoints/
+      Handler: Endpoints::Endpoints.AddressFunctions.DeleteAddressFunction::DeleteAddress
+      Runtime: dotnet8
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Events:
+        GetLessons:
+          Type: Api
+          Properties:
+            Path: /api/address/{externalAddressId}
+            Method: delete

@@ -6,4 +6,5 @@ public interface IAddressDao
 {
     DbAddress? GetAddress(int addressId);
     void SaveAddress(DbAddress address);
+    void DeleteAddress(int addressId);
 }

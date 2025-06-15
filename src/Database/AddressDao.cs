@@ -16,10 +16,19 @@ public class AddressDao : IAddressDao
         return _context.Addresses.AsNoTracking().SingleOrDefault(x => x.Id == addressId);
     }
     
-    private readonly OurDbContext _context;
-
     public void SaveAddress(DbAddress address)
     {
         _context.Addresses.Add(address);
     }
+
+    public void DeleteAddress(int addressId)
+    {
+        var addressToDelete = _context.Addresses.SingleOrDefault(x => x.Id == addressId);
+        if (addressToDelete != null)
+            _context.Addresses.Remove(addressToDelete);
+    }
+    
+    private readonly OurDbContext _context;
+
+
 }

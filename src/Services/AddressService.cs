@@ -40,5 +40,12 @@ public class AddressService : IAddressService
         t.AddressDao.SaveAddress(addressToAdd);
         t.Commit();
     }
+
+    public void DeleteAddress(string externalAddressId)
+    {
+        using var t = _transactor.BeginTransaction();
+        t.AddressDao.DeleteAddress(int.Parse(externalAddressId));
+    }
+    
     private readonly ITransactor _transactor;
 }
