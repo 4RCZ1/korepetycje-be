@@ -114,9 +114,9 @@ public class StudentService : IStudentService
         {
             studentToUpdate.Address = new DbAddress
             {
-                AddressData = String.IsNullOrEmpty(student.Address.AddressData) 
+                AddressData = String.IsNullOrEmpty(student?.Address?.AddressData) 
                     ? studentToUpdate.Address!.AddressData : student.Address.AddressData,
-                AddressName = String.IsNullOrEmpty(student.Address.AddressName) 
+                AddressName = String.IsNullOrEmpty(student?.Address?.AddressName) 
                     ? studentToUpdate.Address!.AddressName : student.Address.AddressName, 
             };
         }

@@ -45,6 +45,31 @@ public class AddressService : IAddressService
     {
         using var t = _transactor.BeginTransaction();
         t.AddressDao.DeleteAddress(int.Parse(externalAddressId));
+        t.Commit();
+    }
+
+    public void UpdateAddress(string externalAddressId, AddressDto address)
+    {
+        var addressToUpdate = GetAddressById(externalAddressId);
+        //TODO: Get student by address, if any, throw exception
+        addressToUpdate.AddressName = address?.AddressName ?? addressToUpdate.AddressName;
+        addressToUpdate.AddressData = address?.AddressData ?? addressToUpdate.AddressData;
+        var convertedAddress = ConvertToDbAddress(addressToUpdate);
+        using var t = _transactor.BeginTransaction();
+        t.AddressDao.SaveAddress(convertedAddress);
+        t.Commit();
+    }
+
+    private DbAddress ConvertToDbAddress(AddressDto address)
+    {
+        if(String.IsNullOrEmpty(address.ExternalId)||String.IsNullOrEmpty(address.AddressName)||String.IsNullOrEmpty(address.AddressData))
+            throw new BadRequestException("All address details are required");
+        return new DbAddress()
+        {
+            Id = int.Parse(address.ExternalId),
+            AddressName = address.AddressName,
+            AddressData = address.AddressData
+        };
     }
     
     private readonly ITransactor _transactor;

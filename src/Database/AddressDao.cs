@@ -18,7 +18,7 @@ public class AddressDao : IAddressDao
     
     public void SaveAddress(DbAddress address)
     {
-        _context.Addresses.Add(address);
+        _context.Addresses.Update(address);
     }
 
     public void DeleteAddress(int addressId)
@@ -27,6 +27,7 @@ public class AddressDao : IAddressDao
         if (addressToDelete != null)
             _context.Addresses.Remove(addressToDelete);
     }
+    
     
     private readonly OurDbContext _context;
 
