@@ -1,5 +1,4 @@
 using Amazon.Lambda.APIGatewayEvents;
-using Amazon.Lambda.Core;
 
 namespace Endpoints;
 
@@ -12,8 +11,7 @@ public class EditLessonFunction
         public required bool EditFutureLessons { get; set; }
     }
 
-    public static Task<APIGatewayProxyResponse> EditLesson(
-        APIGatewayProxyRequest request, ILambdaContext context)
+    public static Task<APIGatewayProxyResponse> EditLesson(APIGatewayProxyRequest request)
     {
         return RestIo.HandleRestExceptionsAsync(async () =>
         {

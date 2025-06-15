@@ -1,12 +1,10 @@
 ﻿using Amazon.Lambda.APIGatewayEvents;
-using Amazon.Lambda.Core;
 
 namespace Endpoints.StudentFunctions;
 
 public class GetStudentFunction
 {
-    public static async Task<APIGatewayProxyResponse> GetStudent(
-        APIGatewayProxyRequest request, ILambdaContext context)
+    public static async Task<APIGatewayProxyResponse> GetStudent(APIGatewayProxyRequest request)
     {
         var service = await ServiceFactory.CreateStudentServiceAsync();
         var studentExternalId = request.PathParameters["studentExternalId"];

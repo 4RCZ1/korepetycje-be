@@ -1,12 +1,10 @@
 ﻿using Amazon.Lambda.APIGatewayEvents;
-using Amazon.Lambda.Core;
 
 namespace Endpoints.StudentFunctions;
 
 public class DeleteStudentFunction
 {
-    public static async Task<APIGatewayProxyResponse> DeleteStudent(
-        APIGatewayProxyRequest request, ILambdaContext context)
+    public static async Task<APIGatewayProxyResponse> DeleteStudent(APIGatewayProxyRequest request)
     {
         var service = await ServiceFactory.CreateStudentServiceAsync();
         var externalStudentId = request.PathParameters["studentExternalId"];

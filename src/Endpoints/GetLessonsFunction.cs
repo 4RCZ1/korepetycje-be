@@ -1,12 +1,10 @@
 using Amazon.Lambda.APIGatewayEvents;
-using Amazon.Lambda.Core;
 
 namespace Endpoints;
 
 public class GetLessonsFunction
 {
-    public static Task<APIGatewayProxyResponse> GetLessonsHandler(
-        APIGatewayProxyRequest request, ILambdaContext context)
+    public static Task<APIGatewayProxyResponse> GetLessonsHandler(APIGatewayProxyRequest request)
     {
         return RestIo.HandleRestExceptionsAsync(async () =>
         {

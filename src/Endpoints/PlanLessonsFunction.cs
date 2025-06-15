@@ -1,5 +1,4 @@
 using Amazon.Lambda.APIGatewayEvents;
-using Amazon.Lambda.Core;
 
 namespace Endpoints;
 
@@ -15,8 +14,7 @@ public class PlanLessonsFunction
         public required IList<string> StudentIds { get; set; }
     }
 
-    public static Task<APIGatewayProxyResponse> PlanLessons(
-        APIGatewayProxyRequest request, ILambdaContext context)
+    public static Task<APIGatewayProxyResponse> PlanLessons(APIGatewayProxyRequest request)
     {
         return RestIo.HandleRestExceptionsAsync(async () =>
         {

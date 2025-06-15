@@ -1,14 +1,12 @@
 ﻿using System.Text.Json;
 using Amazon.Lambda.APIGatewayEvents;
-using Amazon.Lambda.Core;
 using Endpoints.Interfaces;
 
 namespace Endpoints.StudentFunctions;
 
 public class UpdateStudentFunction
 {
-    public static async Task<APIGatewayProxyResponse> UpdateStudent(
-        APIGatewayProxyRequest request, ILambdaContext context)
+    public static async Task<APIGatewayProxyResponse> UpdateStudent(APIGatewayProxyRequest request)
     {
         var service = await ServiceFactory.CreateStudentServiceAsync();
         if (request.Body is null)

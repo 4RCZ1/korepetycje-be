@@ -1,12 +1,10 @@
 using Amazon.Lambda.APIGatewayEvents;
-using Amazon.Lambda.Core;
 
 namespace Endpoints;
 
 public class ConfirmLessonFunction
 {
-    public static Task<APIGatewayProxyResponse> ConfirmLesson(
-        APIGatewayProxyRequest request, ILambdaContext context)
+    public static Task<APIGatewayProxyResponse> ConfirmLesson(APIGatewayProxyRequest request)
     {
         return RestIo.HandleRestExceptionsAsync(async () =>
         {
