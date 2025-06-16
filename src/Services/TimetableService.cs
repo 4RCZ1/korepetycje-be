@@ -208,12 +208,15 @@ public class TimetableService : ITimetableService
 
     private static DateTime ParseDateTime(string s)
     {
-        try
+        if (DateTime.TryParse(
+                s,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.AdjustToUniversal,
+                out var time))
         {
-            return DateTime.ParseExact(
-                s, "O", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
+            return time;
         }
-        catch (FormatException)
+        else
         {
             throw new BadRequestException("Invalid datetime.");
         }
