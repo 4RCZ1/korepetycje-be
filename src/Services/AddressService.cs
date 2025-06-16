@@ -23,6 +23,22 @@ public class AddressService : IAddressService
             AddressData = address.AddressData,
         };
     }
+    
+    public List<AddressDto?> GetAddresses()
+    {
+        using var t = _transactor.BeginTransaction();
+        var addresses = t.AddressDao.GetAddresses();
+        var addressesDto = new List<AddressDto?>();
+        foreach (var address in addresses)
+            addressesDto.Add(new AddressDto()
+            {
+                ExternalId = address?.Id.ToString(),
+                AddressName = address?.AddressName,
+                AddressData = address?.AddressData
+            });
+        return addressesDto;
+    }
+    
 
     public AddressDto GetAddressByIdAsStudent(string addressExternalId, StudentRole role)
     {
@@ -53,7 +69,7 @@ public class AddressService : IAddressService
     public void DeleteAddress(string externalAddressId, TutorRole role)
     {
         using var t = _transactor.BeginTransaction();
-        if (GetStudentsByAddressId(int.Parse(externalAddressId), t).Any())
+        if (GetStudentsByAddressId(int.Parse(externalAddressId), t).Any(s => s.IsDeleted==false))
             throw new BadRequestException("Address is connected to student and cannot be removed!");
         t.AddressDao.DeleteAddress(int.Parse(externalAddressId));
         t.Commit();

@@ -12,6 +12,7 @@ public class OurDbContext : DbContext, ITransaction
         LessonDao = new LessonDao(this);
         StudentDao = new StudentDao(this);
         AddressDao = new AddressDao(this);
+        LessonSuggestionDao = new LessonSuggestionDao(this);
     }
 
     public OurDbContext()
@@ -30,6 +31,7 @@ public class OurDbContext : DbContext, ITransaction
     public ILessonDao LessonDao { get; }
     public IStudentDao StudentDao { get; }
     public IAddressDao AddressDao { get; }
+    public ILessonSuggestionDao LessonSuggestionDao { get; }
 
     public void Commit()
     {
@@ -47,6 +49,7 @@ public class OurDbContext : DbContext, ITransaction
     {
         modelBuilder.Entity<DbStudent>()
             .HasQueryFilter(x => x.IsDeleted == false);
+
     }
 
     private readonly string _connection;

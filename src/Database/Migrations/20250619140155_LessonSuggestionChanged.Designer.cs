@@ -3,6 +3,7 @@ using System;
 using Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Database.Migrations
 {
     [DbContext(typeof(OurDbContext))]
-    partial class OurDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250619140155_LessonSuggestionChanged")]
+    partial class LessonSuggestionChanged
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -113,17 +116,9 @@ namespace Database.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AddressId")
-                        .HasColumnType("integer")
-                        .HasColumnName("address_id");
-
                     b.Property<int?>("LessonId")
                         .HasColumnType("integer")
                         .HasColumnName("lesson_id");
-
-                    b.Property<int>("StudentId")
-                        .HasColumnType("integer")
-                        .HasColumnName("student_id");
 
                     b.Property<int>("TimeslotId")
                         .HasColumnType("integer")
@@ -131,11 +126,7 @@ namespace Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AddressId");
-
                     b.HasIndex("LessonId");
-
-                    b.HasIndex("StudentId");
 
                     b.HasIndex("TimeslotId");
 
@@ -192,12 +183,6 @@ namespace Database.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
                         .HasColumnName("name");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("phone_number");
 
                     b.Property<string>("Surname")
                         .IsRequired()
@@ -274,21 +259,9 @@ namespace Database.Migrations
 
             modelBuilder.Entity("Database.Entities.DbLessonSuggestion", b =>
                 {
-                    b.HasOne("Database.Entities.DbAddress", "Address")
-                        .WithMany()
-                        .HasForeignKey("AddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Database.Entities.DbLesson", "Lesson")
                         .WithMany()
                         .HasForeignKey("LessonId");
-
-                    b.HasOne("Database.Entities.DbStudent", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.HasOne("Database.Entities.DbTimeslot", "Timeslot")
                         .WithMany()
@@ -296,11 +269,7 @@ namespace Database.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Address");
-
                     b.Navigation("Lesson");
-
-                    b.Navigation("Student");
 
                     b.Navigation("Timeslot");
                 });

@@ -13,8 +13,9 @@ public class GetStudentFunction
             var role = identity.RequireTutor();
             var service = await ServiceFactory.CreateStudentServiceAsync();
             var studentExternalId = RestIo.GetPathParameter(request, "studentExternalId");
-            var student = service.GetStudent(studentExternalId, role);
-            return student;
+            var includeDeletedString = RestIo.GetOptionalPathParameter(request, "includeDeleted");
+            bool.TryParse(includeDeletedString, out var includeDeleted);
+            return service.GetStudent(role, studentExternalId, includeDeleted);
         });
     }
 }

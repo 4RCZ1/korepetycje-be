@@ -93,7 +93,14 @@ public class LessonDao : ILessonDao
             .Any(TimeslotDaoConditions.TimeslotOverlap(nts)));
     }
 
-    private static bool IsTermTaken(List<DbTimeslot> tsToTake, List<DbTimeslot> tsTaken)
+    public List<DbTimeslot> GetTimeslots()
+    {
+        return _context.Timeslots
+            .AsNoTracking()
+            .ToList();
+    }
+
+    public bool IsTermTaken(List<DbTimeslot> tsToTake, List<DbTimeslot> tsTaken)
     {
         var colliding = GetCollidingTimeslots(tsToTake, tsTaken);
         return colliding.Count != 0;

@@ -3,6 +3,7 @@ using System;
 using Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Database.Migrations
 {
     [DbContext(typeof(OurDbContext))]
-    partial class OurDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250619203954_LessonSuggChangest-pt1")]
+    partial class LessonSuggChangestpt1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -113,7 +116,7 @@ namespace Database.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AddressId")
+                    b.Property<int?>("AddressId")
                         .HasColumnType("integer")
                         .HasColumnName("address_id");
 
@@ -121,7 +124,7 @@ namespace Database.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("lesson_id");
 
-                    b.Property<int>("StudentId")
+                    b.Property<int?>("StudentId")
                         .HasColumnType("integer")
                         .HasColumnName("student_id");
 
@@ -274,11 +277,9 @@ namespace Database.Migrations
 
             modelBuilder.Entity("Database.Entities.DbLessonSuggestion", b =>
                 {
-                    b.HasOne("Database.Entities.DbAddress", "Address")
+                    b.HasOne("Database.Entities.DbStudent", "Address")
                         .WithMany()
-                        .HasForeignKey("AddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AddressId");
 
                     b.HasOne("Database.Entities.DbLesson", "Lesson")
                         .WithMany()
@@ -286,9 +287,7 @@ namespace Database.Migrations
 
                     b.HasOne("Database.Entities.DbStudent", "Student")
                         .WithMany()
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("StudentId");
 
                     b.HasOne("Database.Entities.DbTimeslot", "Timeslot")
                         .WithMany()

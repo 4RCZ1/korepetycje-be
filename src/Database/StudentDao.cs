@@ -13,22 +13,50 @@ public class StudentDao : IStudentDao
         _context = context;
     }
 
-    public DbStudent? GetStudent(int studentId)
+    public DbStudent? GetStudent(int studentId, bool? includeDeleted = false)
     {
+        if(includeDeleted==true)
+            return _context.Students
+                .IgnoreQueryFilters()
+                .AsNoTracking()
+                .Include(s => s.Address)
+                .SingleOrDefault(s => s.Id == studentId);
+        
         return _context.Students
             .AsNoTracking()
             .Include(s => s.Address)
             .SingleOrDefault(s => s.Id == studentId);
     }
 
-    public List<DbStudent> GetStudents(int? lessonId = null)
+    public List<DbStudent> GetStudents(int? lessonId = null, bool? includeDeleted = false)
     {
-        if (lessonId is null)
+        if (includeDeleted == true)
+            return GetStudentsIncludeDeleted(lessonId);
+        if(lessonId is null)
             return _context.Students
                 .AsNoTracking()
                 .Include(s => s.Address)
                 .ToList();
         return _context.Students
+            .AsNoTracking()
+            .Include(s => s.Address)
+            .Where(s =>_context.Attendances
+                .Where(a=>a.LessonId == lessonId)
+                .Select(a=>a.StudentId)
+                .Contains(s.Id))
+            .ToList();
+    }
+    
+    private List<DbStudent> GetStudentsIncludeDeleted(int? lessonId = null)
+    {
+        if(lessonId is null)
+            return _context.Students
+                .IgnoreQueryFilters()
+                .Include(s => s.Address)
+                .AsNoTracking()
+                .ToList();
+        return _context.Students
+            .IgnoreQueryFilters()
             .AsNoTracking()
             .Include(s => s.Address)
             .Where(s => _context.Attendances
@@ -47,6 +75,10 @@ public class StudentDao : IStudentDao
     {
         var studentToDelete = _context.Students.SingleOrDefault(s => s.Id == studentId);
         if (studentToDelete is not null)
+        {
+            studentToDelete.Address = null;
+            studentToDelete.AddressId = null;
             _context.Students.Remove(studentToDelete);
+        }
     }
 }

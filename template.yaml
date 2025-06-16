@@ -333,6 +333,24 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
             Path: /api/address/{externalAddressId}
             Method: get
             RestApiId: !Ref KorepetycjeApi
+            
+  GetAddresses:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/Endpoints/
+      Handler: Endpoints::Endpoints.AddressFunctions.GetAddressesFunction::GetAddresses
+      Runtime: dotnet8
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        GetLessons:
+          Type: Api
+          Properties:
+            Path: /api/address
+            Method: get
+            RestApiId: !Ref KorepetycjeApi
 
   AddAddress:
     Type: AWS::Serverless::Function
@@ -386,4 +404,77 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
           Properties:
             Path: /api/address/{externalAddressId}
             Method: patch
+            RestApiId: !Ref KorepetycjeApi
+            
+  
+  AddLessonSuggestion:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/Endpoints/
+      Handler: Endpoints::Endpoints.LessonSuggestionFunctions.AddLessonSuggestionFunction::AddLessonSuggestion
+      Runtime: dotnet8
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        GetLessons:
+          Type: Api
+          Properties:
+            Path: /api/lesson-suggestion
+            Method: post
+            RestApiId: !Ref KorepetycjeApi
+            
+  DeleteLessonSuggestion:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/Endpoints/
+      Handler: Endpoints::Endpoints.LessonSuggestionFunctions.DeleteLessonSuggestionFunction::DeleteLessonSuggestion
+      Runtime: dotnet8
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        GetLessons:
+          Type: Api
+          Properties:
+            Path: /api/lesson-suggestion/{externalId}
+            Method: delete
+            RestApiId: !Ref KorepetycjeApi
+
+  UpdateLessonSuggestion:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/Endpoints/
+      Handler: Endpoints::Endpoints.LessonSuggestionFunctions.UpdateLessonSuggestionFunction::UpdateLessonSuggestion
+      Runtime: dotnet8
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        GetLessons:
+          Type: Api
+          Properties:
+            Path: /api/lesson-suggestion/{externalId}
+            Method: patch
+            RestApiId: !Ref KorepetycjeApi
+  
+  GetLessonSuggestions:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/Endpoints/
+      Handler: Endpoints::Endpoints.LessonSuggestionFunctions.GetLessonSuggestionsFunction::GetLessonSuggestions
+      Runtime: dotnet8
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        GetLessons:
+          Type: Api
+          Properties:
+            Path: /api/lesson-suggestion
+            Method: get
             RestApiId: !Ref KorepetycjeApi

@@ -15,4 +15,6 @@ public interface ILessonDao
     DbSchedule? GetScheduleById(int scheduleId);
     void CreateSchedule(DbSchedule schedule);
     void RemoveEmptySchedules();
+    bool IsTermTaken(List<DbTimeslot> tsToTake, List<DbTimeslot> tsTaken);
+    List<DbTimeslot> GetTimeslots();
 }

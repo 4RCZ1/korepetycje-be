@@ -16,12 +16,13 @@ public class StudentService : IStudentService
     {
         DbAddress? addressToAdd = null;
         using var t = _transactor.BeginTransaction();
-        if(int.TryParse(studentToAdd?.Address?.ExternalId, out var addressId))
+        if (int.TryParse(studentToAdd?.Address?.ExternalId, out var addressId))
             addressToAdd = t.AddressDao.GetAddress(addressId);
         var student = new DbStudent
         {
             Name = studentToAdd?.Name ?? "",
             Surname = studentToAdd?.Surname ?? "",
+            PhoneNumber = studentToAdd?.PhoneNumber ?? "",
             Address = addressToAdd ?? new DbAddress()
             {
                 AddressName = studentToAdd?.Address?.AddressName ?? "NOWY ADRES",
@@ -34,10 +35,11 @@ public class StudentService : IStudentService
         return student.Id.ToString(); // Reading IDs of saved entities is specific to EF Core.
     }
 
-    public StudentDto GetStudent(string studentExternalId, TutorRole role)
+    public StudentDto GetStudent(
+        string studentExternalId, TutorRole role, bool? includeDeleted = false)
     {
         using var t = _transactor.BeginTransaction();
-        var student = t.StudentDao.GetStudent(int.Parse(studentExternalId));
+        var student = t.StudentDao.GetStudent(int.Parse(studentExternalId), includeDeleted);
         if (student is null)
             throw new BadRequestException("No student found.");
         return new StudentDto
@@ -45,6 +47,8 @@ public class StudentService : IStudentService
             ExternalId = student.Id.ToString(),
             Name = student.Name,
             Surname = student.Surname,
+            PhoneNumber = student.PhoneNumber,
+            IsDeleted = student.IsDeleted,
             Address = new AddressDto()
             {
                 ExternalId = student.Address?.Id.ToString(),
@@ -54,17 +58,16 @@ public class StudentService : IStudentService
         };
     }
 
-    public List<StudentDto> GetStudents(TutorRole role, string? lessonExternalId = null)
+    public List<StudentDto> GetStudents(TutorRole role, string? lessonExternalId = null, bool? includeDeleted = false)
     {
         using var t = _transactor.BeginTransaction();
         List<DbStudent> students;
         if (String.IsNullOrEmpty(lessonExternalId))
-            students = t.StudentDao.GetStudents();
+            students = t.StudentDao.GetStudents(null, includeDeleted);
         else
         {
-            int lessonId;
-            int.TryParse(lessonExternalId, out lessonId);
-            students = t.StudentDao.GetStudents(lessonId);
+            int.TryParse(lessonExternalId, out var lessonId);
+            students = t.StudentDao.GetStudents(lessonId, includeDeleted);
         }
         if (students is null)
             throw new ApplicationException("No students found");
@@ -76,6 +79,8 @@ public class StudentService : IStudentService
                 ExternalId = s.Id.ToString(),
                 Name = s.Name,
                 Surname = s.Surname,
+                PhoneNumber = s.PhoneNumber,
+                IsDeleted = s.IsDeleted,
                 Address = new AddressDto()
                 {
                     ExternalId = s.Address?.Id.ToString(),
@@ -98,6 +103,8 @@ public class StudentService : IStudentService
            ? studentToUpdate.Name : student.Name;
         studentToUpdate.Surname = String.IsNullOrEmpty(student.Surname)
             ? studentToUpdate.Surname : student.Surname;
+        studentToUpdate.PhoneNumber = String.IsNullOrEmpty(student.PhoneNumber)
+            ? studentToUpdate.PhoneNumber : student.PhoneNumber;
         DbAddress? addressToUpdate = null;
         //if the address id is included in the request body, the address will be updated,
         //if it is not included, a new address will be created
@@ -114,13 +121,18 @@ public class StudentService : IStudentService
         }
         else
         {
-            studentToUpdate.Address = new DbAddress
+            if (student?.Address is not null)
             {
-                AddressData = String.IsNullOrEmpty(student?.Address?.AddressData)
-                    ? studentToUpdate.Address!.AddressData : student.Address.AddressData,
-                AddressName = String.IsNullOrEmpty(student?.Address?.AddressName)
-                    ? studentToUpdate.Address!.AddressName : student.Address.AddressName,
-            };
+                studentToUpdate.Address = new DbAddress
+                {
+                    AddressData = String.IsNullOrEmpty(student?.Address?.AddressData)
+                        ? studentToUpdate.Address!.AddressData
+                        : student.Address.AddressData,
+                    AddressName = String.IsNullOrEmpty(student?.Address?.AddressName)
+                        ? studentToUpdate.Address!.AddressName
+                        : student.Address.AddressName,
+                };
+            }
         }
         t.StudentDao.SaveStudent(studentToUpdate);
         t.Commit();

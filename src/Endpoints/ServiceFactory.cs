@@ -39,6 +39,12 @@ internal static class ServiceFactory
         var connection = await Connection;
         return new StudentService(new Transactor(connection));
     }
+    
+    public static async Task<ILessonSuggestionService> CreateLessonSuggestionServiceAsync()
+    {
+        var connection = await Connection;
+        return new LessonSuggestionService(new Transactor(connection));
+    }
 
     private static async Task<string> GetConnectionStringAsync()
     {

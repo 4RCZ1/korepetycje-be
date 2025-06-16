@@ -5,5 +5,6 @@ public interface ITransaction : IDisposable
     public ILessonDao LessonDao { get; }
     public IStudentDao StudentDao { get; }
     public IAddressDao AddressDao { get; }
+    public ILessonSuggestionDao LessonSuggestionDao { get; }
     public void Commit();
 }

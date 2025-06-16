@@ -19,6 +19,11 @@ public class DbStudent : ISoftDelete
     [MaxLength(50)]
     [Column("surname")]
     public required string Surname { get; set; }
+    
+
+    [MaxLength(20)]
+    [Column("phone_number")]
+    public string PhoneNumber { get; set; }    
 
     [Column("address_id")]
     public int? AddressId { get; set; }

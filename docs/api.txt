@@ -35,10 +35,12 @@ public class AddressDto
 
 public class LessonSuggestionDto
 {
-    public string ExternalId { get; set; }
-    public DateTime SuggestedStart { get; set; }
-    public DateTime SuggestedEnd { get; set; }
-    public string? LessonId { get; set; }
+    public string? ExternalId { get; set; }
+    public DateTimeOffset? SuggestedStart { get; set; }
+    public DateTimeOffset? SuggestedEnd { get; set; }
+    public LessonDto? Lesson { get; set; }
+    public AddressDto? Address { get; set; }
+    public StudentDto? Student { get; set; }
 }
 
 
@@ -262,7 +264,6 @@ Zwraca: kod sukcesu/błędu
 __________
 LESSON SUGGESTION
 Tworzenie Lesson suggestion:
-Dodawanie adresu:
 POST /api/lesson-suggestion
 Możliwe schematy request body:
 {
@@ -274,4 +275,112 @@ Możliwe schematy request body:
     "SuggestedStart": "2026-03-02T12:00:00.0000000Z",
     "SuggestedEnd": "2026-03-02T14:00:00.0000000Z"
 }
+Zwraca: kod sukcesu/błędu
+
+Usuwanie lesson suggestion:
+DELETE /api/lesson-suggestion/{externalId}
+Zwraca: kod sukcesu/błędu
+
+Pobieranie Lesson suggestion
+GET /api/lesson-suggestion - wszystkie
+GET /api/lesson-suggestion?studentExternalId=1 - powiązane z uczniem
+GET /api/lesson-suggestion?suggestedStart=2026-01-02T12:00:00.0000000Z - wszystkie od daty
+GET /api/lesson-suggestion?suggestedEnd=2026-10-02T14:00:00.0000000Z - wszystkie do daty
+GET /api/lesson-suggestion?suggestedStart=2026-01-02T12:00:00.0000000Z&suggestedEnd=2026-10-02T14:00:00.0000000Z&studentExternalId=1 - wszystkie z zakresu dla ucznia
+Zwraca: listę LessonSuggestionDTO, uwzględniającą wszystkie powiązania, np:
+[
+    {
+        "externalId": "2",
+        "suggestedStart": "2025-05-02T12:10:00+00:00",
+        "suggestedEnd": "2025-05-02T13:50:00+00:00",
+        "lesson": {
+            "lessonId": "1",
+            "startTime": "2025-06-02T12:00:00+00:00",
+            "endTime": "2025-06-02T14:00:00+00:00",
+            "address": "ul doskonała",
+            "description": "BRAK",
+            "attendances": [
+                {
+                    "studentName": "NoweImie",
+                    "studentSurname": "żółć",
+                    "confirmed": null
+                }
+            ]
+        },
+        "address": {
+            "externalId": "2",
+            "addressName": "Adres Marcina",
+            "addressData": "Poznań os Jana III Sobieskiego"
+        },
+        "student": {
+            "externalId": "1",
+            "name": "NoweImie",
+            "surname": "żółć",
+            "phoneNumber": "NoweImie",
+            "isDeleted": false,
+            "address": {
+                "externalId": "1",
+                "addressName": "adres 1",
+                "addressData": "ul doskonała"
+            }
+        }
+    },
+    {
+        "externalId": "3",
+        "suggestedStart": "2026-05-02T12:00:00+00:00",
+        "suggestedEnd": "2026-05-02T14:00:00+00:00",
+        "lesson": null,
+        "address": {
+            "externalId": "2",
+            "addressName": "Adres Marcina",
+            "addressData": "Poznań os Jana III Sobieskiego"
+        },
+        "student": {
+            "externalId": "1",
+            "name": "NoweImie",
+            "surname": "żółć",
+            "phoneNumber": "NoweImie",
+            "isDeleted": false,
+            "address": {
+                "externalId": "1",
+                "addressName": "adres 1",
+                "addressData": "ul doskonała"
+            }
+        }
+    }
+]
+
+Update lesson suggestion:
+PATCH /api/lesson-suggestion/{externalId}
+Możliwe schematy body:
+Modyfikuje sugerowany początek lekcji:
+{
+    "suggestedStart": "2025-05-02T12:10:00.0000000Z"
+}
+Modyfikuje sugerowany koniec lekcji:
+{
+    "suggestedEnd": "2025-05-02T13:50:00.0000000Z"
+}
+Modyfikuje powiązaną lekcje (podejrzewam że może być przydatne w wypadku pomyłki użytkownika, kiedy puści lessonSuggestion dotyczącą lekcji, nie wiążąc jej z lekcją):
+{"lesson": {
+            "lessonId": "1",
+            "startTime": "2025-06-02T12:00:00+00:00",
+            "endTime": "2025-06-02T14:00:00+00:00",
+            "address": "ul doskonała",
+            "description": "BRAK",
+            "attendances": [
+                {
+                    "studentName": "NoweImie",
+                    "studentSurname": "żółć",
+                    "confirmed": null
+                }
+            ]
+        }
+}
+Modyfikuje sugerowany adres lekcji:
+{"address": {
+    "externalId": "6"
+        }
+}
+Oczywiście wszystkie powyższe mogą być dowolnie łączone.
 Zwraca: kod sukcesu/błędu

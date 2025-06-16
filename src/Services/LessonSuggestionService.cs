@@ -1,0 +1,172 @@
+﻿using System.Globalization;
+using Database.Entities;
+using Endpoints.Interfaces;
+using Timetable.Interfaces;
+
+namespace Services;
+
+public class LessonSuggestionService : ILessonSuggestionService
+{
+    public LessonSuggestionService(ITransactor transactor)
+    {
+        _transactor = transactor;
+    }
+
+    public string AddLessonSuggestion(LessonSuggestionDto lessonSuggestionToAdd)
+    {
+        if(lessonSuggestionToAdd.SuggestedStart == null 
+           || lessonSuggestionToAdd.SuggestedEnd == null
+           || lessonSuggestionToAdd.Student?.ExternalId == null
+           || lessonSuggestionToAdd.Address?.ExternalId == null)
+            throw new BadRequestException("Required information is missing");
+        
+        DbTimeslot newTimeslot = new DbTimeslot()
+        {
+            StartTime = (DateTimeOffset)lessonSuggestionToAdd.SuggestedStart,
+            EndTime = (DateTimeOffset)lessonSuggestionToAdd.SuggestedEnd
+        };
+        
+        using var t = _transactor.BeginTransaction();
+
+        var studentConnected = t.StudentDao.GetStudent(int.Parse(lessonSuggestionToAdd.Student.ExternalId));
+        var addressConnected = t.AddressDao.GetAddress(int.Parse(lessonSuggestionToAdd.Address.ExternalId));
+        
+        if (studentConnected == null || addressConnected == null)
+            throw new BadRequestException("Requested address or student does not exist!");
+        
+        List<DbTimeslot> takenTimeslots = t.LessonDao.GetTimeslots();
+        
+        if (t.LessonDao.IsTermTaken(new List<DbTimeslot>() { newTimeslot }, takenTimeslots))
+            throw new ApplicationException("This term is taken!");
+
+        
+        DbLessonSuggestion lSuggestion = new DbLessonSuggestion()
+        {
+            Timeslot = newTimeslot,
+            Address = addressConnected,
+            Student = studentConnected,
+        };
+
+        if (int.TryParse(lessonSuggestionToAdd.Lesson?.LessonId, out var lessonId))
+            lSuggestion.Lesson = t.LessonDao.GetLessonById(lessonId);
+        
+        t.LessonSuggestionDao.SaveLessonSuggestion(lSuggestion);
+        t.Commit();
+        return "Lesson suggestion added!";
+    }
+
+    public void DeleteLessonSuggestion(string externalId)
+    {
+        using var t = _transactor.BeginTransaction();
+        t.LessonSuggestionDao.DeleteLessonSuggestion(int.Parse(externalId));
+        t.Commit();
+    }
+
+    public void UpdateLessonSuggestion(string externalId, LessonSuggestionDto updatedLessonSuggestion)
+    {
+        int id = int.Parse(externalId);
+        DbLesson? connectedLesson = null;
+        DbAddress? connectedAddress = null;
+        using var t = _transactor.BeginTransaction();
+        
+        if(int.TryParse(updatedLessonSuggestion.Lesson?.LessonId, out var lessonId))
+            connectedLesson = t.LessonDao.GetLessonById(lessonId);
+        
+        if(int.TryParse(updatedLessonSuggestion.Address?.ExternalId, out var addressId))
+            connectedAddress = t.AddressDao.GetAddress(addressId);
+        
+        var lessSuggToUpdate = t.LessonSuggestionDao.GetLessSuggById(id);
+        lessSuggToUpdate.Timeslot.StartTime = updatedLessonSuggestion.SuggestedStart 
+                                              ?? lessSuggToUpdate.Timeslot.StartTime;
+        lessSuggToUpdate.Timeslot.EndTime = updatedLessonSuggestion.SuggestedEnd 
+                                            ?? lessSuggToUpdate.Timeslot.EndTime;
+        
+        lessSuggToUpdate.Lesson = connectedLesson ?? lessSuggToUpdate.Lesson;
+        lessSuggToUpdate.Address = connectedAddress ?? lessSuggToUpdate.Address;
+
+        var timeslotId = lessSuggToUpdate.TimeslotId;
+        List<DbTimeslot> takenTimeslots = t.LessonDao.GetTimeslots().Where(ts => ts.Id !=timeslotId).ToList();
+        
+        if (t.LessonDao.IsTermTaken(new List<DbTimeslot>() { lessSuggToUpdate.Timeslot }, takenTimeslots))
+            throw new ApplicationException("This term is taken!");
+
+        t.LessonSuggestionDao.SaveLessonSuggestion(lessSuggToUpdate);
+        t.Commit();
+    }
+
+    public List<LessonSuggestionDto> GetLessonSuggestion(string? suggestedStart,
+        string? suggestedEnd, string? studentExternalId)
+    {
+        var startOffset = TryParseDateTime(suggestedStart) ?? DateTimeOffset.MinValue;
+        var endOffset = TryParseDateTime(suggestedEnd) ?? DateTimeOffset.MaxValue;
+        int? studentId = studentExternalId is null ? null : int.Parse(studentExternalId);
+        using var t = _transactor.BeginTransaction();
+        var lessonSuggestions = t.LessonSuggestionDao.GetLessSugg(startOffset, endOffset, studentId);
+        List<LessonSuggestionDto> lessonSuggestionsDto = new List<LessonSuggestionDto>();
+        foreach (var ls in lessonSuggestions)
+        {
+            LessonSuggestionDto lessSuggToGet = new LessonSuggestionDto()
+            {
+                ExternalId = ls.Id.ToString(),
+                SuggestedStart = ls.Timeslot.StartTime,
+                SuggestedEnd = ls.Timeslot.EndTime,
+                Address = new AddressDto()
+                {
+                    ExternalId = ls.Address.Id.ToString(),
+                    AddressData = ls.Address.AddressData,
+                    AddressName = ls.Address.AddressName
+                },
+                Lesson = ls.Lesson is null ? null : new LessonDto()
+                {
+                    LessonId = ls.Lesson?.Id.ToString() ?? "BRAK",
+                    Address = ls.Lesson?.Schedule?.Address?.AddressData ?? "BRAK",
+                    Attendances = ls.Lesson?.Attendances.Select(a => new AttendanceDto()
+                    {
+                        Confirmed = a.IsConfirmed,
+                        StudentName = a.Student?.Name ?? "BRAK",
+                        StudentSurname = a.Student?.Surname ?? "BRAK"
+                    }).ToList() ?? new List<AttendanceDto>(),
+                    Description = ls.Lesson?.TutorInfo ?? "BRAK",
+                    StartTime = ls.Lesson!.Timeslot.StartTime,
+                    EndTime = ls.Lesson!.Timeslot.EndTime
+                },
+                Student = new StudentDto()
+                {
+                    ExternalId = ls.Student.Id.ToString(),
+                    Name = ls.Student.Name,
+                    Surname = ls.Student.Surname,
+                    PhoneNumber = ls.Student.PhoneNumber,
+                    IsDeleted = ls.Student.IsDeleted,
+                    Address = new AddressDto()
+                    {
+                        ExternalId = ls.Student?.Address?.Id.ToString(),
+                        AddressData = ls.Student?.Address?.AddressData,
+                        AddressName = ls.Student?.Address?.AddressName
+                    }
+                }
+            };
+            lessonSuggestionsDto.Add(lessSuggToGet);
+        }
+        
+        return lessonSuggestionsDto;
+    }
+    
+    private static DateTimeOffset? TryParseDateTime(string? s)
+    {
+        if (DateTimeOffset.TryParse(
+                s,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal,
+                out var time))
+        {
+            return time;
+        }
+        else
+        {
+            return null;
+        }
+    }
+    
+    
+    private readonly ITransactor _transactor;
+}
