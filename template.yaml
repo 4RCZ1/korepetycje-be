@@ -44,6 +44,15 @@ Globals:
         KOREPETYCJE_POSTGRES: ""
 
 Resources:  # IAM Role for Lambda functions with SecretsManager access to environment-specific secrets
+  KorepetycjeApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Cors:
+        AllowMethods: "'OPTIONS,GET,POST,PUT,DELETE,PATCH'"
+        AllowHeaders: "'Content-Type,Authorization'"
+        AllowOrigin: "'*'"
+
   LambdaExecutionRole:
     Type: AWS::IAM::Role
     Properties:
@@ -94,6 +103,7 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
           Properties:
             Path: /api/lesson
             Method: get
+            RestApiId: !Ref KorepetycjeApi
 
   PlanLessonsFunction:
     Type: AWS::Serverless::Function
@@ -114,6 +124,7 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
           Properties:
             Path: /api/plan-lessons
             Method: post
+            RestApiId: !Ref KorepetycjeApi
 
   EditLessonFunction:
     Type: AWS::Serverless::Function
@@ -134,6 +145,7 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
           Properties:
             Path: /api/lesson/{lessonId}
             Method: patch
+            RestApiId: !Ref KorepetycjeApi
 
   DeleteLessonFunction:
     Type: AWS::Serverless::Function
@@ -154,6 +166,7 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
           Properties:
             Path: /api/delete-lesson/
             Method: post
+            RestApiId: !Ref KorepetycjeApi
 
   ConfirmLessonFunction:
     Type: AWS::Serverless::Function
@@ -174,6 +187,7 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
           Properties:
             Path: /api/lesson/{lessonId}/confirm
             Method: put
+            RestApiId: !Ref KorepetycjeApi
 
   AddStudent:
     Type: AWS::Serverless::Function
@@ -191,6 +205,8 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
           Properties:
             Path: /api/student
             Method: post
+            RestApiId: !Ref KorepetycjeApi
+
   GetStudent:
     Type: AWS::Serverless::Function
     Properties:
@@ -207,6 +223,8 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
           Properties:
             Path: /api/student/{studentExternalId}
             Method: get
+            RestApiId: !Ref KorepetycjeApi
+
   UpdateStudentFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -223,6 +241,8 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
           Properties:
             Path: /api/student/{studentExternalId}
             Method: patch
+            RestApiId: !Ref KorepetycjeApi
+
   DeleteStudentFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -239,6 +259,8 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
           Properties:
             Path: /api/student/{studentExternalId}
             Method: delete
+            RestApiId: !Ref KorepetycjeApi
+
   GetStudents:
     Type: AWS::Serverless::Function
     Properties:
@@ -255,6 +277,8 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
           Properties:
             Path: /api/student
             Method: get
+            RestApiId: !Ref KorepetycjeApi
+
   GetAddress:
     Type: AWS::Serverless::Function
     Properties:
@@ -271,6 +295,8 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
           Properties:
             Path: /api/address/{externalAddressId}
             Method: get
+            RestApiId: !Ref KorepetycjeApi
+
   AddAddress:
     Type: AWS::Serverless::Function
     Properties:
@@ -287,6 +313,8 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
           Properties:
             Path: /api/address
             Method: post
+            RestApiId: !Ref KorepetycjeApi
+
   DeleteAddress:
     Type: AWS::Serverless::Function
     Properties:
@@ -303,6 +331,8 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
           Properties:
             Path: /api/address/{externalAddressId}
             Method: delete
+            RestApiId: !Ref KorepetycjeApi
+
   UpdateAddress:
     Type: AWS::Serverless::Function
     Properties:
@@ -319,3 +349,4 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
           Properties:
             Path: /api/address/{externalAddressId}
             Method: patch
+            RestApiId: !Ref KorepetycjeApi
