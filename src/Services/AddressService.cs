@@ -51,7 +51,8 @@ public class AddressService : IAddressService
     public void UpdateAddress(string externalAddressId, AddressDto address)
     {
         var addressToUpdate = GetAddressById(externalAddressId);
-        //TODO: Get student by address, if any, throw exception
+        if(GetStudentByAddressId(int.Parse(externalAddressId)) is not null)
+            throw new BadRequestException("Address is connected to student and cannot be removed!");
         addressToUpdate.AddressName = address?.AddressName ?? addressToUpdate.AddressName;
         addressToUpdate.AddressData = address?.AddressData ?? addressToUpdate.AddressData;
         var convertedAddress = ConvertToDbAddress(addressToUpdate);
@@ -70,6 +71,13 @@ public class AddressService : IAddressService
             AddressName = address.AddressName,
             AddressData = address.AddressData
         };
+    }
+
+    private List<DbStudent>? GetStudentByAddressId(int addressId)
+    {
+        using var t = _transactor.BeginTransaction();
+        var students = t.AddressDao.GetStudents(addressId);
+        return students;
     }
     
     private readonly ITransactor _transactor;

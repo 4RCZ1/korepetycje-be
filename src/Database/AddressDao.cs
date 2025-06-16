@@ -27,7 +27,11 @@ public class AddressDao : IAddressDao
         if (addressToDelete != null)
             _context.Addresses.Remove(addressToDelete);
     }
-    
+
+    public List<DbStudent>? GetStudents(int addressId)
+    {
+        return _context.Students.AsNoTracking().Where(x => x.AddressId == addressId).ToList();
+    }
     
     private readonly OurDbContext _context;
 
