@@ -184,6 +184,7 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
       Architectures:
         - x86_64
       MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
       Events:
         GetLessons:
           Type: Api
@@ -199,6 +200,7 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
       Architectures:
         - x86_64
       MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
       Events:
         GetLessons:
           Type: Api
@@ -214,6 +216,7 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
       Architectures:
         - x86_64
       MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
       Events:
         GetLessons:
           Type: Api
@@ -229,6 +232,7 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
       Architectures:
         - x86_64
       MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
       Events:
         GetLessons:
           Type: Api
@@ -244,6 +248,7 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
       Architectures:
         - x86_64
       MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
       Events:
         GetLessons:
           Type: Api
@@ -259,6 +264,7 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
       Architectures:
         - x86_64
       MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
       Events:
         GetLessons:
           Type: Api
@@ -274,6 +280,7 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
       Architectures:
         - x86_64
       MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
       Events:
         GetLessons:
           Type: Api
@@ -289,6 +296,7 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
       Architectures:
         - x86_64
       MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
       Events:
         GetLessons:
           Type: Api
@@ -304,6 +312,7 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
       Architectures:
         - x86_64
       MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
       Events:
         GetLessons:
           Type: Api
