@@ -128,11 +128,13 @@ ___________
 STUDENT
 Pobieranie ucznia po ID:
 GET /api/student/{studentExternalId}
+GET /api/student/{studentExternalId}?includeDeleted=True - z uwzględnieniem usuniętych
 Zwraca: StudentDTO
 
 Pobieranie uczniów:
 GET /api/student - dla pobrania wszystkich uczniów
 GET /api/student?lessonId=1 - dla pobrania uczniów powiązanych z lekcją o ID 1
+GET /api/student?includeDeleted=True  - z uwzględnieniem usuniętych
 Zwraca: Listę StudentDto
 
 Tworzenie ucznia:
