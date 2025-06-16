@@ -7,7 +7,7 @@ public class DeleteStudentFunction
     public static async Task<APIGatewayProxyResponse> DeleteStudent(APIGatewayProxyRequest request)
     {
         var service = await ServiceFactory.CreateStudentServiceAsync();
-        var externalStudentId = request.PathParameters["studentExternalId"];
+        var externalStudentId = RestIo.GetPathParameter(request, "studentExternalId");
         service.DeleteStudent(externalStudentId);
         return new APIGatewayProxyResponse
         {

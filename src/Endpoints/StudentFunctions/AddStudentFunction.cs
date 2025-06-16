@@ -9,12 +9,8 @@ public class AddStudentFunction
     public static async Task<APIGatewayProxyResponse> AddStudent(APIGatewayProxyRequest request)
     {
         var service = await ServiceFactory.CreateStudentServiceAsync();
-        if (request.Body is null)
-        {
-            throw new NullReferenceException("Request body is null");
-        }
-        var body = JsonSerializer.Deserialize<StudentDto>(request.Body);
-        if (body != null) service.AddStudent(body);
+        var body = RestIo.ReadBody<StudentDto>(request);
+        service.AddStudent(body);
         return new APIGatewayProxyResponse
         {
             StatusCode = 200,

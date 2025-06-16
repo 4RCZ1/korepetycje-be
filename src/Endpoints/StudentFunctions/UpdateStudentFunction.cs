@@ -9,14 +9,9 @@ public class UpdateStudentFunction
     public static async Task<APIGatewayProxyResponse> UpdateStudent(APIGatewayProxyRequest request)
     {
         var service = await ServiceFactory.CreateStudentServiceAsync();
-        if (request.Body is null)
-        {
-            throw new NullReferenceException("Request body is null");
-        }
-        var externalStudentId = request.PathParameters["studentExternalId"];
-        var student = JsonSerializer.Deserialize<StudentDto>(request.Body);
-        if (student != null)
-            service.UpdateStudent(externalStudentId, student);
+        var externalStudentId = RestIo.GetPathParameter(request, "studentExternalId");
+        var student = RestIo.ReadBody<StudentDto>(request);
+        service.UpdateStudent(externalStudentId, student);
         return new APIGatewayProxyResponse
         {
             StatusCode = 200,

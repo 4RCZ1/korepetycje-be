@@ -44,6 +44,8 @@ public class AddressService : IAddressService
     public void DeleteAddress(string externalAddressId)
     {
         using var t = _transactor.BeginTransaction();
+        if(GetStudentByAddressId(int.Parse(externalAddressId)) is not null)
+            throw new BadRequestException(message: "Address is connected to student and cannot be removed!");
         t.AddressDao.DeleteAddress(int.Parse(externalAddressId));
         t.Commit();
     }
@@ -51,8 +53,6 @@ public class AddressService : IAddressService
     public void UpdateAddress(string externalAddressId, AddressDto address)
     {
         var addressToUpdate = GetAddressById(externalAddressId);
-        if(GetStudentByAddressId(int.Parse(externalAddressId)) is not null)
-            throw new BadRequestException("Address is connected to student and cannot be removed!");
         addressToUpdate.AddressName = address?.AddressName ?? addressToUpdate.AddressName;
         addressToUpdate.AddressData = address?.AddressData ?? addressToUpdate.AddressData;
         var convertedAddress = ConvertToDbAddress(addressToUpdate);
