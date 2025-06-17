@@ -4,14 +4,18 @@ namespace Endpoints.StudentFunctions;
 
 public class DeleteStudentFunction
 {
-    public static async Task<APIGatewayProxyResponse> DeleteStudent(APIGatewayProxyRequest request)
+    public static async Task<APIGatewayProxyResponse> DeleteStudent(
+        APIGatewayProxyRequest request)
     {
-        var service = await ServiceFactory.CreateStudentServiceAsync();
-        var externalStudentId = RestIo.GetPathParameter(request, "studentExternalId");
-        service.DeleteStudent(externalStudentId);
-        return new APIGatewayProxyResponse
+        return await RestIo.HandleRestExceptionsAsync(async () =>
         {
-            StatusCode = 200,
-        };
+            var service = await ServiceFactory.CreateStudentServiceAsync();
+            var externalStudentId = RestIo.GetPathParameter(request, "studentExternalId");
+            service.DeleteStudent(externalStudentId);
+            return new APIGatewayProxyResponse
+            {
+                StatusCode = 200,
+            };
+        });
     }
 }

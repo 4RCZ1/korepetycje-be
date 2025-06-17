@@ -6,14 +6,17 @@ namespace Endpoints.AddressFunctions;
 public class DeleteAddressFunction
 {
     public static async Task<APIGatewayProxyResponse> DeleteAddress(
-        APIGatewayProxyRequest request, ILambdaContext context)
+        APIGatewayProxyRequest request)
     {
-        var service = await ServiceFactory.CreateAddressServiceAsync();
-        var externalAddressId = RestIo.GetPathParameter(request, "externalAddressId");
-        service.DeleteAddress(externalAddressId);
-        return new APIGatewayProxyResponse
+        return await RestIo.HandleRestExceptionsAsync(async () =>
         {
-            StatusCode = 200,
-        };
+            var service = await ServiceFactory.CreateAddressServiceAsync();
+            var externalAddressId = RestIo.GetPathParameter(request, "externalAddressId");
+            service.DeleteAddress(externalAddressId);
+            return new APIGatewayProxyResponse
+            {
+                StatusCode = 200,
+            };
+        });
     }
 }

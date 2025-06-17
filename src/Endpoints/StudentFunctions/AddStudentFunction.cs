@@ -6,15 +6,19 @@ namespace Endpoints.StudentFunctions;
 
 public class AddStudentFunction
 {
-    public static async Task<APIGatewayProxyResponse> AddStudent(APIGatewayProxyRequest request)
+    public static async Task<APIGatewayProxyResponse> AddStudent(
+        APIGatewayProxyRequest request)
     {
-        var service = await ServiceFactory.CreateStudentServiceAsync();
-        var body = RestIo.ReadBody<StudentDto>(request);
-        service.AddStudent(body);
-        return new APIGatewayProxyResponse
+        return await RestIo.HandleRestExceptionsAsync(async () =>
         {
-            StatusCode = 200,
-        };
+            var service = await ServiceFactory.CreateStudentServiceAsync();
+            var body = RestIo.ReadBody<StudentDto>(request);
+            service.AddStudent(body);
+            return new APIGatewayProxyResponse
+            {
+                StatusCode = 200,
+            };
+        });
     }
 
 }

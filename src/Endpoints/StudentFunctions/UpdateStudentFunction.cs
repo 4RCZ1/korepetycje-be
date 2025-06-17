@@ -6,15 +6,19 @@ namespace Endpoints.StudentFunctions;
 
 public class UpdateStudentFunction
 {
-    public static async Task<APIGatewayProxyResponse> UpdateStudent(APIGatewayProxyRequest request)
+    public static async Task<APIGatewayProxyResponse> UpdateStudent(
+        APIGatewayProxyRequest request)
     {
-        var service = await ServiceFactory.CreateStudentServiceAsync();
-        var externalStudentId = RestIo.GetPathParameter(request, "studentExternalId");
-        var student = RestIo.ReadBody<StudentDto>(request);
-        service.UpdateStudent(externalStudentId, student);
-        return new APIGatewayProxyResponse
+        return await RestIo.HandleRestExceptionsAsync(async () =>
         {
-            StatusCode = 200,
-        };
+            var service = await ServiceFactory.CreateStudentServiceAsync();
+            var externalStudentId = RestIo.GetPathParameter(request, "studentExternalId");
+            var student = RestIo.ReadBody<StudentDto>(request);
+            service.UpdateStudent(externalStudentId, student);
+            return new APIGatewayProxyResponse
+            {
+                StatusCode = 200,
+            };
+        });
     }
 }

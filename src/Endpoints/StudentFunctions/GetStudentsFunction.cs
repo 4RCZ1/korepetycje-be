@@ -6,13 +6,16 @@ namespace Endpoints.StudentFunctions;
 public class GetStudentsFunction
 {
     public async Task<APIGatewayProxyResponse> GetStudents(
-        APIGatewayProxyRequest request, ILambdaContext context)
+        APIGatewayProxyRequest request)
     {
-        var service = await ServiceFactory.CreateStudentServiceAsync();
-        string? lessonExternalId = null;
-        if (!request.QueryStringParameters?.TryGetValue("lessonId", out lessonExternalId) ?? true)
-            return RestIo.OkJson(service.GetStudents());
-        var students = service.GetStudents(lessonExternalId);
-        return RestIo.OkJson(students);
+        return await RestIo.HandleRestExceptionsAsync(async () =>
+        {
+            var service = await ServiceFactory.CreateStudentServiceAsync();
+            string? lessonExternalId = null;
+            if (!request.QueryStringParameters?.TryGetValue("lessonId", out lessonExternalId) ?? true)
+                return RestIo.OkJson(service.GetStudents());
+            var students = service.GetStudents(lessonExternalId);
+            return RestIo.OkJson(students);
+        });
     }
 }

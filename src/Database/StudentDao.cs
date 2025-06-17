@@ -24,9 +24,13 @@ public class StudentDao : IStudentDao
     public List<DbStudent> GetStudents(int? lessonId = null)
     {
         if(lessonId is null)
-            return _context.Students.AsNoTracking().ToList();
+            return _context.Students
+                .AsNoTracking()
+                .Include(s => s.Address)
+                .ToList();
         return _context.Students
             .AsNoTracking()
+            .Include(s => s.Address)
             .Where(s =>_context.Attendances
                 .Where(a=>a.LessonId == lessonId)
                 .Select(a=>a.StudentId)

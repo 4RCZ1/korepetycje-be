@@ -1,8 +1,6 @@
 ﻿using Database.Entities;
 using Endpoints.Interfaces;
 using Timetable.Interfaces;
-using Endpoints;
-
 
 namespace Services;
 
@@ -44,7 +42,7 @@ public class AddressService : IAddressService
     public void DeleteAddress(string externalAddressId)
     {
         using var t = _transactor.BeginTransaction();
-        if(GetStudentByAddressId(int.Parse(externalAddressId)) is not null)
+        if(GetStudentByAddressId(int.Parse(externalAddressId), t)?.Any() ?? false)
             throw new BadRequestException(message: "Address is connected to student and cannot be removed!");
         t.AddressDao.DeleteAddress(int.Parse(externalAddressId));
         t.Commit();
@@ -73,9 +71,8 @@ public class AddressService : IAddressService
         };
     }
 
-    private List<DbStudent>? GetStudentByAddressId(int addressId)
+    private List<DbStudent>? GetStudentByAddressId(int addressId, ITransaction t)
     {
-        using var t = _transactor.BeginTransaction();
         var students = t.AddressDao.GetStudents(addressId);
         return students;
     }
