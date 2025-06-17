@@ -2,7 +2,6 @@ using Database.Entities;
 
 namespace Services;
 
-// todo: handle offsets
 public class Scheduler
 {
     public Scheduler(TimeZoneInfo timeZone)
@@ -16,16 +15,18 @@ public class Scheduler
         int periodInDays)
     {
         var result = new List<TimeRange>();
-        var newEvent = firstEvent;
+        var localStart = ConvertToLocalDateTime(firstEvent.Start);
+        var localEnd = ConvertToLocalDateTime(firstEvent.End);
         var period = TimeSpan.FromDays(periodInDays);
-        while (newEvent.Start < seriesEnd)
+        while (ConvertToUtcInstant(localStart) < seriesEnd)
         {
-            result.Add(newEvent);
-            newEvent = new TimeRange
+            result.Add(new TimeRange
             {
-                Start = newEvent.Start + period,
-                End = newEvent.End + period,
-            };
+                Start = ConvertToUtcInstant(localStart),
+                End = ConvertToUtcInstant(localEnd),
+            });
+            localStart += period;
+            localEnd += period;
         }
         return result;
     }
@@ -37,13 +38,25 @@ public class Scheduler
         if (series.Count == 0)
             return [];
         var first = series.First();
-        var startOffset = firstStart - first.Start;
-        var endOffset = firstEnd - first.End;
+        var startOffset = ConvertToLocalDateTime(firstStart) - ConvertToLocalDateTime(first.Start);
+        var endOffset = ConvertToLocalDateTime(firstEnd) - ConvertToLocalDateTime(first.End);
         return series.Select(r => new TimeRange
         {
-            Start = r.Start + startOffset,
-            End = r.End + endOffset,
+            Start = ConvertToUtcInstant(ConvertToLocalDateTime(r.Start) + startOffset),
+            End = ConvertToUtcInstant(ConvertToLocalDateTime(r.End) + endOffset),
         }).ToList();
+    }
+
+    // Here "local" means "belonging to _timeZone".
+    private DateTimeOffset ConvertToUtcInstant(DateTime localTime)
+    {
+        var localTimeWithOffset = new DateTimeOffset(localTime, _timeZone.GetUtcOffset(localTime));
+        return TimeZoneInfo.ConvertTime(localTimeWithOffset, TimeZoneInfo.Utc);
+    }
+
+    private DateTime ConvertToLocalDateTime(DateTimeOffset instant)
+    {
+        return TimeZoneInfo.ConvertTime(instant, _timeZone).DateTime;
     }
 
     private readonly TimeZoneInfo _timeZone;
