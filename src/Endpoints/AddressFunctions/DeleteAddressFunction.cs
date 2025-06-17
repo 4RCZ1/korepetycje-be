@@ -13,10 +13,7 @@ public class DeleteAddressFunction
             var service = await ServiceFactory.CreateAddressServiceAsync();
             var externalAddressId = RestIo.GetPathParameter(request, "externalAddressId");
             service.DeleteAddress(externalAddressId);
-            return new APIGatewayProxyResponse
-            {
-                StatusCode = 200,
-            };
+            return string.Empty;
         });
     }
 }

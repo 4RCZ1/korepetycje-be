@@ -21,10 +21,7 @@ public class UpdateAddressFunction
             var externalAddressId = RestIo.GetPathParameter(request, "externalAddressId");
             var address = RestIo.ReadBody<AddressDto>(request);
             service.UpdateAddress(externalAddressId, address);
-            return new APIGatewayProxyResponse
-            {
-                StatusCode = 200,
-            };
+            return string.Empty;
         });
     }
 

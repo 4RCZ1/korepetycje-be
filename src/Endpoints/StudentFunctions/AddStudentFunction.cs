@@ -14,10 +14,7 @@ public class AddStudentFunction
             var service = await ServiceFactory.CreateStudentServiceAsync();
             var body = RestIo.ReadBody<StudentDto>(request);
             service.AddStudent(body);
-            return new APIGatewayProxyResponse
-            {
-                StatusCode = 200,
-            };
+            return string.Empty;
         });
     }
 

@@ -13,7 +13,7 @@ public class GetAddressFunction
             var service = await ServiceFactory.CreateAddressServiceAsync();
             var addressExternalId = RestIo.GetPathParameter(request, "externalAddressId");
             var address = service.GetAddressById(addressExternalId);
-            return RestIo.OkJson(address);
+            return address;
         });
     }
 }

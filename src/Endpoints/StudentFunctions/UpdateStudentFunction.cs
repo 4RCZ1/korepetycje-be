@@ -15,10 +15,7 @@ public class UpdateStudentFunction
             var externalStudentId = RestIo.GetPathParameter(request, "studentExternalId");
             var student = RestIo.ReadBody<StudentDto>(request);
             service.UpdateStudent(externalStudentId, student);
-            return new APIGatewayProxyResponse
-            {
-                StatusCode = 200,
-            };
+            return string.Empty;
         });
     }
 }

@@ -12,10 +12,7 @@ public class DeleteStudentFunction
             var service = await ServiceFactory.CreateStudentServiceAsync();
             var externalStudentId = RestIo.GetPathParameter(request, "studentExternalId");
             service.DeleteStudent(externalStudentId);
-            return new APIGatewayProxyResponse
-            {
-                StatusCode = 200,
-            };
+            return string.Empty;
         });
     }
 }

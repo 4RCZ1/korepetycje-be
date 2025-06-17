@@ -32,8 +32,8 @@ public class AddressService : IAddressService
         using var t = _transactor.BeginTransaction();
         var addressToAdd =  new DbAddress()
         {
-            AddressName = address?.AddressName ?? string.Empty,
-            AddressData = address?.AddressData ?? string.Empty
+            AddressName = address?.AddressName!,
+            AddressData = address?.AddressData!
         };
         t.AddressDao.SaveAddress(addressToAdd);
         t.Commit();
@@ -42,7 +42,7 @@ public class AddressService : IAddressService
     public void DeleteAddress(string externalAddressId)
     {
         using var t = _transactor.BeginTransaction();
-        if(GetStudentByAddressId(int.Parse(externalAddressId), t)?.Any() ?? false)
+        if(GetStudentsByAddressId(int.Parse(externalAddressId), t)?.Any() ?? false)
             throw new BadRequestException(message: "Address is connected to student and cannot be removed!");
         t.AddressDao.DeleteAddress(int.Parse(externalAddressId));
         t.Commit();
@@ -71,7 +71,7 @@ public class AddressService : IAddressService
         };
     }
 
-    private List<DbStudent>? GetStudentByAddressId(int addressId, ITransaction t)
+    private List<DbStudent?> GetStudentsByAddressId(int addressId, ITransaction t)
     {
         var students = t.AddressDao.GetStudents(addressId);
         return students;

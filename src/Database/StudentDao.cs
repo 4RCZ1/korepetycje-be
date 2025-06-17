@@ -23,7 +23,7 @@ public class StudentDao : IStudentDao
 
     public List<DbStudent> GetStudents(int? lessonId = null)
     {
-        if(lessonId is null)
+        if (lessonId is null)
             return _context.Students
                 .AsNoTracking()
                 .Include(s => s.Address)
@@ -31,9 +31,9 @@ public class StudentDao : IStudentDao
         return _context.Students
             .AsNoTracking()
             .Include(s => s.Address)
-            .Where(s =>_context.Attendances
-                .Where(a=>a.LessonId == lessonId)
-                .Select(a=>a.StudentId)
+            .Where(s => _context.Attendances
+                .Where(a => a.LessonId == lessonId)
+                .Select(a => a.StudentId)
                 .Contains(s.Id))
             .ToList();
     }

@@ -15,10 +15,7 @@ public class AddAddressFunction
             var service = await ServiceFactory.CreateAddressServiceAsync();
             var body = RestIo.ReadBody<AddressDto>(request);
             service.AddAddress(body);
-            return new APIGatewayProxyResponse
-            {
-                StatusCode = 200,
-            };
+            return string.Empty;
         });
     }
 }

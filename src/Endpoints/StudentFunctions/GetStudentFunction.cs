@@ -12,7 +12,7 @@ public class GetStudentFunction
             var service = await ServiceFactory.CreateStudentServiceAsync();
             var studentExternalId = RestIo.GetPathParameter(request, "studentExternalId");
             var student = service.GetStudent(studentExternalId);
-            return RestIo.OkJson(student);
+            return student;
         });
     }
 }
