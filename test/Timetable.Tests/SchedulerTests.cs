@@ -7,21 +7,21 @@ public class SchedulerTests
     [Fact]
     public void PlanSingleEvent()
     {
-        var plan = Scheduler.Plan(FirstEvent, SecondEvent.Start, Weekly);
+        var plan = _scheduler.Plan(FirstEvent, SecondEvent.Start, Weekly);
         Assert.Equivalent(new[] { FirstEvent }, plan, strict: true);
     }
 
     [Fact]
     public void PlanSeries()
     {
-        var plan = Scheduler.Plan(FirstEvent, ThirdEvent.Start + TimeSpan.FromMinutes(5), Weekly);
+        var plan = _scheduler.Plan(FirstEvent, ThirdEvent.Start + TimeSpan.FromMinutes(5), Weekly);
         Assert.Equivalent(new[] { FirstEvent, SecondEvent, ThirdEvent }, plan, strict: true);
     }
 
     [Fact]
     public void PlanNothing()
     {
-        var plan = Scheduler.Plan(FirstEvent, FirstEvent.Start, Weekly);
+        var plan = _scheduler.Plan(FirstEvent, FirstEvent.Start, Weekly);
         Assert.Empty(plan);
     }
 
@@ -29,7 +29,7 @@ public class SchedulerTests
     public void RescheduleSeries()
     {
         var week = TimeSpan.FromDays(7);
-        var series = Scheduler.RescheduleSeries(
+        var series = _scheduler.RescheduleSeries(
             new List<TimeRange> { FirstEvent, ThirdEvent }, NewFirstStart, NewFirstEnd);
         Assert.Equivalent(
             new List<TimeRange>
@@ -42,7 +42,7 @@ public class SchedulerTests
     [Fact]
     public void RescheduleNothing()
     {
-        Assert.Empty(Scheduler.RescheduleSeries([], NewFirstStart, NewFirstEnd));
+        Assert.Empty(_scheduler.RescheduleSeries([], NewFirstStart, NewFirstEnd));
     }
 
     private static readonly DateTimeOffset NewFirstStart = new(2026, 5, 3, 11, 0, 0, TimeSpan.Zero);
@@ -67,4 +67,6 @@ public class SchedulerTests
     };
 
     private const int Weekly = 7;
+
+    private readonly Scheduler _scheduler = new(TimeZoneInfo.Utc);
 }

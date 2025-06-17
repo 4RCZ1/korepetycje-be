@@ -12,7 +12,7 @@ public class EditLessonTests
     {
         A.CallTo(() => _transactor.BeginTransaction()).Returns(_transaction).Once();
         A.CallTo(() => _transaction.LessonDao).Returns(_dao);
-        _service = new TimetableService(_transactor);
+        _service = new TimetableService(_transactor, TimeZoneInfo.Utc);
         A.CallTo(() => _dao.GetLessonById(EditedLessonId)).Returns(new DbLesson
         {
             Id = EditedLessonId,

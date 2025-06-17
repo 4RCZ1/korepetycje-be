@@ -13,9 +13,9 @@ internal static class ServiceFactory
     public static async Task<ITimetableService> CreateTimetableServiceAsync()
     {
         var connection = await Connection;
-        return new TimetableService(new Transactor(connection));
+        return new TimetableService(new Transactor(connection), TimeZoneInfo.Utc);
     }
-    
+
     public static async Task<IAddressService> CreateAddressServiceAsync()
     {
         var connection = await Connection;

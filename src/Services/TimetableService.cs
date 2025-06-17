@@ -7,9 +7,10 @@ namespace Services;
 
 public class TimetableService : ITimetableService
 {
-    public TimetableService(ITransactor transactor)
+    public TimetableService(ITransactor transactor, TimeZoneInfo timeZone)
     {
         _transactor = transactor;
+        _scheduler = new Scheduler(timeZone);
     }
 
     public IList<LessonDto> GetLessons(string startTime, string endTime)
@@ -67,7 +68,7 @@ public class TimetableService : ITimetableService
         string externalAddressId,
         IList<string> externalStudentIds)
     {
-        var plan = Scheduler.Plan(
+        var plan = _scheduler.Plan(
             new TimeRange { Start = firstStart, End = firstEnd },
             scheduleEnd,
             periodInDays);
@@ -154,10 +155,10 @@ public class TimetableService : ITimetableService
         }
     }
 
-    private static ICollection<DbLesson> UpdateLessonTimes(
+    private ICollection<DbLesson> UpdateLessonTimes(
         ICollection<DbLesson> lessons, DateTimeOffset newStartTime, DateTimeOffset newEndTime)
     {
-        var newLessonTimes = Scheduler.RescheduleSeries(
+        var newLessonTimes = _scheduler.RescheduleSeries(
             lessons.Select(l => l.Timeslot.AsRange()).ToList(),
             newStartTime,
             newEndTime);
@@ -223,4 +224,5 @@ public class TimetableService : ITimetableService
     }
 
     private readonly ITransactor _transactor;
+    private readonly Scheduler _scheduler;
 }

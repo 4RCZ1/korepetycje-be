@@ -3,9 +3,14 @@ using Database.Entities;
 namespace Services;
 
 // todo: handle offsets
-public static class Scheduler
+public class Scheduler
 {
-    public static IList<TimeRange> Plan(
+    public Scheduler(TimeZoneInfo timeZone)
+    {
+        _timeZone = timeZone;
+    }
+
+    public IList<TimeRange> Plan(
         TimeRange firstEvent,
         DateTimeOffset seriesEnd,
         int periodInDays)
@@ -26,7 +31,7 @@ public static class Scheduler
     }
 
     // Assumes the input is sorted.
-    public static IList<TimeRange> RescheduleSeries(
+    public IList<TimeRange> RescheduleSeries(
         IList<TimeRange> series, DateTimeOffset firstStart, DateTimeOffset firstEnd)
     {
         if (series.Count == 0)
@@ -40,6 +45,8 @@ public static class Scheduler
             End = r.End + endOffset,
         }).ToList();
     }
+
+    private readonly TimeZoneInfo _timeZone;
 }
 
 public struct TimeRange
