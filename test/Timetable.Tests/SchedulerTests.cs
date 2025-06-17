@@ -29,42 +29,41 @@ public class SchedulerTests
     public void RescheduleSeries()
     {
         var week = TimeSpan.FromDays(7);
-        var firstStart = new DateTime(2026, 5, 3, 11, 0, 0);
-        var firstEnd = new DateTime(2026, 5, 3, 12, 0, 0);
         var series = Scheduler.RescheduleSeries(
-            new List<TimeRange> { FirstEvent, ThirdEvent }, firstStart, firstEnd);
+            new List<TimeRange> { FirstEvent, ThirdEvent }, NewFirstStart, NewFirstEnd);
         Assert.Equivalent(
             new List<TimeRange>
             {
-                new() { Start = firstStart, End = firstEnd },
-                new() { Start = firstStart + 2 * week, End = firstEnd + 2 * week }
+                new() { Start = NewFirstStart, End = NewFirstEnd },
+                new() { Start = NewFirstStart + 2 * week, End = NewFirstEnd + 2 * week }
             }, series, strict: true);
     }
 
     [Fact]
     public void RescheduleNothing()
     {
-        var firstStart = new DateTime(2026, 5, 3, 11, 0, 0);
-        var firstEnd = new DateTime(2026, 5, 3, 12, 0, 0);
-        Assert.Empty(Scheduler.RescheduleSeries(new List<TimeRange>(), firstStart, firstEnd));
+        Assert.Empty(Scheduler.RescheduleSeries([], NewFirstStart, NewFirstEnd));
     }
+
+    private static readonly DateTimeOffset NewFirstStart = new(2026, 5, 3, 11, 0, 0, TimeSpan.Zero);
+    private static readonly DateTimeOffset NewFirstEnd = new(2026, 5, 3, 12, 0, 0, TimeSpan.Zero);
 
     private static readonly TimeRange FirstEvent = new()
     {
-        Start = new DateTime(2025, 5, 3, 11, 0, 0),
-        End = new DateTime(2025, 5, 3, 13, 0, 0),
+        Start = new DateTimeOffset(2025, 5, 3, 11, 0, 0, TimeSpan.Zero),
+        End = new DateTimeOffset(2025, 5, 3, 13, 0, 0, TimeSpan.Zero),
     };
 
     private static readonly TimeRange SecondEvent = new()
     {
-        Start = new DateTime(2025, 5, 10, 11, 0, 0),
-        End = new DateTime(2025, 5, 10, 13, 0, 0),
+        Start = new DateTimeOffset(2025, 5, 10, 11, 0, 0, TimeSpan.Zero),
+        End = new DateTimeOffset(2025, 5, 10, 13, 0, 0, TimeSpan.Zero),
     };
 
     private static readonly TimeRange ThirdEvent = new()
     {
-        Start = new DateTime(2025, 5, 17, 11, 0, 0),
-        End = new DateTime(2025, 5, 17, 13, 0, 0),
+        Start = new DateTimeOffset(2025, 5, 17, 11, 0, 0, TimeSpan.Zero),
+        End = new DateTimeOffset(2025, 5, 17, 13, 0, 0, TimeSpan.Zero),
     };
 
     private const int Weekly = 7;

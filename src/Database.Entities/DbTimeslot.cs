@@ -12,9 +12,9 @@ public class DbTimeslot
 
     [Required]
     [Column("start_time")]
-    public DateTime StartTime { get; set; }
+    public DateTimeOffset StartTime { get; set; }
 
     [Required]
     [Column("end_time")]
-    public DateTime EndTime { get; set; }
+    public DateTimeOffset EndTime { get; set; }
 }

@@ -50,8 +50,8 @@ public class TimeslotDaoConditionTests
                 }));
     }
 
-    private static DateTime Instant(int i)
+    private static DateTimeOffset Instant(int i)
     {
-        return new DateTime(2025, 5, 5, 12, 0, 0) + TimeSpan.FromMinutes(30 * i);
+        return new DateTimeOffset(2025, 5, 5, 12, 0, 0, TimeSpan.Zero) + TimeSpan.FromMinutes(i);
     }
 }

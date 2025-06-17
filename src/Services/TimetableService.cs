@@ -60,9 +60,9 @@ public class TimetableService : ITimetableService
     }
 
     public void PlanLessons(
-        DateTime firstStart,
-        DateTime firstEnd,
-        DateTime scheduleEnd,
+        DateTimeOffset firstStart,
+        DateTimeOffset firstEnd,
+        DateTimeOffset scheduleEnd,
         int periodInDays,
         string externalAddressId,
         IList<string> externalStudentIds)
@@ -96,8 +96,8 @@ public class TimetableService : ITimetableService
 
     public void EditLesson(
         string lessonExternalId,
-        DateTime newStartTime,
-        DateTime newEndTime,
+        DateTimeOffset newStartTime,
+        DateTimeOffset newEndTime,
         bool editFutureLessons)
     {
         using var t = _transactor.BeginTransaction();
@@ -155,7 +155,7 @@ public class TimetableService : ITimetableService
     }
 
     private static ICollection<DbLesson> UpdateLessonTimes(
-        ICollection<DbLesson> lessons, DateTime newStartTime, DateTime newEndTime)
+        ICollection<DbLesson> lessons, DateTimeOffset newStartTime, DateTimeOffset newEndTime)
     {
         var newLessonTimes = Scheduler.RescheduleSeries(
             lessons.Select(l => l.Timeslot.AsRange()).ToList(),
@@ -206,12 +206,12 @@ public class TimetableService : ITimetableService
         return databaseId.ToString();
     }
 
-    private static DateTime ParseDateTime(string s)
+    private static DateTimeOffset ParseDateTime(string s)
     {
-        if (DateTime.TryParse(
+        if (DateTimeOffset.TryParse(
                 s,
                 CultureInfo.InvariantCulture,
-                DateTimeStyles.AdjustToUniversal,
+                DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal,
                 out var time))
         {
             return time;

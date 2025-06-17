@@ -2,9 +2,13 @@ using Database.Entities;
 
 namespace Services;
 
+// todo: handle offsets
 public static class Scheduler
 {
-    public static IList<TimeRange> Plan(TimeRange firstEvent, DateTime seriesEnd, int periodInDays)
+    public static IList<TimeRange> Plan(
+        TimeRange firstEvent,
+        DateTimeOffset seriesEnd,
+        int periodInDays)
     {
         var result = new List<TimeRange>();
         var newEvent = firstEvent;
@@ -23,7 +27,7 @@ public static class Scheduler
 
     // Assumes the input is sorted.
     public static IList<TimeRange> RescheduleSeries(
-        IList<TimeRange> series, DateTime firstStart, DateTime firstEnd)
+        IList<TimeRange> series, DateTimeOffset firstStart, DateTimeOffset firstEnd)
     {
         if (series.Count == 0)
             return [];
@@ -40,8 +44,8 @@ public static class Scheduler
 
 public struct TimeRange
 {
-    public required DateTime Start;
-    public required DateTime End;
+    public required DateTimeOffset Start;
+    public required DateTimeOffset End;
 
     public override string ToString() => $"({Start}, {End})";
 }

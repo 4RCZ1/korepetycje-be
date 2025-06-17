@@ -6,9 +6,9 @@ public class PlanLessonsFunction
 {
     private class PlanLessonsRequestBody
     {
-        public required DateTime FirstStartTime { get; set; }
-        public required DateTime FirstEndTime { get; set; }
-        public required DateTime ScheduleEndTime { get; set; }
+        public required DateTimeOffset FirstStartTime { get; set; }
+        public required DateTimeOffset FirstEndTime { get; set; }
+        public required DateTimeOffset ScheduleEndTime { get; set; }
         public required int PeriodInDays { get; set; }
         public required string AddressId { get; set; }
         public required IList<string> StudentIds { get; set; }

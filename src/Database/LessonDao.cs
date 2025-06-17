@@ -27,14 +27,15 @@ public class LessonDao : ILessonDao
         return _context.Lessons.AsNoTracking().SingleOrDefault(l => l.Id == lessonId);
     }
 
-    public IList<DbLesson> GetLessonsInRange(DateTime startTime, DateTime endTime)
+    public IList<DbLesson> GetLessonsInRange(DateTimeOffset startTime, DateTimeOffset endTime)
     {
         return GetLessons()
             .Where(TimeslotDaoConditions.LessonOverlap(startTime, endTime))
             .ToList();
     }
 
-    public IList<DbLesson> GetStudentLessonsInRange(int studentId, DateTime startTime, DateTime endTime)
+    public IList<DbLesson> GetStudentLessonsInRange(
+        int studentId, DateTimeOffset startTime, DateTimeOffset endTime)
     {
         return GetLessons()
             .Where(lesson => lesson.Attendances.Any(a => a.StudentId == studentId))

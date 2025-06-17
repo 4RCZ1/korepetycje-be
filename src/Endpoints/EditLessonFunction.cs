@@ -4,10 +4,11 @@ namespace Endpoints;
 
 public class EditLessonFunction
 {
+    // todo: document every API change
     private class EditLessonRequestBody
     {
-        public required DateTime StartTime { get; set; }
-        public required DateTime EndTime { get; set; }
+        public required DateTimeOffset StartTime { get; set; }
+        public required DateTimeOffset EndTime { get; set; }
         public required bool EditFutureLessons { get; set; }
     }
 

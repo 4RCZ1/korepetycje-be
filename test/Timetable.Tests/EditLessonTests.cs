@@ -160,10 +160,10 @@ public class EditLessonTests
         return A<IList<int>>.That.IsSameSequenceAs(ids);
     }
 
-    private readonly DateTime _oldStartTime = new(2024, 1, 1, 6, 0, 0);
-    private readonly DateTime _oldEndTime = new(2024, 1, 1, 6, 30, 0);
-    private readonly DateTime _newStartTime = new(2025, 5, 3, 13, 0, 0);
-    private readonly DateTime _newEndTime = new(2025, 5, 3, 14, 0, 0);
+    private readonly DateTimeOffset _oldStartTime = new(2024, 1, 1, 6, 0, 0, TimeSpan.Zero);
+    private readonly DateTimeOffset _oldEndTime = new(2024, 1, 1, 6, 30, 0, TimeSpan.Zero);
+    private readonly DateTimeOffset _newStartTime = new(2025, 5, 3, 13, 0, 0, TimeSpan.Zero);
+    private readonly DateTimeOffset _newEndTime = new(2025, 5, 3, 14, 0, 0, TimeSpan.Zero);
     private readonly TimeSpan _week = TimeSpan.FromDays(7);
     private const int EditedLessonId = 12;
     private const int AddressId = 101;
