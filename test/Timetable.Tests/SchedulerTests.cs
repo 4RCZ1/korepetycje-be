@@ -8,7 +8,7 @@ public class SchedulerTests
     public void PlanSingleEvent()
     {
         var plan = _utcScheduler.Plan(FirstEvent, SecondEvent.Start, Weekly);
-        Assert.Equivalent(new[] { FirstEvent }, plan, strict: true);
+        Assert.Equal([FirstEvent], plan);
     }
 
     [Fact]
@@ -16,7 +16,7 @@ public class SchedulerTests
     {
         var plan = _utcScheduler.Plan(
             FirstEvent, ThirdEvent.Start + TimeSpan.FromMinutes(5), Weekly);
-        Assert.Equivalent(new[] { FirstEvent, SecondEvent, ThirdEvent }, plan, strict: true);
+        Assert.Equal([FirstEvent, SecondEvent, ThirdEvent], plan);
     }
 
     [Fact]
@@ -32,12 +32,12 @@ public class SchedulerTests
         var week = TimeSpan.FromDays(7);
         var series = _utcScheduler.RescheduleSeries(
             new List<TimeRange> { FirstEvent, ThirdEvent }, NewFirstStart, NewFirstEnd);
-        Assert.Equivalent(
+        Assert.Equal(
             new List<TimeRange>
             {
                 new() { Start = NewFirstStart, End = NewFirstEnd },
                 new() { Start = NewFirstStart + 2 * week, End = NewFirstEnd + 2 * week }
-            }, series, strict: true);
+            }, series);
     }
 
     [Fact]
