@@ -62,7 +62,7 @@ public static class RestIo
         return parameter;
     }
 
-    public static APIGatewayProxyResponse OkJson(Object objectToSerialize)
+    private static APIGatewayProxyResponse OkJson(Object objectToSerialize)
     {
         return new APIGatewayProxyResponse
         {

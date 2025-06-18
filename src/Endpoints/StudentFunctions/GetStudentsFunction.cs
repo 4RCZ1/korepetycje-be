@@ -1,5 +1,4 @@
 ﻿using Amazon.Lambda.APIGatewayEvents;
-using Amazon.Lambda.Core;
 
 namespace Endpoints.StudentFunctions;
 
@@ -11,11 +10,9 @@ public class GetStudentsFunction
         return await RestIo.HandleRestExceptionsAsync(async () =>
         {
             var service = await ServiceFactory.CreateStudentServiceAsync();
-            string? lessonExternalId = null;
-            if (!request.QueryStringParameters?.TryGetValue("lessonId", out lessonExternalId) ?? true)
-                return RestIo.OkJson(service.GetStudents());
-            var students = service.GetStudents(lessonExternalId);
-            return RestIo.OkJson(students);
+            if (request.QueryStringParameters.TryGetValue("lessonId", out var lessonExternalId))
+                return service.GetStudents(lessonExternalId);
+            return service.GetStudents();
         });
     }
 }
