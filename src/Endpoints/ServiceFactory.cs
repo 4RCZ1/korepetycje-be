@@ -13,7 +13,8 @@ internal static class ServiceFactory
     public static async Task<ITimetableService> CreateTimetableServiceAsync()
     {
         var connection = await Connection;
-        return new TimetableService(new Transactor(connection), TimeZoneInfo.Utc);
+        var timeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Warsaw");
+        return new TimetableService(new Transactor(connection), timeZone);
     }
 
     public static async Task<IAddressService> CreateAddressServiceAsync()
