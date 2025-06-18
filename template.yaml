@@ -28,6 +28,12 @@ Parameters:
     Type: String
     Default: "prod/dbhost"
     Description: ARN of the host secret for production environment
+  DevCognitoData:
+    Type: String
+    Default: "dev/cognito"
+  ProdCognitoData:
+    Type: String
+    Default: "prod/cognito"
 
 Conditions:
   IsDevOrFeature: !Or
@@ -83,6 +89,73 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
                     - IsDevOrFeature
                     - !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${DevHostSecretArn}*"
                     - !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${ProdHostSecretArn}*"
+                  - !If
+                    - IsDevOrFeature
+                    - !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${DevCognitoData}*"
+                    - !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${ProdCognitoData}*"
+
+  RegisterStudentFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/Endpoints/
+      Handler: Endpoints::Endpoints.Authentication.RegisterStudentFunction::RegisterStudent
+      Runtime: dotnet8
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Environment:
+        Variables:
+          ENVIRONMENT: !Ref Environment
+      Events:
+        GetLessons:
+          Type: Api
+          Properties:
+            Path: /api/auth/register-student
+            Method: post
+            RestApiId: !Ref KorepetycjeApi
+
+  LogInFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/Endpoints/
+      Handler: Endpoints::Endpoints.Authentication.LogInFunction::LogIn
+      Runtime: dotnet8
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Environment:
+        Variables:
+          ENVIRONMENT: !Ref Environment
+      Events:
+        GetLessons:
+          Type: Api
+          Properties:
+            Path: /api/auth/log-in
+            Method: post
+            RestApiId: !Ref KorepetycjeApi
+
+  ChangePasswordFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/Endpoints/
+      Handler: Endpoints::Endpoints.Authentication.ChangePasswordFunction::ChangePassword
+      Runtime: dotnet8
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Environment:
+        Variables:
+          ENVIRONMENT: !Ref Environment
+      Events:
+        GetLessons:
+          Type: Api
+          Properties:
+            Path: /api/auth/change-password
+            Method: post
+            RestApiId: !Ref KorepetycjeApi
 
   GetLessonsFunction:
     Type: AWS::Serverless::Function

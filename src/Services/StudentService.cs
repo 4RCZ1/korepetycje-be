@@ -11,7 +11,7 @@ public class StudentService : IStudentService
         _transactor = transactor;
     }
 
-    public void AddStudent(StudentDto studentToAdd)
+    public string AddStudent(StudentDto studentToAdd)
     {
         DbAddress? addressToAdd = null;
         using var t = _transactor.BeginTransaction();
@@ -27,9 +27,10 @@ public class StudentService : IStudentService
                 AddressData = studentToAdd?.Address?.AddressData ?? "Uzupełnij dane"
             }
         };
-        
+
         t.StudentDao.SaveStudent(student);
         t.Commit();
+        return student.Id.ToString(); // Reading IDs of saved entities is specific to EF Core.
     }
 
     public StudentDto GetStudent(string studentExternalId)
@@ -51,7 +52,7 @@ public class StudentService : IStudentService
             }
         };
     }
-    
+
     public List<StudentDto> GetStudents(string? lessonExternalId = null)
     {
         using var t = _transactor.BeginTransaction();
@@ -92,12 +93,12 @@ public class StudentService : IStudentService
         var studentToUpdate = t.StudentDao.GetStudent(studentId);
         if (studentToUpdate is null)
             throw new BadRequestException("No student found.");
-        studentToUpdate.Name = String.IsNullOrEmpty(student.Name) 
+        studentToUpdate.Name = String.IsNullOrEmpty(student.Name)
            ? studentToUpdate.Name : student.Name;
-        studentToUpdate.Surname = String.IsNullOrEmpty(student.Surname) 
+        studentToUpdate.Surname = String.IsNullOrEmpty(student.Surname)
             ? studentToUpdate.Surname : student.Surname;
         DbAddress? addressToUpdate = null;
-        //if the address id is included in the request body, the address will be updated, 
+        //if the address id is included in the request body, the address will be updated,
         //if it is not included, a new address will be created
         if(int.TryParse(student?.Address?.ExternalId, out var addressId))
             addressToUpdate = t.AddressDao.GetAddress(addressId);
@@ -114,10 +115,10 @@ public class StudentService : IStudentService
         {
             studentToUpdate.Address = new DbAddress
             {
-                AddressData = String.IsNullOrEmpty(student?.Address?.AddressData) 
+                AddressData = String.IsNullOrEmpty(student?.Address?.AddressData)
                     ? studentToUpdate.Address!.AddressData : student.Address.AddressData,
-                AddressName = String.IsNullOrEmpty(student?.Address?.AddressName) 
-                    ? studentToUpdate.Address!.AddressName : student.Address.AddressName, 
+                AddressName = String.IsNullOrEmpty(student?.Address?.AddressName)
+                    ? studentToUpdate.Address!.AddressName : student.Address.AddressName,
             };
         }
         t.StudentDao.SaveStudent(studentToUpdate);

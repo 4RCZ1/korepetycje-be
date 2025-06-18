@@ -1,7 +1,9 @@
 using System.Text.Json;
 using Amazon;
+using Amazon.CognitoIdentityProvider;
 using Amazon.SecretsManager;
 using Amazon.SecretsManager.Model;
+using Authentication;
 using Database;
 using Endpoints.Interfaces;
 using Services;
@@ -10,6 +12,15 @@ namespace Endpoints;
 
 internal static class ServiceFactory
 {
+    public static async Task<IAuthenticationService> CreateAuthenticationService()
+    {
+        var cognitoSecret = await GetSecretAsync("dev/cognito");
+        return new AuthenticationService(
+            cognitoSecret["user_pool_id"],
+            cognitoSecret["client_app_id"],
+            cognitoSecret["client_app_secret"]);
+    }
+
     public static async Task<ITimetableService> CreateTimetableServiceAsync()
     {
         var connection = await Connection;
@@ -45,7 +56,7 @@ internal static class ServiceFactory
                $"User Id={usernamePassword["username"]};Password={usernamePassword["password"]}";
     }
 
-    private static async Task<IDictionary<string, string>> GetSecretAsync(string secretName)
+    public static async Task<IDictionary<string, string>> GetSecretAsync(string secretName)
     {
         const string region = "eu-central-1";
 

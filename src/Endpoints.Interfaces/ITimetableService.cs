@@ -1,9 +1,13 @@
+using Endpoints.Interfaces.Authorization;
+
 namespace Endpoints.Interfaces;
 
 public interface ITimetableService
 {
-    IList<LessonDto> GetLessons(string startTime, string endTime);
-    IList<LessonDto> GetStudentLessons(string studentExternalId, string startTime, string endTime);
+    IList<LessonDto> GetLessons(string startTime, string endTime, TutorRole role);
+    IList<LessonDto> GetStudentLessons(
+        string studentExternalId, string startTime, string endTime, TutorRole role);
+    IList<LessonDto> GetLessonsAsStudent(string startTime, string endTime, StudentRole role);
     void PlanLessons(
         DateTimeOffset firstStart,
         DateTimeOffset firstEnd,

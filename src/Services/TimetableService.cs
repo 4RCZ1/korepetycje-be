@@ -1,6 +1,7 @@
 using System.Globalization;
 using Database.Entities;
 using Endpoints.Interfaces;
+using Endpoints.Interfaces.Authorization;
 using Timetable.Interfaces;
 
 namespace Services;
@@ -13,44 +14,70 @@ public class TimetableService : ITimetableService
         _scheduler = new Scheduler(timeZone);
     }
 
-    public IList<LessonDto> GetLessons(string startTime, string endTime)
+    public IList<LessonDto> GetLessons(string startTime, string endTime, TutorRole role)
     {
         using var t = _transactor.BeginTransaction();
         return t.LessonDao.GetLessonsInRange(ParseDateTime(startTime), ParseDateTime(endTime))
-            .Select(lesson => new LessonDto
-            {
-                LessonId = EncodeExternalId(lesson.Id),
-                StartTime = lesson.Timeslot.StartTime,
-                EndTime = lesson.Timeslot.EndTime,
-                Address = lesson.Schedule!.Address!.AddressData,
-                Description = lesson.TutorInfo ?? string.Empty,
-                Attendances = ConvertAttendancesToDtos(lesson.Attendances),
-            }).ToList();
+            .Select(ConvertLessonToDtoForTutor)
+            .ToList();
     }
 
     public IList<LessonDto> GetStudentLessons(
         string studentExternalId,
         string startTime,
-        string endTime)
+        string endTime,
+        TutorRole role)
     {
         using var t = _transactor.BeginTransaction();
         return t.LessonDao.GetStudentLessonsInRange(
                 DecodeExternalId(studentExternalId),
                 ParseDateTime(startTime),
                 ParseDateTime(endTime))
-            .Select(lesson => new LessonDto
-            {
-                LessonId = EncodeExternalId(lesson.Id),
-                StartTime = lesson.Timeslot.StartTime,
-                EndTime = lesson.Timeslot.EndTime,
-                Address = lesson.Schedule!.Address!.AddressData,
-                Description = string.Empty,
-                Attendances = ConvertAttendancesToDtos(lesson.Attendances),
-            }).ToList();
+            .Select(ConvertLessonToDtoForTutor)
+            .ToList();
+    }
+
+    private static LessonDto ConvertLessonToDtoForTutor(DbLesson lesson)
+    {
+        return new LessonDto
+        {
+            LessonId = EncodeExternalId(lesson.Id),
+            StartTime = lesson.Timeslot.StartTime,
+            EndTime = lesson.Timeslot.EndTime,
+            Address = lesson.Schedule!.Address!.AddressData,
+            Description = lesson.TutorInfo ?? string.Empty,
+            Attendances = ConvertAttendancesToDtos(lesson.Attendances),
+        };
+    }
+
+    public IList<LessonDto> GetLessonsAsStudent(string startTime, string endTime, StudentRole role)
+    {
+        using var t = _transactor.BeginTransaction();
+        var studentId = DecodeExternalId(role.ExternalStudentId);
+        return t.LessonDao.GetStudentLessonsInRange(
+                studentId,
+                ParseDateTime(startTime),
+                ParseDateTime(endTime))
+            .Select(l => ConvertLessonToDtoForStudent(studentId, l))
+            .ToList();
+    }
+
+    private static LessonDto ConvertLessonToDtoForStudent(int studentId, DbLesson lesson)
+    {
+        return new LessonDto
+        {
+            LessonId = EncodeExternalId(lesson.Id),
+            StartTime = lesson.Timeslot.StartTime,
+            EndTime = lesson.Timeslot.EndTime,
+            Address = lesson.Schedule!.Address!.AddressData,
+            Description = string.Empty,
+            Attendances = ConvertAttendancesToDtos(
+                lesson.Attendances.Where(a => a.StudentId == studentId)),
+        };
     }
 
     private static IList<AttendanceDto> ConvertAttendancesToDtos(
-        ICollection<DbAttendance> attendances)
+        IEnumerable<DbAttendance> attendances)
     {
         return attendances.Select(a => new AttendanceDto
         {

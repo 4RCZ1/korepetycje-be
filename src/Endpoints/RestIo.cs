@@ -3,6 +3,7 @@ using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.Serialization.SystemTextJson;
 using Endpoints.Interfaces;
+using Endpoints.Interfaces.Authorization;
 
 [assembly: LambdaSerializer(typeof(CamelCaseLambdaJsonSerializer))]
 
@@ -26,6 +27,16 @@ public static class RestIo
                 Headers = Headers("text/plain"),
             };
         }
+        catch (AuthException e)
+        {
+            Console.WriteLine(e);
+            return new APIGatewayProxyResponse
+            {
+                Body = "Forbidden",
+                StatusCode = 403,
+                Headers = Headers("text/plain"),
+            };
+        }
     }
 
     public static T ReadBody<T>(APIGatewayProxyRequest request)
@@ -43,6 +54,17 @@ public static class RestIo
             Console.WriteLine(e);
             throw new BadRequestException(InvalidBodyMessage);
         }
+    }
+
+    public static string ReadToken(APIGatewayProxyRequest request)
+    {
+        const string prefix = "Bearer ";
+        if (!request.Headers.TryGetValue("Authorization", out var authHeader)
+            || !authHeader.StartsWith(prefix))
+        {
+            throw new BadRequestException("Invalid Authorization header.");
+        }
+        return authHeader[prefix.Length..];
     }
 
     public static string GetQueryParameter(APIGatewayProxyRequest request, string name)
