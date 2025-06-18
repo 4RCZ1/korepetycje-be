@@ -15,7 +15,7 @@ public class AddressDao : IAddressDao
     {
         return _context.Addresses.AsNoTracking().SingleOrDefault(x => x.Id == addressId);
     }
-    
+
     public void SaveAddress(DbAddress address)
     {
         _context.Addresses.Update(address);
@@ -28,11 +28,11 @@ public class AddressDao : IAddressDao
             _context.Addresses.Remove(addressToDelete);
     }
 
-    public List<DbStudent?> GetStudents(int addressId)
+    public List<DbStudent> GetStudents(int addressId)
     {
         return _context.Students.AsNoTracking().Where(x => x.AddressId == addressId).ToList();
     }
-    
+
     private readonly OurDbContext _context;
 
 

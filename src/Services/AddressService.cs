@@ -10,13 +10,11 @@ public class AddressService : IAddressService
     {
         _transactor = transactor;
     }
-    
+
     public AddressDto GetAddressById(string addressExternalId)
     {
         using var t = _transactor.BeginTransaction();
-        var address = t.AddressDao.GetAddress(int.Parse(addressExternalId));
-        if (address is null)
-            throw new BadRequestException("Address does not exist");
+        var address = GetExistingAddress(int.Parse(addressExternalId), t);
         return new AddressDto()
         {
             ExternalId = address?.Id.ToString(),
@@ -30,10 +28,10 @@ public class AddressService : IAddressService
         if(String.IsNullOrEmpty(address.AddressName)||String.IsNullOrEmpty(address.AddressData))
             throw new BadRequestException("All address details are required");
         using var t = _transactor.BeginTransaction();
-        var addressToAdd =  new DbAddress()
+        var addressToAdd = new DbAddress()
         {
-            AddressName = address?.AddressName!,
-            AddressData = address?.AddressData!
+            AddressName = address.AddressName!,
+            AddressData = address.AddressData!
         };
         t.AddressDao.SaveAddress(addressToAdd);
         t.Commit();
@@ -42,8 +40,8 @@ public class AddressService : IAddressService
     public void DeleteAddress(string externalAddressId)
     {
         using var t = _transactor.BeginTransaction();
-        if(GetStudentsByAddressId(int.Parse(externalAddressId), t)?.Any() ?? false)
-            throw new BadRequestException(message: "Address is connected to student and cannot be removed!");
+        if (GetStudentsByAddressId(int.Parse(externalAddressId), t).Any())
+            throw new BadRequestException("Address is connected to student and cannot be removed!");
         t.AddressDao.DeleteAddress(int.Parse(externalAddressId));
         t.Commit();
     }
@@ -51,8 +49,8 @@ public class AddressService : IAddressService
     public void UpdateAddress(string externalAddressId, AddressDto address)
     {
         var addressToUpdate = GetAddressById(externalAddressId);
-        addressToUpdate.AddressName = address?.AddressName ?? addressToUpdate.AddressName;
-        addressToUpdate.AddressData = address?.AddressData ?? addressToUpdate.AddressData;
+        addressToUpdate.AddressName = address.AddressName ?? addressToUpdate.AddressName;
+        addressToUpdate.AddressData = address.AddressData ?? addressToUpdate.AddressData;
         var convertedAddress = ConvertToDbAddress(addressToUpdate);
         using var t = _transactor.BeginTransaction();
         t.AddressDao.SaveAddress(convertedAddress);
@@ -71,11 +69,16 @@ public class AddressService : IAddressService
         };
     }
 
-    private List<DbStudent?> GetStudentsByAddressId(int addressId, ITransaction t)
+    private static DbAddress GetExistingAddress(int addressId, ITransaction t)
     {
-        var students = t.AddressDao.GetStudents(addressId);
-        return students;
+        return t.AddressDao.GetAddress(addressId) ??
+               throw new BadRequestException("Address does not exist");
     }
-    
+
+    private List<DbStudent> GetStudentsByAddressId(int addressId, ITransaction t)
+    {
+        return t.AddressDao.GetStudents(addressId);
+    }
+
     private readonly ITransactor _transactor;
 }
