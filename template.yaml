@@ -269,7 +269,7 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
         GetLessons:
           Type: Api
           Properties:
-            Path: /api/address/{addressExternalId}
+            Path: /api/address/{externalAddressId}
             Method: get
   AddAddress:
     Type: AWS::Serverless::Function
