@@ -3,8 +3,8 @@ Encje:
 public class LessonDto
 {
     public required string LessonId { get; set; }
-    public required DateTime StartTime { get; set; }
-    public required DateTime EndTime { get; set; }
+    public required DateTimeOffset StartTime { get; set; }
+    public required DateTimeOffset EndTime { get; set; }
     public required string Address { get; set; } // todo: replace with DTO
     public required string Description { get; set; }
     public required IList<AttendanceDto> Attendances { get; set; }
@@ -39,16 +39,30 @@ Zwraca listę LessonDto.
 Może zwrócić:
 [
     {
-        "lessonId": "501",
-        "startTime": "2025-06-14T08:39:04.254313Z",
-        "endTime": "2025-06-14T09:39:04.254313Z",
-        "address": "adres testowy",
-        "description": "info info",
+        "lessonId": "1",
+        "startTime": "2025-02-02T12:00:00+00:00",
+        "endTime": "2025-02-02T14:00:00+00:00",
+        "address": "ul. Jakaśtam",
+        "description": "",
         "attendances": [
             {
-                "studentName": "Jan",
-                "studentSurname": "Kowalski",
-                "confirmed": false
+                "studentName": "aaa",
+                "studentSurname": "qqqqq",
+                "confirmed": null
+            }
+        ]
+    },
+    {
+        "lessonId": "2",
+        "startTime": "2025-02-09T12:00:00+00:00",
+        "endTime": "2025-02-09T14:00:00+00:00",
+        "address": "ul. Jakaśtam",
+        "description": "",
+        "attendances": [
+            {
+                "studentName": "aaa",
+                "studentSurname": "qqqqq",
+                "confirmed": null
             }
         ]
     }
@@ -69,9 +83,9 @@ posiadający body:
 Schemat body:
 private class PlanLessonsRequestBody
 {
-    public required DateTime FirstStartTime { get; set; }
-    public required DateTime FirstEndTime { get; set; }
-    public required DateTime ScheduleEndTime { get; set; }
+    public required DateTimeOffset FirstStartTime { get; set; }
+    public required DateTimeOffset FirstEndTime { get; set; }
+    public required DateTimeOffset ScheduleEndTime { get; set; }
     public required int PeriodInDays { get; set; }
     public required string AddressId { get; set; }
     public required IList<string> StudentIds { get; set; }
@@ -118,8 +132,8 @@ Request body:
 Schemat request body:
 private class EditLessonRequestBody
 {
-    public required DateTime StartTime { get; set; }
-    public required DateTime EndTime { get; set; }
+    public required DateTimeOffset StartTime { get; set; }
+    public required DateTimeOffset EndTime { get; set; }
     public required bool EditFutureLessons { get; set; }
 }
 

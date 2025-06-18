@@ -4,7 +4,6 @@ namespace Endpoints;
 
 public class EditLessonFunction
 {
-    // todo: document every API change
     private class EditLessonRequestBody
     {
         public required DateTimeOffset StartTime { get; set; }
