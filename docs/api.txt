@@ -128,13 +128,13 @@ ___________
 STUDENT
 Pobieranie ucznia po ID:
 GET /api/student/{studentExternalId}
-GET /api/student/{studentExternalId}?includeDeleted=True - z uwzględnieniem usuniętych
+GET /api/student/{studentExternalId}?includeDeleted=True - z uwzględnieniem usuniętych (jeszcze nie ma na devie)
 Zwraca: StudentDTO
 
 Pobieranie uczniów:
 GET /api/student - dla pobrania wszystkich uczniów
 GET /api/student?lessonId=1 - dla pobrania uczniów powiązanych z lekcją o ID 1
-GET /api/student?includeDeleted=True  - z uwzględnieniem usuniętych
+GET /api/student?includeDeleted=True  - z uwzględnieniem usuniętych (jeszcze nie ma na devie)
 Zwraca: Listę StudentDto
 
 Tworzenie ucznia:
@@ -195,8 +195,36 @@ W sytuacji poniższej:
 }
 Zostanie utworzony nowy adres, a "AddressData" zostanie skopiowane z dotychczasowego adresu ucznia
 Zwraca: kod sukcesu/błędu
+
+Usuwanie ucznia:
+/api/student/{studentExternalId}
+Zwraca: kod sukcesu/błędu
 _________
 ADDRESS
 Pobieranie adresu:
 GET /api/address/{addressExternalId}
 Zwraca: AddressDto
+
+Dodawanie adresu:
+POST /api/address
+Schemat request body:
+{
+    "AddressName": "NowaNazwa",
+    "AddressData": "NowyAdres"
+}
+Zwraca: kod sukcesu/błędu
+
+Usuwanie adresu:
+DELETE api/address/{externalAddressId}
+Rzuca błąd, jeśli istnieje student powiązany z adresem
+Zwraca: kod sukcesu/błędu
+
+Update adresu:
+PATCH /api/address/{externalAddressId}
+Schemat request body:
+{
+    "AddressName": "NazwaNowegoAdresu"
+}
+Zwraca: kod sukcesu/błędu
+
+TODO/in progress: pobieranie wszystkich adresów
