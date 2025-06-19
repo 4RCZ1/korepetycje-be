@@ -10,7 +10,8 @@ public class GetStudentsFunction
         return await RestIo.HandleRestExceptionsAsync(async () =>
         {
             var service = await ServiceFactory.CreateStudentServiceAsync();
-            if (request.QueryStringParameters.TryGetValue("lessonId", out var lessonExternalId))
+            var lessonExternalId = RestIo.GetOptionalQueryParameter(request, "lessonId");
+            if (lessonExternalId is not null)
                 return service.GetStudents(lessonExternalId);
             return service.GetStudents();
         });

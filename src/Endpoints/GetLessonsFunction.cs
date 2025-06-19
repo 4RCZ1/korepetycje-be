@@ -9,9 +9,8 @@ public class GetLessonsFunction
         return RestIo.HandleRestExceptionsAsync(async () =>
         {
             var service = await ServiceFactory.CreateTimetableServiceAsync();
-            if (request.QueryStringParameters.TryGetValue(
-                    "studentId",
-                    out var studentExternalId))
+            var studentExternalId = RestIo.GetOptionalQueryParameter(request, "studentId");
+            if (studentExternalId is not null)
             {
                 return service.GetStudentLessons(
                     studentExternalId,

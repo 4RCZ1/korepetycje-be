@@ -47,8 +47,16 @@ public static class RestIo
 
     public static string GetQueryParameter(APIGatewayProxyRequest request, string name)
     {
+        return GetOptionalQueryParameter(request, name) ??
+               throw new BadRequestException($"Missing query parameter: {name}");
+    }
+
+    public static string? GetOptionalQueryParameter(APIGatewayProxyRequest request, string name)
+    {
+        if (request.QueryStringParameters is null)
+            return null;
         if (!request.QueryStringParameters.TryGetValue(name, out var parameter))
-            throw new BadRequestException($"Missing query parameter: {name}");
+            return null;
         return parameter;
     }
 
