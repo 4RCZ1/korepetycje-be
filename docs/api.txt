@@ -32,6 +32,14 @@ public class AddressDto
     public string? AddressData { get; set; }
 }
 
+public class LessonSuggestionDto
+{
+    public string ExternalId { get; set; }
+    public DateTime SuggestedStart { get; set; }
+    public DateTime SuggestedEnd { get; set; }
+    public string? LessonId { get; set; }
+}
+
 
 Pobieranie lekcji:
 GET http://localhost:3000/api/lesson?startTime=2025-01-01T12:00:00.0000000Z&endTime=2026-01-01T12:00:00.0000000Z
@@ -157,6 +165,7 @@ Możliwe schematy Request Body :
 {
     "Name": "Basia",
     "Surname": "Be",
+    "PhoneNumber": "123456",
     "Address": {
         "ExternalId": "2"
     }
@@ -165,6 +174,7 @@ Powyższe utworzy ucznia przypisując do niego istniejący już adres o ID 2
 {
     "Name": "x",
     "Surname": "y",
+    "PhoneNumber": "123456",
     "Address": {
         "AddressName": "nowy",
         "AddressData": "ulica"
@@ -179,6 +189,7 @@ Możliwe schematy request body:
 {
     "Name": "x",
     "Surname": "y",
+    "PhoneNumber": "123456",
     "Address": {
         "AddressName": "nowy",
         "AddressData": "ulica"
@@ -219,6 +230,10 @@ Pobieranie adresu:
 GET /api/address/{addressExternalId}
 Zwraca: AddressDto
 
+Pobieranie wszystkich adresów:
+GET /api/address
+Zwraca: Listę AddressDto
+
 Dodawanie adresu:
 POST /api/address
 Schemat request body:
@@ -240,5 +255,21 @@ Schemat request body:
     "AddressName": "NazwaNowegoAdresu"
 }
 Zwraca: kod sukcesu/błędu
+__________
+LESSON SUGGESTION
+Tworzenie Lesson suggestion:
+Dodawanie adresu:
+POST /api/lesson-suggestion
+Możliwe schematy request body:
+{
+    "SuggestedStart": "2026-03-02T12:00:00.0000000Z",
+    "SuggestedEnd": "2026-03-02T14:00:00.0000000Z",
+    "LessonId": "29"
+}
+{
+    "SuggestedStart": "2026-03-02T12:00:00.0000000Z",
+    "SuggestedEnd": "2026-03-02T14:00:00.0000000Z"
+}
+Zwraca: kod sukcesu/błędu
 
-TODO/in progress: pobieranie wszystkich adresów
+
