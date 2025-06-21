@@ -48,6 +48,10 @@ public class TimeslotDaoConditionTests
                 {
                     Timeslot = new DbTimeslot { StartTime = s2, EndTime = e2 }
                 }));
+        Assert.Equal(overlapExpected,
+            TimeslotDaoConditions.TimeslotOverlap(new DbTimeslot { StartTime = s1, EndTime = e1 })
+                .Compile()
+                .Invoke(new DbTimeslot { StartTime = s2, EndTime = e2 }));
     }
 
     private static DateTimeOffset Instant(int i)

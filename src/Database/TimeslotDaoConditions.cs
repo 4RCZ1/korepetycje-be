@@ -10,4 +10,9 @@ public static class TimeslotDaoConditions
     {
         return lesson => lesson.Timeslot.StartTime < end && start < lesson.Timeslot.EndTime;
     }
+
+    public static Expression<Func<DbTimeslot, bool>> TimeslotOverlap(DbTimeslot ts1)
+    {
+        return ts2 => ts2.StartTime < ts1.EndTime && ts1.StartTime < ts2.EndTime;
+    }
 }

@@ -76,14 +76,21 @@ public class LessonDao : ILessonDao
     public void CreateSchedule(DbSchedule schedule)
     {
         var timeslotsToTake = schedule.Lessons.Select(l => l.Timeslot).ToList();
-        var timeslotsTaken = _context.Timeslots
-            .AsNoTracking()
-            .ToList();
-
-        if (IsTermTaken(timeslotsToTake, timeslotsTaken))
+        if (DetectCollisions(timeslotsToTake))
             throw new ApplicationException("There are colliding lessons!");
-
         _context.Add(schedule);
+    }
+
+    private bool DetectCollisions(List<DbTimeslot> newTimeslots)
+    {
+        var deletedTimeslotIds = _context.ChangeTracker.Entries<DbTimeslot>()
+            .Where(entry => entry.State == EntityState.Deleted)
+            .Select(entry => entry.Entity.Id)
+            .ToList();
+        return newTimeslots.Any(nts => _context.Timeslots
+            .AsNoTracking()
+            .Where(ts => !deletedTimeslotIds.Contains(ts.Id))
+            .Any(TimeslotDaoConditions.TimeslotOverlap(nts)));
     }
 
     private static bool IsTermTaken(List<DbTimeslot> tsToTake, List<DbTimeslot> tsTaken)
