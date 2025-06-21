@@ -1,5 +1,6 @@
 using Database.Entities;
 using Endpoints.Interfaces;
+using Endpoints.Interfaces.Authorization;
 using FakeItEasy;
 using Services;
 using Timetable.Interfaces;
@@ -26,7 +27,7 @@ public class EditLessonTests
     {
         A.CallTo(() => _dao.GetScheduleById(ScheduleId))
             .Returns(ScheduleWith([LessonToday, LessonInAWeek]));
-        _service.EditLesson("12", _newStartTime, _newEndTime, false);
+        _service.EditLesson("12", _newStartTime, _newEndTime, false, _role);
         A.CallTo(() => _dao.RemoveLessonsCascading(Ids(EditedLessonId)))
             .MustHaveHappenedOnceExactly();
         A.CallTo(() => _dao.CreateSchedule(A<DbSchedule>.That.Matches(
@@ -43,7 +44,7 @@ public class EditLessonTests
     {
         A.CallTo(() => _dao.GetScheduleById(ScheduleId))
             .Returns(ScheduleWith([LessonToday, LessonInAWeek]));
-        _service.EditLesson("12", _newStartTime, _newEndTime, true);
+        _service.EditLesson("12", _newStartTime, _newEndTime, true, _role);
         A.CallTo(() => _dao.RemoveLessonsCascading(Ids(12, 13)))
             .MustHaveHappenedOnceExactly();
         A.CallTo(() => _dao.CreateSchedule(A<DbSchedule>.That.Matches(s =>
@@ -61,7 +62,7 @@ public class EditLessonTests
     {
         A.CallTo(() => _dao.GetScheduleById(ScheduleId))
             .Returns(ScheduleWith([LessonWeekAgo, LessonToday, LessonInAWeek]));
-        _service.EditLesson("12", _newStartTime, _newEndTime, true);
+        _service.EditLesson("12", _newStartTime, _newEndTime, true, _role);
         A.CallTo(() => _dao.RemoveLessonsCascading(Ids(12, 13)))
             .MustHaveHappenedOnceExactly();
         A.CallTo(() => _dao.CreateSchedule(A<DbSchedule>.That.Matches(s =>
@@ -76,7 +77,7 @@ public class EditLessonTests
     public void ThrowForNonexistentLesson()
     {
         A.CallTo(() => _dao.GetLessonById(10101)).Returns(null);
-        var action = () => _service.EditLesson("10101", _newStartTime, _newEndTime, false);
+        var action = () => _service.EditLesson("10101", _newStartTime, _newEndTime, false, _role);
         Assert.Throws<BadRequestException>(action);
     }
 
@@ -85,7 +86,7 @@ public class EditLessonTests
     {
         A.CallTo(() => _dao.GetScheduleById(ScheduleId))
             .Returns(ScheduleWith([LessonWeekAgo, LessonToday, LessonInAWeek]));
-        _service.DeleteLesson("12", false);
+        _service.DeleteLesson("12", false, _role);
         A.CallTo(() => _dao.RemoveLessonsCascading(Ids(EditedLessonId)))
             .MustHaveHappenedOnceExactly();
         A.CallTo(() => _dao.RemoveEmptySchedules()).MustHaveHappenedOnceExactly();
@@ -97,7 +98,7 @@ public class EditLessonTests
     {
         A.CallTo(() => _dao.GetScheduleById(ScheduleId))
             .Returns(ScheduleWith([LessonWeekAgo, LessonToday, LessonInAWeek]));
-        _service.DeleteLesson("12", true);
+        _service.DeleteLesson("12", true, _role);
         A.CallTo(() => _dao.RemoveLessonsCascading(Ids(EditedLessonId, 13)))
             .MustHaveHappenedOnceExactly();
     }
@@ -106,7 +107,7 @@ public class EditLessonTests
     public void IgnoreNonexistentLessons()
     {
         A.CallTo(() => _dao.GetLessonById(10101)).Returns(null);
-        _service.DeleteLesson("10101", false);
+        _service.DeleteLesson("10101", false, _role);
         A.CallTo(() => _dao.RemoveLessonsCascading(A<IList<int>>.That.Not.IsEmpty()))
             .MustNotHaveHappened();
     }
@@ -169,6 +170,7 @@ public class EditLessonTests
     private const int AddressId = 101;
     private const int ScheduleId = 201;
 
+    private readonly TutorRole _role = new();
     private readonly ITransactor _transactor = A.Fake<ITransactor>();
     private readonly ITransaction _transaction = A.Fake<ITransaction>();
     private readonly ILessonDao _dao = A.Fake<ILessonDao>();

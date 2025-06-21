@@ -1,4 +1,5 @@
 using Amazon.Lambda.APIGatewayEvents;
+using Endpoints.Interfaces.Authorization;
 
 namespace Endpoints;
 
@@ -18,6 +19,7 @@ public class PlanLessonsFunction
     {
         return RestIo.HandleRestBoilerplateAsync(request, async identity =>
         {
+            var role = identity.RequireTutor();
             var service = await ServiceFactory.CreateTimetableServiceAsync();
             var body = RestIo.ReadBody<PlanLessonsRequestBody>(request);
             service.PlanLessons(
@@ -26,7 +28,8 @@ public class PlanLessonsFunction
                 body.ScheduleEndTime,
                 body.PeriodInDays,
                 body.AddressId,
-                body.StudentIds);
+                body.StudentIds,
+                role);
             return string.Empty;
         });
     }

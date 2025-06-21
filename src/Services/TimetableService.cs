@@ -93,7 +93,8 @@ public class TimetableService : ITimetableService
         DateTimeOffset scheduleEnd,
         int periodInDays,
         string externalAddressId,
-        IList<string> externalStudentIds)
+        IList<string> externalStudentIds,
+        TutorRole role)
     {
         var plan = _scheduler.Plan(
             new TimeRange { Start = firstStart, End = firstEnd },
@@ -126,7 +127,8 @@ public class TimetableService : ITimetableService
         string lessonExternalId,
         DateTimeOffset newStartTime,
         DateTimeOffset newEndTime,
-        bool editFutureLessons)
+        bool editFutureLessons,
+        TutorRole role)
     {
         using var t = _transactor.BeginTransaction();
         var lessonId = int.Parse(lessonExternalId);
@@ -146,7 +148,7 @@ public class TimetableService : ITimetableService
         t.Commit();
     }
 
-    public void DeleteLesson(string externalLessonId, bool deleteFutureLessons)
+    public void DeleteLesson(string externalLessonId, bool deleteFutureLessons, TutorRole role)
     {
         using var t = _transactor.BeginTransaction();
         var lessonId = int.Parse(externalLessonId);

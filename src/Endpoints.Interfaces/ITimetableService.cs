@@ -14,12 +14,14 @@ public interface ITimetableService
         DateTimeOffset scheduleEnd,
         int periodInDays,
         string externalAddressId,
-        IList<string> externalStudentIds);
+        IList<string> externalStudentIds,
+        TutorRole role);
     void EditLesson(
         string lessonExternalId,
         DateTimeOffset newStartTime,
         DateTimeOffset newEndTime,
-        bool editFutureLessons);
-    void DeleteLesson(string externalLessonId, bool deleteFutureLessons);
+        bool editFutureLessons,
+        TutorRole role);
+    void DeleteLesson(string externalLessonId, bool deleteFutureLessons, TutorRole role);
     void ConfirmLesson(bool confirmed, string lessonExternalId, StudentRole role);
 }

@@ -1,4 +1,5 @@
 using Amazon.Lambda.APIGatewayEvents;
+using Endpoints.Interfaces.Authorization;
 
 namespace Endpoints;
 
@@ -15,6 +16,7 @@ public class EditLessonFunction
     {
         return RestIo.HandleRestBoilerplateAsync(request, async identity =>
         {
+            var role = identity.RequireTutor();
             var service = await ServiceFactory.CreateTimetableServiceAsync();
             var lessonExternalId = RestIo.GetPathParameter(request, "lessonId");
             var body = RestIo.ReadBody<EditLessonRequestBody>(request);
@@ -22,7 +24,8 @@ public class EditLessonFunction
                 lessonExternalId,
                 body.StartTime,
                 body.EndTime,
-                body.EditFutureLessons);
+                body.EditFutureLessons,
+                role);
             return string.Empty;
         });
     }
