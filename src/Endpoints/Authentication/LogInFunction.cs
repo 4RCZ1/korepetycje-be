@@ -12,7 +12,7 @@ public class LogInFunction
 
     public static Task<APIGatewayProxyResponse> LogIn(APIGatewayProxyRequest request)
     {
-        return RestIo.HandleRestExceptionsAsync(async () =>
+        return RestIo.HandleRestBoilerplateAsync(async () =>
         {
             var body = RestIo.ReadBody<LogInRequestBody>(request);
             var service = await ServiceFactory.CreateAuthenticationService();

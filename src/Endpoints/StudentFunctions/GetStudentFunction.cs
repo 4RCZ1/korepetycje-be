@@ -7,7 +7,7 @@ public class GetStudentFunction
     public static async Task<APIGatewayProxyResponse> GetStudent(
         APIGatewayProxyRequest request)
     {
-        return await RestIo.HandleRestExceptionsAsync(async () =>
+        return await RestIo.HandleRestBoilerplateAsync(async () =>
         {
             var service = await ServiceFactory.CreateStudentServiceAsync();
             var studentExternalId = RestIo.GetPathParameter(request, "studentExternalId");

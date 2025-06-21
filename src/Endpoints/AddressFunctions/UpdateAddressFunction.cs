@@ -10,7 +10,7 @@ public class UpdateAddressFunction
     public static async Task<APIGatewayProxyResponse> UpdateAddress(
         APIGatewayProxyRequest request)
     {
-        return await RestIo.HandleRestExceptionsAsync(async () =>
+        return await RestIo.HandleRestBoilerplateAsync(async () =>
         {
             var service = await ServiceFactory.CreateAddressServiceAsync();
             if (request.Body is null)

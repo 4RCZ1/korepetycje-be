@@ -14,7 +14,7 @@ public class ChangePasswordFunction
 
     public static Task<APIGatewayProxyResponse> ChangePassword(APIGatewayProxyRequest request)
     {
-        return RestIo.HandleRestExceptionsAsync(async () =>
+        return RestIo.HandleRestBoilerplateAsync(async () =>
         {
             var body = RestIo.ReadBody<ChangePasswordRequestBody>(request);
             var service = await ServiceFactory.CreateAuthenticationService();

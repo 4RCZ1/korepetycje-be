@@ -11,7 +11,7 @@ public class ConfirmLessonFunction
 
     public static Task<APIGatewayProxyResponse> ConfirmLesson(APIGatewayProxyRequest request)
     {
-        return RestIo.HandleRestExceptionsAsync(async () =>
+        return RestIo.HandleRestBoilerplateAsync(async () =>
         {
             var service = await ServiceFactory.CreateTimetableServiceAsync();
             var lessonExternalId = RestIo.GetPathParameter(request, "lessonId");

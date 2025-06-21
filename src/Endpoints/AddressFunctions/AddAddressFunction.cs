@@ -10,7 +10,7 @@ public class AddAddressFunction
     public static async Task<APIGatewayProxyResponse> AddAddress(
         APIGatewayProxyRequest request)
     {
-        return await RestIo.HandleRestExceptionsAsync(async () =>
+        return await RestIo.HandleRestBoilerplateAsync(async () =>
         {
             var service = await ServiceFactory.CreateAddressServiceAsync();
             var body = RestIo.ReadBody<AddressDto>(request);

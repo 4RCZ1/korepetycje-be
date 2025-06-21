@@ -16,7 +16,7 @@ public class PlanLessonsFunction
 
     public static Task<APIGatewayProxyResponse> PlanLessons(APIGatewayProxyRequest request)
     {
-        return RestIo.HandleRestExceptionsAsync(async () =>
+        return RestIo.HandleRestBoilerplateAsync(async () =>
         {
             var service = await ServiceFactory.CreateTimetableServiceAsync();
             var body = RestIo.ReadBody<PlanLessonsRequestBody>(request);

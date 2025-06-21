@@ -7,7 +7,7 @@ public class GetLessonsFunction
 {
     public static Task<APIGatewayProxyResponse> GetLessonsHandler(APIGatewayProxyRequest request)
     {
-        return RestIo.HandleRestExceptionsAsync(async () =>
+        return RestIo.HandleRestBoilerplateAsync(async () =>
         {
             var token = RestIo.ReadToken(request);
             var authService = await ServiceFactory.CreateAuthenticationService();

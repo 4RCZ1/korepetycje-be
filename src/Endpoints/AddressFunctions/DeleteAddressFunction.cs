@@ -8,7 +8,7 @@ public class DeleteAddressFunction
     public static async Task<APIGatewayProxyResponse> DeleteAddress(
         APIGatewayProxyRequest request)
     {
-        return await RestIo.HandleRestExceptionsAsync(async () =>
+        return await RestIo.HandleRestBoilerplateAsync(async () =>
         {
             var service = await ServiceFactory.CreateAddressServiceAsync();
             var externalAddressId = RestIo.GetPathParameter(request, "externalAddressId");

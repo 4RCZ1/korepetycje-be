@@ -12,7 +12,7 @@ public class DeleteLessonFunction
 
     public static Task<APIGatewayProxyResponse> DeleteLesson(APIGatewayProxyRequest request)
     {
-        return RestIo.HandleRestExceptionsAsync(async () =>
+        return RestIo.HandleRestBoilerplateAsync(async () =>
         {
             var service = await ServiceFactory.CreateTimetableServiceAsync();
             var body = RestIo.ReadBody<DeleteLessonRequestBody>(request);
