@@ -12,7 +12,7 @@ public class AddressService : IAddressService
         _transactor = transactor;
     }
 
-    public AddressDto GetAddressByIdAsTutor(string addressExternalId, TutorRole role)
+    public AddressDto GetAddressById(string addressExternalId, TutorRole role)
     {
         using var t = _transactor.BeginTransaction();
         var address = GetExistingAddress(int.Parse(addressExternalId), t);
@@ -37,19 +37,6 @@ public class AddressService : IAddressService
                 AddressData = address?.AddressData
             });
         return addressesDto;
-    }
-
-
-    public AddressDto GetAddressByIdAsStudent(string addressExternalId, StudentRole role)
-    {
-        using var t = _transactor.BeginTransaction();
-        var address = GetExistingAddress(int.Parse(addressExternalId), t);
-        return new AddressDto
-        {
-            ExternalId = address.Id.ToString(),
-            AddressName = string.Empty,
-            AddressData = address.AddressData,
-        };
     }
 
     public void AddAddress(AddressDto address, TutorRole role)

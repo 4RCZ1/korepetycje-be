@@ -4,8 +4,7 @@ namespace Endpoints.Interfaces;
 
 public interface IAddressService
 {
-    AddressDto GetAddressByIdAsStudent(string addressId, StudentRole role);
-    AddressDto GetAddressByIdAsTutor(string addressId, TutorRole role);
+    AddressDto GetAddressById(string addressId, TutorRole role);
     List<AddressDto> GetAddresses(TutorRole role);
     void AddAddress(AddressDto address, TutorRole role);
     void DeleteAddress(string externalAddressId, TutorRole role);

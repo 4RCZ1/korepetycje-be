@@ -11,11 +11,10 @@ public class GetAddressFunction
     {
         return await RestIo.HandleRestBoilerplateAsync(request, async identity =>
         {
+            var role = identity.RequireTutor();
             var service = await ServiceFactory.CreateAddressServiceAsync();
             var addressExternalId = RestIo.GetPathParameter(request, "externalAddressId");
-            if (identity.AsStudent.HasValue)
-                return service.GetAddressByIdAsStudent(addressExternalId, identity.AsStudent.Value);
-            return service.GetAddressByIdAsTutor(addressExternalId, identity.RequireTutor());
+            return service.GetAddressById(addressExternalId, role);
         });
     }
 }
