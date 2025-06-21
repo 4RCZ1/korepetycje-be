@@ -1,0 +1,49 @@
+Encje:
+
+public class LoginDto
+{
+    public required bool NewPasswordRequired { get; set; }
+    public string? AccessToken { get; set; }
+    public string? UserGroup { get; set; }
+    public string? AuthSession { get; set; }
+}
+Logowanie jest pomyślne, gdy AccessToken jest wypełnione.
+Wtedy jest wypełnione też UserGroup.
+UserGroup przyjmuje wartości: "students", "tutors".
+Większość endpointów wymaga AccessToken w nagłówku Authorization z podanym trybem Bearer.
+
+
+Logowanie (nie wymaga uprzedniego uwierzytelnienia):
+POST /api/auth/log-in
+Body:
+{
+    "username": "mail@użytkownika.cośtam",
+    "password": "tajne_hasło"
+}
+Schemat body:
+private class LogInRequestBody
+{
+    public required string Username { get; set; }
+    public required string Password { get; set; }
+}
+Używamy maili jako nazw użytkownika.
+Hasło ma wymagania (małej i dużej litery, cyfry, znaku specjalnego, odpowiedniej długości, etc.) zdefiniowane w Cognito.
+Zwraca LoginDto. Jeśli jest NewPasswordRequired, należy zmienić hasło przekazując otrzymane AuthSession.
+
+
+Zmiana hasła przy pierwszym logowaniu (nie wymaga uprzedniego uwierzytelnienia):
+POST /api/auth/change-password
+Schemat body:
+private class ChangePasswordRequestBody
+{
+    public required string AuthSession { get; set; }
+    public required string Username { get; set; }
+    public required string NewPassword { get; set; }
+}
+Zwraca LoginDto.
+
+
+Rejestracja ucznia (jako korepetytor):
+POST /api/auth/register-student
+Przyjmuje: StudentDto (patrz dokumentacja operacji na uczniach). Email jest wymagany.
+Zwraca: kod statusu HTTP.

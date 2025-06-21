@@ -22,6 +22,7 @@ public class StudentDto
     public string? ExternalId { get; set; }
     public string? Name { get; set; }
     public string? Surname { get; set; }
+    public string? Email { get; set; } // todo: persist
     public AddressDto? Address { get; set; }
 }
 
@@ -166,6 +167,7 @@ Możliwe schematy Request Body :
     "Name": "Basia",
     "Surname": "Be",
     "PhoneNumber": "123456",
+    "Email": "jakiś@mail.cośtam",
     "Address": {
         "ExternalId": "2"
     }
@@ -175,6 +177,7 @@ Powyższe utworzy ucznia przypisując do niego istniejący już adres o ID 2
     "Name": "x",
     "Surname": "y",
     "PhoneNumber": "123456",
+    "Email": "jakiś@mail.cośtam",
     "Address": {
         "AddressName": "nowy",
         "AddressData": "ulica"
@@ -190,6 +193,7 @@ Możliwe schematy request body:
     "Name": "x",
     "Surname": "y",
     "PhoneNumber": "123456",
+    "Email": "jakiś@mail.cośtam",
     "Address": {
         "AddressName": "nowy",
         "AddressData": "ulica"
@@ -271,5 +275,3 @@ Możliwe schematy request body:
     "SuggestedEnd": "2026-03-02T14:00:00.0000000Z"
 }
 Zwraca: kod sukcesu/błędu
-
-
