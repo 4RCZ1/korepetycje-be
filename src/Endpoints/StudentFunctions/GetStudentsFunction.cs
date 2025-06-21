@@ -12,7 +12,7 @@ public class GetStudentsFunction
         {
             var role = identity.RequireTutor();
             var service = await ServiceFactory.CreateStudentServiceAsync();
-            var includeDeletedString = RestIo.GetOptionalQueryParameter("includeDeleted");
+            var includeDeletedString = RestIo.GetOptionalQueryParameter(request, "includeDeleted");
             bool.TryParse(includeDeletedString, out var includeDeleted);
             var lessonExternalId = RestIo.GetOptionalQueryParameter(request, "lessonId");
             return service.GetStudents(role, lessonExternalId, includeDeleted); // todo: fix after merge

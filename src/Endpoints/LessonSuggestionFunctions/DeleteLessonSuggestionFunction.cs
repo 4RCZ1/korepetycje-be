@@ -1,5 +1,6 @@
 ﻿using Amazon.Lambda.APIGatewayEvents;
 using Endpoints.Interfaces;
+using Endpoints.Interfaces.Authorization;
 
 namespace Endpoints.LessonSuggestionFunctions;
 
@@ -7,11 +8,12 @@ public class DeleteLessonSuggestionFunction
 {
     public static Task<APIGatewayProxyResponse> DeleteLessonSuggestion(APIGatewayProxyRequest request)
     {
-        return RestIo.HandleRestExceptionsAsync(async () =>
+        return RestIo.HandleRestBoilerplateAsync(request, async identity =>
         {
+            var role = identity.RequireTutor();
             var service = await ServiceFactory.CreateLessonSuggestionServiceAsync();
             var externalId = RestIo.GetPathParameter(request, "externalId");
-            service.DeleteLessonSuggestion(externalId);
+            service.DeleteLessonSuggestion(externalId, role);
             return "";
         });
     }

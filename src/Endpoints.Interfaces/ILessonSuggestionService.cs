@@ -1,9 +1,13 @@
-﻿namespace Endpoints.Interfaces;
+﻿using Endpoints.Interfaces.Authorization;
+
+namespace Endpoints.Interfaces;
 
 public interface ILessonSuggestionService
 {
-    string AddLessonSuggestion(LessonSuggestionDto lessonSuggestionToAdd);
-    void DeleteLessonSuggestion(string externalId);
-    void UpdateLessonSuggestion(string externalId, LessonSuggestionDto updatedLessonSuggestion);
-    List<LessonSuggestionDto> GetLessonSuggestion(string? suggestedStart, string? suggestedEnd, string? studentExternalId);
+    string AddLessonSuggestion(LessonSuggestionDto lessonSuggestionToAdd, TutorRole role);
+    void DeleteLessonSuggestion(string externalId, TutorRole role);
+    void UpdateLessonSuggestion(
+        string externalId, LessonSuggestionDto updatedLessonSuggestion, TutorRole role);
+    List<LessonSuggestionDto> GetLessonSuggestion(
+        string? suggestedStart, string? suggestedEnd, string? studentExternalId, TutorRole role);
 }

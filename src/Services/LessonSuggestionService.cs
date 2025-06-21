@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using Database.Entities;
 using Endpoints.Interfaces;
+using Endpoints.Interfaces.Authorization;
 using Timetable.Interfaces;
 
 namespace Services;
@@ -12,34 +13,34 @@ public class LessonSuggestionService : ILessonSuggestionService
         _transactor = transactor;
     }
 
-    public string AddLessonSuggestion(LessonSuggestionDto lessonSuggestionToAdd)
+    public string AddLessonSuggestion(LessonSuggestionDto lessonSuggestionToAdd, TutorRole role)
     {
-        if(lessonSuggestionToAdd.SuggestedStart == null 
+        if(lessonSuggestionToAdd.SuggestedStart == null
            || lessonSuggestionToAdd.SuggestedEnd == null
            || lessonSuggestionToAdd.Student?.ExternalId == null
            || lessonSuggestionToAdd.Address?.ExternalId == null)
             throw new BadRequestException("Required information is missing");
-        
+
         DbTimeslot newTimeslot = new DbTimeslot()
         {
             StartTime = (DateTimeOffset)lessonSuggestionToAdd.SuggestedStart,
             EndTime = (DateTimeOffset)lessonSuggestionToAdd.SuggestedEnd
         };
-        
+
         using var t = _transactor.BeginTransaction();
 
         var studentConnected = t.StudentDao.GetStudent(int.Parse(lessonSuggestionToAdd.Student.ExternalId));
         var addressConnected = t.AddressDao.GetAddress(int.Parse(lessonSuggestionToAdd.Address.ExternalId));
-        
+
         if (studentConnected == null || addressConnected == null)
             throw new BadRequestException("Requested address or student does not exist!");
-        
+
         List<DbTimeslot> takenTimeslots = t.LessonDao.GetTimeslots();
-        
+
         if (t.LessonDao.IsTermTaken(new List<DbTimeslot>() { newTimeslot }, takenTimeslots))
             throw new ApplicationException("This term is taken!");
 
-        
+
         DbLessonSuggestion lSuggestion = new DbLessonSuggestion()
         {
             Timeslot = newTimeslot,
@@ -49,44 +50,45 @@ public class LessonSuggestionService : ILessonSuggestionService
 
         if (int.TryParse(lessonSuggestionToAdd.Lesson?.LessonId, out var lessonId))
             lSuggestion.Lesson = t.LessonDao.GetLessonById(lessonId);
-        
+
         t.LessonSuggestionDao.SaveLessonSuggestion(lSuggestion);
         t.Commit();
         return "Lesson suggestion added!";
     }
 
-    public void DeleteLessonSuggestion(string externalId)
+    public void DeleteLessonSuggestion(string externalId, TutorRole role)
     {
         using var t = _transactor.BeginTransaction();
         t.LessonSuggestionDao.DeleteLessonSuggestion(int.Parse(externalId));
         t.Commit();
     }
 
-    public void UpdateLessonSuggestion(string externalId, LessonSuggestionDto updatedLessonSuggestion)
+    public void UpdateLessonSuggestion(
+        string externalId, LessonSuggestionDto updatedLessonSuggestion, TutorRole role)
     {
         int id = int.Parse(externalId);
         DbLesson? connectedLesson = null;
         DbAddress? connectedAddress = null;
         using var t = _transactor.BeginTransaction();
-        
+
         if(int.TryParse(updatedLessonSuggestion.Lesson?.LessonId, out var lessonId))
             connectedLesson = t.LessonDao.GetLessonById(lessonId);
-        
+
         if(int.TryParse(updatedLessonSuggestion.Address?.ExternalId, out var addressId))
             connectedAddress = t.AddressDao.GetAddress(addressId);
-        
+
         var lessSuggToUpdate = t.LessonSuggestionDao.GetLessSuggById(id);
-        lessSuggToUpdate.Timeslot.StartTime = updatedLessonSuggestion.SuggestedStart 
+        lessSuggToUpdate.Timeslot.StartTime = updatedLessonSuggestion.SuggestedStart
                                               ?? lessSuggToUpdate.Timeslot.StartTime;
-        lessSuggToUpdate.Timeslot.EndTime = updatedLessonSuggestion.SuggestedEnd 
+        lessSuggToUpdate.Timeslot.EndTime = updatedLessonSuggestion.SuggestedEnd
                                             ?? lessSuggToUpdate.Timeslot.EndTime;
-        
+
         lessSuggToUpdate.Lesson = connectedLesson ?? lessSuggToUpdate.Lesson;
         lessSuggToUpdate.Address = connectedAddress ?? lessSuggToUpdate.Address;
 
         var timeslotId = lessSuggToUpdate.TimeslotId;
         List<DbTimeslot> takenTimeslots = t.LessonDao.GetTimeslots().Where(ts => ts.Id !=timeslotId).ToList();
-        
+
         if (t.LessonDao.IsTermTaken(new List<DbTimeslot>() { lessSuggToUpdate.Timeslot }, takenTimeslots))
             throw new ApplicationException("This term is taken!");
 
@@ -94,8 +96,8 @@ public class LessonSuggestionService : ILessonSuggestionService
         t.Commit();
     }
 
-    public List<LessonSuggestionDto> GetLessonSuggestion(string? suggestedStart,
-        string? suggestedEnd, string? studentExternalId)
+    public List<LessonSuggestionDto> GetLessonSuggestion(
+        string? suggestedStart, string? suggestedEnd, string? studentExternalId, TutorRole role)
     {
         var startOffset = TryParseDateTime(suggestedStart) ?? DateTimeOffset.MinValue;
         var endOffset = TryParseDateTime(suggestedEnd) ?? DateTimeOffset.MaxValue;
@@ -147,10 +149,10 @@ public class LessonSuggestionService : ILessonSuggestionService
             };
             lessonSuggestionsDto.Add(lessSuggToGet);
         }
-        
+
         return lessonSuggestionsDto;
     }
-    
+
     private static DateTimeOffset? TryParseDateTime(string? s)
     {
         if (DateTimeOffset.TryParse(
@@ -166,7 +168,7 @@ public class LessonSuggestionService : ILessonSuggestionService
             return null;
         }
     }
-    
-    
+
+
     private readonly ITransactor _transactor;
 }

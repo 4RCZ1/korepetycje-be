@@ -23,8 +23,8 @@ public class AddressService : IAddressService
             AddressData = address.AddressData,
         };
     }
-    
-    public List<AddressDto?> GetAddresses()
+
+    public List<AddressDto?> GetAddresses(TutorRole role)
     {
         using var t = _transactor.BeginTransaction();
         var addresses = t.AddressDao.GetAddresses();
@@ -38,7 +38,7 @@ public class AddressService : IAddressService
             });
         return addressesDto;
     }
-    
+
 
     public AddressDto GetAddressByIdAsStudent(string addressExternalId, StudentRole role)
     {
