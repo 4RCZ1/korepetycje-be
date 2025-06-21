@@ -16,7 +16,7 @@ public class RegisterStudentFunction
                 throw new BadRequestException("Email is required.");
             var authService = await ServiceFactory.CreateAuthenticationService();
             var studentService = await ServiceFactory.CreateStudentServiceAsync();
-            var externalStudentId = studentService.AddStudent(body);
+            var externalStudentId = studentService.AddStudent(body, role);
             await authService.RegisterStudentAsync(externalStudentId, body.Email, role);
             return string.Empty;
         });

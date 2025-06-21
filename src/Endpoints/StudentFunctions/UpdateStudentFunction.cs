@@ -1,5 +1,6 @@
 ﻿using Amazon.Lambda.APIGatewayEvents;
 using Endpoints.Interfaces;
+using Endpoints.Interfaces.Authorization;
 
 namespace Endpoints.StudentFunctions;
 
@@ -10,10 +11,11 @@ public class UpdateStudentFunction
     {
         return await RestIo.HandleRestBoilerplateAsync(request, async identity =>
         {
+            var role = identity.RequireTutor();
             var service = await ServiceFactory.CreateStudentServiceAsync();
             var externalStudentId = RestIo.GetPathParameter(request, "studentExternalId");
             var student = RestIo.ReadBody<StudentDto>(request);
-            service.UpdateStudent(externalStudentId, student);
+            service.UpdateStudent(externalStudentId, student, role);
             return string.Empty;
         });
     }

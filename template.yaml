@@ -262,24 +262,6 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
             Method: put
             RestApiId: !Ref KorepetycjeApi
 
-  AddStudent:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: ./src/Endpoints/
-      Handler: Endpoints::Endpoints.StudentFunctions.AddStudentFunction::AddStudent
-      Runtime: dotnet8
-      Architectures:
-        - x86_64
-      MemorySize: 512
-      Role: !GetAtt LambdaExecutionRole.Arn
-      Events:
-        GetLessons:
-          Type: Api
-          Properties:
-            Path: /api/student
-            Method: post
-            RestApiId: !Ref KorepetycjeApi
-
   GetStudent:
     Type: AWS::Serverless::Function
     Properties:
@@ -314,24 +296,6 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
           Properties:
             Path: /api/student/{studentExternalId}
             Method: patch
-            RestApiId: !Ref KorepetycjeApi
-
-  DeleteStudentFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: ./src/Endpoints/
-      Handler: Endpoints::Endpoints.StudentFunctions.DeleteStudentFunction::DeleteStudent
-      Runtime: dotnet8
-      Architectures:
-        - x86_64
-      MemorySize: 512
-      Role: !GetAtt LambdaExecutionRole.Arn
-      Events:
-        GetLessons:
-          Type: Api
-          Properties:
-            Path: /api/student/{studentExternalId}
-            Method: delete
             RestApiId: !Ref KorepetycjeApi
 
   GetStudents:

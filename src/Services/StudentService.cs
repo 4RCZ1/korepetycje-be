@@ -1,5 +1,6 @@
 ﻿using Database.Entities;
 using Endpoints.Interfaces;
+using Endpoints.Interfaces.Authorization;
 using Timetable.Interfaces;
 
 namespace Services;
@@ -11,7 +12,7 @@ public class StudentService : IStudentService
         _transactor = transactor;
     }
 
-    public string AddStudent(StudentDto studentToAdd)
+    public string AddStudent(StudentDto studentToAdd, TutorRole role)
     {
         DbAddress? addressToAdd = null;
         using var t = _transactor.BeginTransaction();
@@ -33,7 +34,7 @@ public class StudentService : IStudentService
         return student.Id.ToString(); // Reading IDs of saved entities is specific to EF Core.
     }
 
-    public StudentDto GetStudent(string studentExternalId)
+    public StudentDto GetStudent(string studentExternalId, TutorRole role)
     {
         using var t = _transactor.BeginTransaction();
         var student = t.StudentDao.GetStudent(int.Parse(studentExternalId));
@@ -53,7 +54,7 @@ public class StudentService : IStudentService
         };
     }
 
-    public List<StudentDto> GetStudents(string? lessonExternalId = null)
+    public List<StudentDto> GetStudents(TutorRole role, string? lessonExternalId = null)
     {
         using var t = _transactor.BeginTransaction();
         List<DbStudent> students;
@@ -86,7 +87,7 @@ public class StudentService : IStudentService
         return studentDtos;
     }
 
-    public void UpdateStudent(string externalStudentId, StudentDto student)
+    public void UpdateStudent(string externalStudentId, StudentDto student, TutorRole role)
     {
         using var t = _transactor.BeginTransaction();
         var studentId = int.Parse(externalStudentId);
@@ -125,7 +126,7 @@ public class StudentService : IStudentService
         t.Commit();
     }
 
-    public void DeleteStudent(string studentExternalId)
+    public void DeleteStudent(string studentExternalId, TutorRole role)
     {
         using var t = _transactor.BeginTransaction();
         t.StudentDao.DeleteStudent(int.Parse(studentExternalId));

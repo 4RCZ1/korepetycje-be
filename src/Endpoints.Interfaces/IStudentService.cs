@@ -1,10 +1,12 @@
-﻿namespace Endpoints.Interfaces;
+﻿using Endpoints.Interfaces.Authorization;
+
+namespace Endpoints.Interfaces;
 
 public interface IStudentService
 {
-    string AddStudent(StudentDto student);
-    StudentDto GetStudent(string studentExternalId);
-    List<StudentDto> GetStudents(string? lessonExternalId = null);
-    void UpdateStudent(string externalStudentId, StudentDto student);
-    void DeleteStudent(string studentExternalId);
+    string AddStudent(StudentDto student, TutorRole role);
+    StudentDto GetStudent(string studentExternalId, TutorRole role);
+    List<StudentDto> GetStudents(TutorRole role, string? lessonExternalId = null);
+    void UpdateStudent(string externalStudentId, StudentDto student, TutorRole role);
+    void DeleteStudent(string studentExternalId, TutorRole role);
 }
