@@ -1,5 +1,6 @@
 ﻿using Database.Entities;
 using Endpoints.Interfaces;
+using Endpoints.Interfaces.Authorization;
 using Timetable.Interfaces;
 
 namespace Services;
@@ -11,11 +12,11 @@ public class AddressService : IAddressService
         _transactor = transactor;
     }
 
-    public AddressDto GetAddressById(string addressExternalId)
+    public AddressDto GetAddressByIdAsTutor(string addressExternalId, TutorRole role)
     {
         using var t = _transactor.BeginTransaction();
         var address = GetExistingAddress(int.Parse(addressExternalId), t);
-        return new AddressDto()
+        return new AddressDto
         {
             ExternalId = address.Id.ToString(),
             AddressName = address.AddressName,
@@ -23,7 +24,19 @@ public class AddressService : IAddressService
         };
     }
 
-    public void AddAddress(AddressDto address)
+    public AddressDto GetAddressByIdAsStudent(string addressExternalId, StudentRole role)
+    {
+        using var t = _transactor.BeginTransaction();
+        var address = GetExistingAddress(int.Parse(addressExternalId), t);
+        return new AddressDto
+        {
+            ExternalId = address.Id.ToString(),
+            AddressName = string.Empty,
+            AddressData = address.AddressData,
+        };
+    }
+
+    public void AddAddress(AddressDto address, TutorRole role)
     {
         if(String.IsNullOrEmpty(address.AddressName)||String.IsNullOrEmpty(address.AddressData))
             throw new BadRequestException("All address details are required");
@@ -37,7 +50,7 @@ public class AddressService : IAddressService
         t.Commit();
     }
 
-    public void DeleteAddress(string externalAddressId)
+    public void DeleteAddress(string externalAddressId, TutorRole role)
     {
         using var t = _transactor.BeginTransaction();
         if (GetStudentsByAddressId(int.Parse(externalAddressId), t).Any())
@@ -46,7 +59,7 @@ public class AddressService : IAddressService
         t.Commit();
     }
 
-    public void UpdateAddress(string externalAddressId, AddressDto address)
+    public void UpdateAddress(string externalAddressId, AddressDto address, TutorRole role)
     {
         using var t = _transactor.BeginTransaction();
         var addressToUpdate = GetExistingAddress(int.Parse(externalAddressId), t);

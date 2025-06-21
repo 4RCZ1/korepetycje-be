@@ -1,5 +1,6 @@
 ﻿using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
+using Endpoints.Interfaces.Authorization;
 
 namespace Endpoints.AddressFunctions;
 
@@ -12,8 +13,9 @@ public class GetAddressFunction
         {
             var service = await ServiceFactory.CreateAddressServiceAsync();
             var addressExternalId = RestIo.GetPathParameter(request, "externalAddressId");
-            var address = service.GetAddressById(addressExternalId);
-            return address;
+            if (identity.AsStudent.HasValue)
+                return service.GetAddressByIdAsStudent(addressExternalId, identity.AsStudent.Value);
+            return service.GetAddressByIdAsTutor(addressExternalId, identity.RequireTutor());
         });
     }
 }

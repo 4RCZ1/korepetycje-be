@@ -2,6 +2,7 @@
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Endpoints.Interfaces;
+using Endpoints.Interfaces.Authorization;
 
 namespace Endpoints.AddressFunctions;
 
@@ -12,6 +13,7 @@ public class UpdateAddressFunction
     {
         return await RestIo.HandleRestBoilerplateAsync(request, async identity =>
         {
+            var role = identity.RequireTutor();
             var service = await ServiceFactory.CreateAddressServiceAsync();
             if (request.Body is null)
             {
@@ -20,7 +22,7 @@ public class UpdateAddressFunction
 
             var externalAddressId = RestIo.GetPathParameter(request, "externalAddressId");
             var address = RestIo.ReadBody<AddressDto>(request);
-            service.UpdateAddress(externalAddressId, address);
+            service.UpdateAddress(externalAddressId, address, role);
             return string.Empty;
         });
     }

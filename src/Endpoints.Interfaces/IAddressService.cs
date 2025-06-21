@@ -1,9 +1,12 @@
-﻿namespace Endpoints.Interfaces;
+﻿using Endpoints.Interfaces.Authorization;
+
+namespace Endpoints.Interfaces;
 
 public interface IAddressService
 {
-    AddressDto GetAddressById(string addressId);
-    void AddAddress(AddressDto address);
-    void DeleteAddress(string externalAddressId);
-    void UpdateAddress(string externalAddressId, AddressDto address);
+    AddressDto GetAddressByIdAsStudent(string addressId, StudentRole role);
+    AddressDto GetAddressByIdAsTutor(string addressId, TutorRole role);
+    void AddAddress(AddressDto address, TutorRole role);
+    void DeleteAddress(string externalAddressId, TutorRole role);
+    void UpdateAddress(string externalAddressId, AddressDto address, TutorRole role);
 }
