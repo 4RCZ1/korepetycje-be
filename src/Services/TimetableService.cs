@@ -203,12 +203,12 @@ public class TimetableService : ITimetableService
         }).ToList();
     }
 
-    public void ConfirmLesson(bool confirmed, string lessonExternalId, string studentExternalId)
+    public void ConfirmLesson(bool confirmed, string lessonExternalId, StudentRole role)
     {
         using var t = _transactor.BeginTransaction();
         var attendance = t.LessonDao.GetAttendance(
             DecodeExternalId(lessonExternalId),
-            DecodeExternalId(studentExternalId));
+            DecodeExternalId(role.ExternalStudentId));
         if (attendance is null)
             return;
         if (attendance.IsConfirmed is null)

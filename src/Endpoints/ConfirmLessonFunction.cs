@@ -1,4 +1,5 @@
 using Amazon.Lambda.APIGatewayEvents;
+using Endpoints.Interfaces.Authorization;
 
 namespace Endpoints;
 
@@ -13,11 +14,11 @@ public class ConfirmLessonFunction
     {
         return RestIo.HandleRestBoilerplateAsync(request, async identity =>
         {
+            var role = identity.RequireStudent();
             var service = await ServiceFactory.CreateTimetableServiceAsync();
             var lessonExternalId = RestIo.GetPathParameter(request, "lessonId");
             var body = RestIo.ReadBody<ConfirmLessonRequestBody>(request);
-            const string studentExternalId = "1"; // todo: get from authentication token instead
-            service.ConfirmLesson(body.Confirmed, lessonExternalId, studentExternalId);
+            service.ConfirmLesson(body.Confirmed, lessonExternalId, role);
             return string.Empty;
         });
     }

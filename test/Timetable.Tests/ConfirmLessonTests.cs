@@ -1,5 +1,6 @@
 using Database.Entities;
 using Endpoints.Interfaces;
+using Endpoints.Interfaces.Authorization;
 using FakeItEasy;
 using Services;
 using Timetable.Interfaces;
@@ -21,7 +22,7 @@ public class ConfirmLessonTests
     public void ConfirmOrRejectAttendance(bool confirm)
     {
         DatabaseAttendanceIs(new DbAttendance { IsConfirmed = null });
-        _service.ConfirmLesson(confirm, ExternalLessonId, ExternalStudentId);
+        _service.ConfirmLesson(confirm, ExternalLessonId, _role);
         A.CallTo(() => _dao.SaveAttendance(
                 A<DbAttendance>.That.Matches(a => a.IsConfirmed == confirm)))
             .MustHaveHappenedOnceExactly();
@@ -35,7 +36,7 @@ public class ConfirmLessonTests
     {
         DatabaseAttendanceIs(new DbAttendance { IsConfirmed = previousState });
         var action = () =>
-            _service.ConfirmLesson(!previousState, ExternalLessonId, ExternalStudentId);
+            _service.ConfirmLesson(!previousState, ExternalLessonId, _role);
         Assert.Throws<BadRequestException>(action);
     }
 
@@ -45,7 +46,7 @@ public class ConfirmLessonTests
     public void IgnoreRepeatedRequest(bool confirmed)
     {
         DatabaseAttendanceIs(new DbAttendance { IsConfirmed = confirmed });
-        _service.ConfirmLesson(confirmed, ExternalLessonId, ExternalStudentId);
+        _service.ConfirmLesson(confirmed, ExternalLessonId, _role);
         A.CallTo(() => _dao.SaveAttendance(A<DbAttendance>._))
             .MustNotHaveHappened();
     }
@@ -54,7 +55,7 @@ public class ConfirmLessonTests
     public void IgnoreRemovedAttendances()
     {
         DatabaseAttendanceIs(null);
-        _service.ConfirmLesson(true, ExternalLessonId, ExternalStudentId);
+        _service.ConfirmLesson(true, ExternalLessonId, _role);
         A.CallTo(() => _dao.SaveAttendance(A<DbAttendance>._))
             .MustNotHaveHappened();
     }
@@ -67,6 +68,7 @@ public class ConfirmLessonTests
     private const string ExternalLessonId = "101";
     private const string ExternalStudentId = "201";
 
+    private readonly StudentRole _role = new() { ExternalStudentId = ExternalStudentId };
     private readonly ITransactor _transactor = A.Fake<ITransactor>();
     private readonly ITransaction _transaction = A.Fake<ITransaction>();
     private readonly ILessonDao _dao = A.Fake<ILessonDao>();

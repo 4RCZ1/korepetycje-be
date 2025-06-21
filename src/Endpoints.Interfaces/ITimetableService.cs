@@ -21,5 +21,5 @@ public interface ITimetableService
         DateTimeOffset newEndTime,
         bool editFutureLessons);
     void DeleteLesson(string externalLessonId, bool deleteFutureLessons);
-    void ConfirmLesson(bool confirmed, string lessonExternalId, string studentExternalId);
+    void ConfirmLesson(bool confirmed, string lessonExternalId, StudentRole role);
 }
