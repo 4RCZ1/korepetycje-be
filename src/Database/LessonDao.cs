@@ -81,16 +81,22 @@ public class LessonDao : ILessonDao
         _context.Add(schedule);
     }
 
-    private bool DetectCollisions(List<DbTimeslot> newTimeslots)
+    private bool DetectCollisions(List<DbTimeslot> timeslotsToSave)
     {
         var deletedTimeslotIds = _context.ChangeTracker.Entries<DbTimeslot>()
             .Where(entry => entry.State == EntityState.Deleted)
             .Select(entry => entry.Entity.Id)
             .ToList();
-        return newTimeslots.Any(nts => _context.Timeslots
+        // Updating timeslots is not supported here.
+        return timeslotsToSave.Where(IsTimeslotNew).Any(nts => _context.Timeslots
             .AsNoTracking()
             .Where(ts => !deletedTimeslotIds.Contains(ts.Id))
             .Any(TimeslotDaoConditions.TimeslotOverlap(nts)));
+    }
+
+    private static bool IsTimeslotNew(DbTimeslot ts)
+    {
+        return ts.Id == 0;
     }
 
     public List<DbTimeslot> GetTimeslots()

@@ -20,9 +20,22 @@ public class LessonSuggestionDao : ILessonSuggestionDao
 
     public void DeleteLessonSuggestion(int id)
     {
-        var lesSugToDelete = GetLessSuggById(id);
-        _context.LessonSuggestions.Remove(lesSugToDelete);
-        _context.Timeslots.Remove(lesSugToDelete.Timeslot);
+        var suggestionToDelete = _context.LessonSuggestions
+            .Include(s => s.Timeslot)
+            .SingleOrDefault(s => s.Id == id);
+        if (suggestionToDelete is not null)
+        {
+            _context.LessonSuggestions.Remove(suggestionToDelete);
+            _context.Timeslots.Remove(suggestionToDelete.Timeslot!);
+        }
+    }
+
+    public void DeleteSuggestionPreservingTimeslot(int id)
+    {
+        var suggestionToDelete = _context.LessonSuggestions
+            .SingleOrDefault(s => s.Id == id);
+        if (suggestionToDelete is not null)
+            _context.LessonSuggestions.Remove(suggestionToDelete);
     }
 
     public List<DbLessonSuggestion> GetLessSugg(DateTimeOffset start, DateTimeOffset end, int? studentId)

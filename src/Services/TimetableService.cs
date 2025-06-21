@@ -148,6 +148,38 @@ public class TimetableService : ITimetableService
         t.Commit();
     }
 
+    public void AcceptSuggestion(string externalSuggestionId, bool accept, StudentRole role)
+    {
+        var suggestionId = DecodeExternalId(externalSuggestionId);
+        using var t = _transactor.BeginTransaction();
+        var suggestion = t.LessonSuggestionDao.GetLessSuggById(suggestionId);
+        if (suggestion.StudentId != DecodeExternalId(role.ExternalStudentId))
+            throw new AuthException();
+        if (accept)
+        {
+            t.LessonDao.CreateSchedule(new DbSchedule
+            {
+                AddressId = suggestion.AddressId,
+                Lessons =
+                [
+                    new DbLesson
+                    {
+                        TimeslotId = suggestion.TimeslotId,
+                        Attendances = [new DbAttendance { StudentId = suggestion.StudentId }],
+                    },
+                ],
+            });
+            t.LessonSuggestionDao.DeleteSuggestionPreservingTimeslot(suggestionId);
+            if (suggestion.LessonId.HasValue)
+                t.LessonDao.RemoveLessonsCascading([suggestion.LessonId.Value]);
+        }
+        else
+        {
+            t.LessonSuggestionDao.DeleteLessonSuggestion(suggestionId);
+        }
+        t.Commit();
+    }
+
     public void DeleteLesson(string externalLessonId, bool deleteFutureLessons, TutorRole role)
     {
         using var t = _transactor.BeginTransaction();
