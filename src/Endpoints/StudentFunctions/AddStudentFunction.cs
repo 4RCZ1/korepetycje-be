@@ -8,7 +8,7 @@ public class AddStudentFunction
     public static async Task<APIGatewayProxyResponse> AddStudent(
         APIGatewayProxyRequest request)
     {
-        return await RestIo.HandleRestBoilerplateAsync(async () =>
+        return await RestIo.HandleRestBoilerplateAsync(request, async identity =>
         {
             var service = await ServiceFactory.CreateStudentServiceAsync();
             var body = RestIo.ReadBody<StudentDto>(request);

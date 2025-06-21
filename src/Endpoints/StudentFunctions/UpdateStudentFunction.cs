@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using Amazon.Lambda.APIGatewayEvents;
+﻿using Amazon.Lambda.APIGatewayEvents;
 using Endpoints.Interfaces;
 
 namespace Endpoints.StudentFunctions;
@@ -9,7 +8,7 @@ public class UpdateStudentFunction
     public static async Task<APIGatewayProxyResponse> UpdateStudent(
         APIGatewayProxyRequest request)
     {
-        return await RestIo.HandleRestBoilerplateAsync(async () =>
+        return await RestIo.HandleRestBoilerplateAsync(request, async identity =>
         {
             var service = await ServiceFactory.CreateStudentServiceAsync();
             var externalStudentId = RestIo.GetPathParameter(request, "studentExternalId");

@@ -8,7 +8,7 @@ public class RegisterStudentFunction
     public Task<APIGatewayProxyResponse> RegisterStudent(APIGatewayProxyRequest request)
     {
         // todo: verify tutor JWT
-        return RestIo.HandleRestBoilerplateAsync(async () =>
+        return RestIo.HandleRestBoilerplateAsync(request, async identity =>
         {
             var body = RestIo.ReadBody<StudentDto>(request);
             if (body.Email is null)

@@ -14,11 +14,12 @@ public class ChangePasswordFunction
 
     public static Task<APIGatewayProxyResponse> ChangePassword(APIGatewayProxyRequest request)
     {
-        return RestIo.HandleRestBoilerplateAsync(async () =>
+        return RestIo.UnsafeHandleRestBoilerplateAsync(async () =>
         {
             var body = RestIo.ReadBody<ChangePasswordRequestBody>(request);
             var service = await ServiceFactory.CreateAuthenticationService();
-            return await service.ChangePasswordAsync(body.AuthSession, body.Username, body.NewPassword);
+            return await service.ChangePasswordAsync(
+                body.AuthSession, body.Username, body.NewPassword);
         });
     }
 }

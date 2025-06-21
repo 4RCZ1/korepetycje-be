@@ -11,7 +11,20 @@ namespace Endpoints;
 
 public static class RestIo
 {
-    public static async Task<APIGatewayProxyResponse> HandleRestBoilerplateAsync<T>(Func<Task<T>> f)
+    public static async Task<APIGatewayProxyResponse> HandleRestBoilerplateAsync<T>(
+        APIGatewayProxyRequest request, Func<UserIdentity, Task<T>> f)
+    {
+        return await UnsafeHandleRestBoilerplateAsync(async () =>
+        {
+            var token = ReadToken(request);
+            var authService = await ServiceFactory.CreateAuthenticationService();
+            var identity = await authService.AuthenticateAsync(token);
+            return await f.Invoke(identity);
+        });
+    }
+
+    public static async Task<APIGatewayProxyResponse> UnsafeHandleRestBoilerplateAsync<T>(
+        Func<Task<T>> f)
     {
         try
         {
@@ -56,7 +69,7 @@ public static class RestIo
         }
     }
 
-    public static string ReadToken(APIGatewayProxyRequest request)
+    private static string ReadToken(APIGatewayProxyRequest request)
     {
         const string prefix = "Bearer ";
         if (!request.Headers.TryGetValue("Authorization", out var authHeader)

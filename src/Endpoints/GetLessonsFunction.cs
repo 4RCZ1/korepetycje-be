@@ -7,11 +7,8 @@ public class GetLessonsFunction
 {
     public static Task<APIGatewayProxyResponse> GetLessonsHandler(APIGatewayProxyRequest request)
     {
-        return RestIo.HandleRestBoilerplateAsync(async () =>
+        return RestIo.HandleRestBoilerplateAsync(request, async identity =>
         {
-            var token = RestIo.ReadToken(request);
-            var authService = await ServiceFactory.CreateAuthenticationService();
-            var identity = await authService.AuthenticateAsync(token);
             var service = await ServiceFactory.CreateTimetableServiceAsync();
             if (identity.AsStudent.HasValue)
             {
