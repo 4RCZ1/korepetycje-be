@@ -25,7 +25,7 @@ public class LessonSuggestionDao : ILessonSuggestionDao
         _context.Timeslots.Remove(lesSugToDelete.Timeslot);
     }
 
-    public List<DbLessonSuggestion> GetLessSugg(DateTimeOffset startOffset, DateTimeOffset endOffset, int? studentId)
+    public List<DbLessonSuggestion> GetLessSugg(DateTimeOffset start, DateTimeOffset end, int? studentId)
     {
         var lessonSuggestions = _context.LessonSuggestions
             .Include(ls => ls.Student)
@@ -40,8 +40,7 @@ public class LessonSuggestionDao : ILessonSuggestionDao
                     .ThenInclude(s => s.Address)
             .Include(ls => ls.Address)
             .Include(ls => ls.Timeslot)
-            .Where(ls => ls.Timeslot.StartTime >= startOffset 
-                         && ls.Timeslot.EndTime <= endOffset);
+            .Where(TimeslotDaoConditions.SuggestionOverlap(start, end));
         if(studentId.HasValue)
             lessonSuggestions = lessonSuggestions.Where(ls => ls.StudentId == studentId);
         return lessonSuggestions.ToList();

@@ -12,28 +12,28 @@ public class DbLessonSuggestion
 
     [Column("lesson_id")]
     public int? LessonId { get; set; }
-    
+
+    [Required]
     [Column("timeslot_id")]
     public int TimeslotId { get; set; }
-    
+
+    [Required]
     [Column("student_id")]
     public int StudentId { get; set; }
-    
+
+    [Required]
     [Column("address_id")]
     public int AddressId { get; set; }
 
     [ForeignKey(nameof(LessonId))]
     public DbLesson? Lesson { get; set; }
-    
-    [Required]
+
     [ForeignKey(nameof(TimeslotId))]
-    public required DbTimeslot Timeslot { get; set; }
-    
-    [Required]
+    public DbTimeslot? Timeslot { get; set; }
+
     [ForeignKey(nameof(StudentId))]
-    public required DbStudent Student { get; set; }
-    
-    [Required]
+    public DbStudent? Student { get; set; }
+
     [ForeignKey(nameof(AddressId))]
-    public required DbAddress Address { get; set; }
+    public DbAddress? Address { get; set; }
 }

@@ -38,7 +38,7 @@ public class LessonSuggestionService : ILessonSuggestionService
         List<DbTimeslot> takenTimeslots = t.LessonDao.GetTimeslots();
 
         if (t.LessonDao.IsTermTaken(new List<DbTimeslot>() { newTimeslot }, takenTimeslots))
-            throw new ApplicationException("This term is taken!");
+            throw new BadRequestException("This term is taken!");
 
 
         DbLessonSuggestion lSuggestion = new DbLessonSuggestion()
@@ -90,7 +90,7 @@ public class LessonSuggestionService : ILessonSuggestionService
         List<DbTimeslot> takenTimeslots = t.LessonDao.GetTimeslots().Where(ts => ts.Id !=timeslotId).ToList();
 
         if (t.LessonDao.IsTermTaken(new List<DbTimeslot>() { lessSuggToUpdate.Timeslot }, takenTimeslots))
-            throw new ApplicationException("This term is taken!");
+            throw new BadRequestException("This term is taken!");
 
         t.LessonSuggestionDao.SaveLessonSuggestion(lessSuggToUpdate);
         t.Commit();

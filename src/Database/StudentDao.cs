@@ -13,57 +13,30 @@ public class StudentDao : IStudentDao
         _context = context;
     }
 
-    public DbStudent? GetStudent(int studentId, bool? includeDeleted = false)
+    public DbStudent? GetStudent(int studentId, bool includeDeleted = false)
     {
-        if(includeDeleted==true)
-            return _context.Students
-                .IgnoreQueryFilters()
-                .AsNoTracking()
-                .Include(s => s.Address)
-                .SingleOrDefault(s => s.Id == studentId);
-        
-        return _context.Students
-            .AsNoTracking()
-            .Include(s => s.Address)
+        return QueryStudents(includeDeleted, null)
             .SingleOrDefault(s => s.Id == studentId);
     }
 
-    public List<DbStudent> GetStudents(int? lessonId = null, bool? includeDeleted = false)
+    public List<DbStudent> GetStudents(int? lessonId = null, bool includeDeleted = false)
     {
-        if (includeDeleted == true)
-            return GetStudentsIncludeDeleted(lessonId);
-        if(lessonId is null)
-            return _context.Students
-                .AsNoTracking()
-                .Include(s => s.Address)
-                .ToList();
-        return _context.Students
-            .AsNoTracking()
-            .Include(s => s.Address)
-            .Where(s =>_context.Attendances
-                .Where(a=>a.LessonId == lessonId)
-                .Select(a=>a.StudentId)
-                .Contains(s.Id))
-            .ToList();
+        return QueryStudents(includeDeleted, lessonId).ToList();
     }
-    
-    private List<DbStudent> GetStudentsIncludeDeleted(int? lessonId = null)
+
+    private IQueryable<DbStudent> QueryStudents(bool includeDeleted, int? lessonId)
     {
-        if(lessonId is null)
-            return _context.Students
-                .IgnoreQueryFilters()
-                .Include(s => s.Address)
-                .AsNoTracking()
-                .ToList();
-        return _context.Students
-            .IgnoreQueryFilters()
+        IQueryable<DbStudent> query = _context.Students
             .AsNoTracking()
-            .Include(s => s.Address)
-            .Where(s => _context.Attendances
-                .Where(a => a.LessonId == lessonId)
-                .Select(a => a.StudentId)
-                .Contains(s.Id))
-            .ToList();
+            .Include(s => s.Address);
+        if (includeDeleted)
+            query = query.IgnoreQueryFilters();
+        if (lessonId is not null)
+        {
+            query = query.Where(s =>
+                _context.Attendances.Any(a => a.LessonId == lessonId && a.StudentId == s.Id));
+        }
+        return query;
     }
 
     public void SaveStudent(DbStudent student)

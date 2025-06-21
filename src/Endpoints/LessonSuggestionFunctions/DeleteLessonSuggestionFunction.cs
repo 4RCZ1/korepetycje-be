@@ -1,5 +1,4 @@
 ﻿using Amazon.Lambda.APIGatewayEvents;
-using Endpoints.Interfaces;
 using Endpoints.Interfaces.Authorization;
 
 namespace Endpoints.LessonSuggestionFunctions;

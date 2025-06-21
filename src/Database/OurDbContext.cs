@@ -49,7 +49,6 @@ public class OurDbContext : DbContext, ITransaction
     {
         modelBuilder.Entity<DbStudent>()
             .HasQueryFilter(x => x.IsDeleted == false);
-
     }
 
     private readonly string _connection;

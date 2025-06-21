@@ -5,8 +5,7 @@ namespace Endpoints.StudentFunctions;
 
 public class GetStudentsFunction
 {
-    public async Task<APIGatewayProxyResponse> GetStudents(
-        APIGatewayProxyRequest request)
+    public static async Task<APIGatewayProxyResponse> GetStudents(APIGatewayProxyRequest request)
     {
         return await RestIo.HandleRestBoilerplateAsync(request, async identity =>
         {
@@ -15,7 +14,7 @@ public class GetStudentsFunction
             var includeDeletedString = RestIo.GetOptionalQueryParameter(request, "includeDeleted");
             bool.TryParse(includeDeletedString, out var includeDeleted);
             var lessonExternalId = RestIo.GetOptionalQueryParameter(request, "lessonId");
-            return service.GetStudents(role, lessonExternalId, includeDeleted); // todo: fix after merge
+            return service.GetStudents(role, lessonExternalId, includeDeleted);
         });
     }
 }

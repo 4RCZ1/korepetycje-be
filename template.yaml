@@ -333,7 +333,7 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
             Path: /api/address/{externalAddressId}
             Method: get
             RestApiId: !Ref KorepetycjeApi
-            
+
   GetAddresses:
     Type: AWS::Serverless::Function
     Properties:
@@ -405,8 +405,7 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
             Path: /api/address/{externalAddressId}
             Method: patch
             RestApiId: !Ref KorepetycjeApi
-            
-  
+
   AddLessonSuggestion:
     Type: AWS::Serverless::Function
     Properties:
@@ -424,7 +423,7 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
             Path: /api/lesson-suggestion
             Method: post
             RestApiId: !Ref KorepetycjeApi
-            
+
   DeleteLessonSuggestion:
     Type: AWS::Serverless::Function
     Properties:
@@ -460,7 +459,7 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
             Path: /api/lesson-suggestion/{externalId}
             Method: patch
             RestApiId: !Ref KorepetycjeApi
-  
+
   GetLessonSuggestions:
     Type: AWS::Serverless::Function
     Properties:

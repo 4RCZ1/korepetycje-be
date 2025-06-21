@@ -24,11 +24,11 @@ public class AddressService : IAddressService
         };
     }
 
-    public List<AddressDto?> GetAddresses(TutorRole role)
+    public List<AddressDto> GetAddresses(TutorRole role)
     {
         using var t = _transactor.BeginTransaction();
         var addresses = t.AddressDao.GetAddresses();
-        var addressesDto = new List<AddressDto?>();
+        var addressesDto = new List<AddressDto>();
         foreach (var address in addresses)
             addressesDto.Add(new AddressDto()
             {

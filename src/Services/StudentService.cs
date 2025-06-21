@@ -36,7 +36,7 @@ public class StudentService : IStudentService
     }
 
     public StudentDto GetStudent(
-        string studentExternalId, TutorRole role, bool? includeDeleted = false)
+        string studentExternalId, TutorRole role, bool includeDeleted = false)
     {
         using var t = _transactor.BeginTransaction();
         var student = t.StudentDao.GetStudent(int.Parse(studentExternalId), includeDeleted);
@@ -58,7 +58,7 @@ public class StudentService : IStudentService
         };
     }
 
-    public List<StudentDto> GetStudents(TutorRole role, string? lessonExternalId = null, bool? includeDeleted = false)
+    public List<StudentDto> GetStudents(TutorRole role, string? lessonExternalId = null, bool includeDeleted = false)
     {
         using var t = _transactor.BeginTransaction();
         List<DbStudent> students;
@@ -106,8 +106,6 @@ public class StudentService : IStudentService
         studentToUpdate.PhoneNumber = String.IsNullOrEmpty(student.PhoneNumber)
             ? studentToUpdate.PhoneNumber : student.PhoneNumber;
         DbAddress? addressToUpdate = null;
-        //if the address id is included in the request body, the address will be updated,
-        //if it is not included, a new address will be created
         if(int.TryParse(student?.Address?.ExternalId, out var addressId))
             addressToUpdate = t.AddressDao.GetAddress(addressId);
         if (addressToUpdate is not null)

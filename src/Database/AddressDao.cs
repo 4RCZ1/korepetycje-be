@@ -15,10 +15,10 @@ public class AddressDao : IAddressDao
     {
         return _context.Addresses.AsNoTracking().SingleOrDefault(x => x.Id == addressId);
     }
-    
-    public List<DbAddress?> GetAddresses()
+
+    public List<DbAddress> GetAddresses()
     {
-        return _context.Addresses.AsNoTracking().ToList()!;
+        return _context.Addresses.AsNoTracking().ToList();
     }
 
     public void SaveAddress(DbAddress address)
