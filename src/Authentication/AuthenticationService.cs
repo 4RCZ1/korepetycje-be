@@ -19,7 +19,7 @@ public class AuthenticationService : IAuthenticationService
         _appClientSecret = appClientSecret;
     }
 
-    public async Task RegisterStudentAsync(string externalStudentId, string email)
+    public async Task RegisterStudentAsync(string externalStudentId, string email, TutorRole role)
     {
         var createUserResponse = await _identityProvider.AdminCreateUserAsync(
             new AdminCreateUserRequest
