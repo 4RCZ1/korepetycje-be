@@ -78,14 +78,26 @@ public class LessonSuggestionService : ILessonSuggestionService
         DbLesson? connectedLesson = null;
         DbAddress? connectedAddress = null;
         using var t = _transactor.BeginTransaction();
-
-        if(int.TryParse(updatedLessonSuggestion.Lesson?.LessonId, out var lessonId))
+        
+        var lessSuggToUpdate = t.LessonSuggestionDao.GetLessSuggById(id);
+        if(lessSuggToUpdate == null)
+            throw new BadRequestException("The requested lesson suggestion does not exist!");
+        
+        if (int.TryParse(updatedLessonSuggestion.Lesson?.LessonId, out var lessonId))
+        {
             connectedLesson = t.LessonDao.GetLessonById(lessonId);
+            if(connectedLesson == null)
+                throw new BadRequestException("The requested lesson does not exist!");
+            if(connectedLesson.Attendances.Count>1)
+                throw new BadRequestException("Cannot create lesson suggestion for multiple students lesson!");
+            if(connectedLesson.Attendances.SingleOrDefault()!.Student!.Id != lessSuggToUpdate.Student!.Id)
+                throw new BadRequestException("The chosen student do not attend to chosen lesson!");
+        }
 
         if(int.TryParse(updatedLessonSuggestion.Address?.ExternalId, out var addressId))
             connectedAddress = t.AddressDao.GetAddress(addressId);
 
-        var lessSuggToUpdate = t.LessonSuggestionDao.GetLessSuggById(id);
+        
         lessSuggToUpdate.Timeslot.StartTime = updatedLessonSuggestion.SuggestedStart
                                               ?? lessSuggToUpdate.Timeslot.StartTime;
         lessSuggToUpdate.Timeslot.EndTime = updatedLessonSuggestion.SuggestedEnd
