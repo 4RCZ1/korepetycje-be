@@ -24,7 +24,10 @@ public class LessonDao : ILessonDao
 
     public DbLesson? GetLessonById(int lessonId)
     {
-        return _context.Lessons.AsNoTracking().SingleOrDefault(l => l.Id == lessonId);
+        return _context.Lessons
+            .AsNoTracking()
+            .Include(l => l.Timeslot)
+            .SingleOrDefault(l => l.Id == lessonId);
     }
 
     public void SaveLesson(DbLesson lesson)

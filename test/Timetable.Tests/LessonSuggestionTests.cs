@@ -13,7 +13,7 @@ public class LessonSuggestionTests
         A.CallTo(() => _transactor.BeginTransaction()).Returns(_transaction).Once();
         A.CallTo(() => _transaction.LessonSuggestionDao).Returns(_suggestionDao);
         A.CallTo(() => _transaction.LessonDao).Returns(_lessonDao);
-        _service = new TimetableService(_transactor, TimeZoneInfo.Utc);
+        _service = new TimetableService(_transactor, TimeZoneInfo.Utc, A.Dummy<IClock>());
     }
 
     [Fact]

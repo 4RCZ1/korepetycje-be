@@ -1,12 +1,12 @@
 using System.Text.Json;
 using Amazon;
-using Amazon.CognitoIdentityProvider;
 using Amazon.SecretsManager;
 using Amazon.SecretsManager.Model;
 using Authentication;
 using Database;
 using Endpoints.Interfaces;
 using Services;
+using Timetable.Interfaces;
 
 namespace Endpoints;
 
@@ -25,7 +25,12 @@ internal static class ServiceFactory
     {
         var connection = await Connection;
         var timeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Warsaw");
-        return new TimetableService(new Transactor(connection), timeZone);
+        return new TimetableService(new Transactor(connection), timeZone, new Clock());
+    }
+
+    private class Clock : IClock
+    {
+        public DateTimeOffset Now => DateTimeOffset.UtcNow;
     }
 
     public static async Task<IAddressService> CreateAddressServiceAsync()
@@ -39,7 +44,7 @@ internal static class ServiceFactory
         var connection = await Connection;
         return new StudentService(new Transactor(connection));
     }
-    
+
     public static async Task<ILessonSuggestionService> CreateLessonSuggestionServiceAsync()
     {
         var connection = await Connection;

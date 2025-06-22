@@ -8,10 +8,11 @@ namespace Services;
 
 public class TimetableService : ITimetableService
 {
-    public TimetableService(ITransactor transactor, TimeZoneInfo timeZone)
+    public TimetableService(ITransactor transactor, TimeZoneInfo timeZone, IClock clock)
     {
         _transactor = transactor;
         _scheduler = new Scheduler(timeZone);
+        _clock = clock;
     }
 
     public IList<LessonDto> GetLessons(string startTime, string endTime, TutorRole role)
@@ -248,6 +249,7 @@ public class TimetableService : ITimetableService
             DecodeExternalId(role.ExternalStudentId));
         if (attendance is null)
             return;
+        ValidateConfirmationTime(t, attendance);
         if (attendance.IsConfirmed is null)
         {
             attendance.IsConfirmed = confirmed;
@@ -259,6 +261,14 @@ public class TimetableService : ITimetableService
             if (attendance.IsConfirmed != confirmed)
                 throw new BadRequestException("Cannot change attendance status again.");
         }
+    }
+
+    private void ValidateConfirmationTime(ITransaction t, DbAttendance attendance)
+    {
+        var lesson = t.LessonDao.GetLessonById(attendance.LessonId)!;
+        var lessonStart = lesson.Timeslot!.StartTime;
+        if (lessonStart - AttendanceDeadline < _clock.Now)
+            throw new BadRequestException("Zbyt późna próba potwierdzenia obecności.");
     }
 
     public void EditLessonDetails(string externalLessonId, string newDescription, TutorRole role)
@@ -298,6 +308,8 @@ public class TimetableService : ITimetableService
         }
     }
 
+    private static readonly TimeSpan AttendanceDeadline = TimeSpan.FromHours(23);
     private readonly ITransactor _transactor;
     private readonly Scheduler _scheduler;
+    private readonly IClock _clock;
 }
