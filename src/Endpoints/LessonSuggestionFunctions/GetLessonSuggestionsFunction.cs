@@ -1,4 +1,5 @@
 ﻿using Amazon.Lambda.APIGatewayEvents;
+using Endpoints.Interfaces;
 using Endpoints.Interfaces.Authorization;
 
 namespace Endpoints.LessonSuggestionFunctions;
@@ -9,14 +10,21 @@ public class GetLessonSuggestionsFunction
     {
         return RestIo.HandleRestBoilerplateAsync(request, async identity =>
         {
-            var role = identity.RequireTutor();
             var suggestedStart = RestIo.GetOptionalQueryParameter(request, "suggestedStart");
             var suggestedEnd = RestIo.GetOptionalQueryParameter(request, "suggestedEnd");
-            var studentExternalId = RestIo.GetOptionalQueryParameter(request, "studentExternalId");
             var service = await ServiceFactory.CreateLessonSuggestionServiceAsync();
-            var lessonSuggestions = service.GetLessonSuggestion(
-                suggestedStart, suggestedEnd, studentExternalId, role);
-            return lessonSuggestions;
+            if (identity.AsStudent.HasValue)
+            {
+                var role = identity.RequireStudent();
+                return service.GetLessSuggsAsStudent(suggestedStart, suggestedEnd, role);
+            }
+            else
+            {
+                var role = identity.RequireTutor();
+                var studentExternalId = RestIo.GetOptionalQueryParameter(request, "studentExternalId");
+                return service.GetLessonSuggestion(
+                    suggestedStart, suggestedEnd, studentExternalId, role);
+            }
         });
     }
 }

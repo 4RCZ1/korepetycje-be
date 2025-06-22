@@ -49,7 +49,10 @@ public class LessonSuggestionService : ILessonSuggestionService
         };
 
         if (int.TryParse(lessonSuggestionToAdd.Lesson?.LessonId, out var lessonId))
+        {
             lSuggestion.Lesson = t.LessonDao.GetLessonById(lessonId);
+            IsLessonAcceptable(lSuggestion.Lesson, studentConnected);
+        }
 
         t.LessonSuggestionDao.SaveLessonSuggestion(lSuggestion);
         t.Commit();
@@ -70,14 +73,21 @@ public class LessonSuggestionService : ILessonSuggestionService
         DbLesson? connectedLesson = null;
         DbAddress? connectedAddress = null;
         using var t = _transactor.BeginTransaction();
-
-        if(int.TryParse(updatedLessonSuggestion.Lesson?.LessonId, out var lessonId))
+        
+        var lessSuggToUpdate = t.LessonSuggestionDao.GetLessSuggById(id);
+        if(lessSuggToUpdate == null)
+            throw new BadRequestException("The requested lesson suggestion does not exist!");
+        
+        if (int.TryParse(updatedLessonSuggestion.Lesson?.LessonId, out var lessonId))
+        {
             connectedLesson = t.LessonDao.GetLessonById(lessonId);
+            IsLessonAcceptable(connectedLesson, lessSuggToUpdate.Student!);
+        }
 
         if(int.TryParse(updatedLessonSuggestion.Address?.ExternalId, out var addressId))
             connectedAddress = t.AddressDao.GetAddress(addressId);
 
-        var lessSuggToUpdate = t.LessonSuggestionDao.GetLessSuggById(id);
+        
         lessSuggToUpdate.Timeslot.StartTime = updatedLessonSuggestion.SuggestedStart
                                               ?? lessSuggToUpdate.Timeslot.StartTime;
         lessSuggToUpdate.Timeslot.EndTime = updatedLessonSuggestion.SuggestedEnd
@@ -96,6 +106,16 @@ public class LessonSuggestionService : ILessonSuggestionService
         t.Commit();
     }
 
+    private static void IsLessonAcceptable(DbLesson? lesson, DbStudent student)
+    {
+        if(lesson == null)
+            throw new BadRequestException("The requested lesson does not exist!");
+        if(lesson.Attendances.Count>1)
+            throw new BadRequestException("Cannot create lesson suggestion for multiple students lesson!");
+        if(lesson.Attendances.SingleOrDefault()!.Student!.Id != student.Id)
+            throw new BadRequestException("The chosen student do not attend to chosen lesson!");
+    }
+
     public List<LessonSuggestionDto> GetLessonSuggestion(
         string? suggestedStart, string? suggestedEnd, string? studentExternalId, TutorRole role)
     {
@@ -110,13 +130,13 @@ public class LessonSuggestionService : ILessonSuggestionService
             LessonSuggestionDto lessSuggToGet = new LessonSuggestionDto()
             {
                 ExternalId = ls.Id.ToString(),
-                SuggestedStart = ls.Timeslot.StartTime,
-                SuggestedEnd = ls.Timeslot.EndTime,
+                SuggestedStart = ls.Timeslot?.StartTime,
+                SuggestedEnd = ls.Timeslot?.EndTime,
                 Address = new AddressDto()
                 {
-                    ExternalId = ls.Address.Id.ToString(),
-                    AddressData = ls.Address.AddressData,
-                    AddressName = ls.Address.AddressName
+                    ExternalId = ls.Address?.Id.ToString(),
+                    AddressData = ls.Address?.AddressData,
+                    AddressName = ls.Address?.AddressName
                 },
                 Lesson = ls.Lesson is null ? null : new LessonDto()
                 {
@@ -134,17 +154,59 @@ public class LessonSuggestionService : ILessonSuggestionService
                 },
                 Student = new StudentDto()
                 {
-                    ExternalId = ls.Student.Id.ToString(),
-                    Name = ls.Student.Name,
-                    Surname = ls.Student.Surname,
-                    PhoneNumber = ls.Student.PhoneNumber,
-                    IsDeleted = ls.Student.IsDeleted,
+                    ExternalId = ls.Student?.Id.ToString(),
+                    Name = ls.Student?.Name,
+                    Surname = ls.Student?.Surname,
+                    PhoneNumber = ls.Student?.PhoneNumber,
+                    IsDeleted = ls.Student?.IsDeleted,
                     Address = new AddressDto()
                     {
                         ExternalId = ls.Student?.Address?.Id.ToString(),
                         AddressData = ls.Student?.Address?.AddressData,
                         AddressName = ls.Student?.Address?.AddressName
                     }
+                }
+            };
+            lessonSuggestionsDto.Add(lessSuggToGet);
+        }
+
+        return lessonSuggestionsDto;
+    }
+
+    public List<LessonSuggestionDto> GetLessSuggsAsStudent(
+        string? suggestedStart, string? suggestedEnd, StudentRole role)
+    {
+        var startOffset = TryParseDateTime(suggestedStart) ?? DateTimeOffset.MinValue;
+        var endOffset = TryParseDateTime(suggestedEnd) ?? DateTimeOffset.MaxValue;
+        var studentId = int.Parse(role.ExternalStudentId);
+        using var t = _transactor.BeginTransaction();
+        var lessonSuggestions = t.LessonSuggestionDao.GetLessSugg(startOffset, endOffset, studentId);
+        List<LessonSuggestionDto> lessonSuggestionsDto = new List<LessonSuggestionDto>();
+        foreach (var ls in lessonSuggestions)
+        {
+            LessonSuggestionDto lessSuggToGet = new LessonSuggestionDto()
+            {
+                ExternalId = ls.Id.ToString(),
+                SuggestedStart = ls.Timeslot?.StartTime,
+                SuggestedEnd = ls.Timeslot?.EndTime,
+                Address = new AddressDto()
+                {
+                    ExternalId = ls.Address?.Id.ToString(),
+                    AddressData = ls.Address?.AddressData,
+                },
+                Lesson = ls.Lesson is null ? null : new LessonDto()
+                {
+                    LessonId = ls.Lesson?.Id.ToString() ?? "BRAK",
+                    Address = ls.Lesson?.Schedule?.Address?.AddressData ?? "BRAK",
+                    Attendances = ls.Lesson?.Attendances.Select(a => new AttendanceDto()
+                    {
+                        Confirmed = a.IsConfirmed,
+                        StudentName = a.Student?.Name ?? "BRAK",
+                        StudentSurname = a.Student?.Surname ?? "BRAK"
+                    }).ToList() ?? new List<AttendanceDto>(),
+                    Description = "",
+                    StartTime = ls.Lesson!.Timeslot.StartTime,
+                    EndTime = ls.Lesson!.Timeslot.EndTime
                 }
             };
             lessonSuggestionsDto.Add(lessSuggToGet);

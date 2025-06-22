@@ -304,6 +304,8 @@ DELETE /api/lesson-suggestion/{externalId}
 Zwraca: kod sukcesu/błędu
 
 Pobieranie Lesson suggestion
+Jako korepetytor wszystkie poniższe opcje są dostępne.
+Uczeń otrzymuje tylko swoje korepetycje oraz nie może użyć filtru studentExternalId.
 GET /api/lesson-suggestion - wszystkie
 GET /api/lesson-suggestion?studentExternalId=1 - powiązane z uczniem
 GET /api/lesson-suggestion?suggestedStart=2026-01-02T12:00:00.0000000Z - wszystkie od daty
