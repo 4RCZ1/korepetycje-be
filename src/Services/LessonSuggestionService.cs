@@ -51,12 +51,7 @@ public class LessonSuggestionService : ILessonSuggestionService
         if (int.TryParse(lessonSuggestionToAdd.Lesson?.LessonId, out var lessonId))
         {
             lSuggestion.Lesson = t.LessonDao.GetLessonById(lessonId);
-            if(lSuggestion.Lesson == null)
-                throw new BadRequestException("The requested lesson does not exist!");
-            if(lSuggestion.Lesson.Attendances.Count>1)
-                throw new BadRequestException("Cannot create lesson suggestion for multiple students lesson!");
-            if(lSuggestion.Lesson!.Attendances.SingleOrDefault()!.Student!.Id != studentConnected.Id)
-                throw new BadRequestException("The chosen student do not attend to chosen lesson!");
+            IsLessonAcceptable(lSuggestion.Lesson, studentConnected);
         }
 
         t.LessonSuggestionDao.SaveLessonSuggestion(lSuggestion);
@@ -86,12 +81,7 @@ public class LessonSuggestionService : ILessonSuggestionService
         if (int.TryParse(updatedLessonSuggestion.Lesson?.LessonId, out var lessonId))
         {
             connectedLesson = t.LessonDao.GetLessonById(lessonId);
-            if(connectedLesson == null)
-                throw new BadRequestException("The requested lesson does not exist!");
-            if(connectedLesson.Attendances.Count>1)
-                throw new BadRequestException("Cannot create lesson suggestion for multiple students lesson!");
-            if(connectedLesson.Attendances.SingleOrDefault()!.Student!.Id != lessSuggToUpdate.Student!.Id)
-                throw new BadRequestException("The chosen student do not attend to chosen lesson!");
+            IsLessonAcceptable(connectedLesson, lessSuggToUpdate.Student!);
         }
 
         if(int.TryParse(updatedLessonSuggestion.Address?.ExternalId, out var addressId))
@@ -114,6 +104,16 @@ public class LessonSuggestionService : ILessonSuggestionService
 
         t.LessonSuggestionDao.SaveLessonSuggestion(lessSuggToUpdate);
         t.Commit();
+    }
+
+    private static void IsLessonAcceptable(DbLesson? lesson, DbStudent student)
+    {
+        if(lesson == null)
+            throw new BadRequestException("The requested lesson does not exist!");
+        if(lesson.Attendances.Count>1)
+            throw new BadRequestException("Cannot create lesson suggestion for multiple students lesson!");
+        if(lesson.Attendances.SingleOrDefault()!.Student!.Id != student.Id)
+            throw new BadRequestException("The chosen student do not attend to chosen lesson!");
     }
 
     public List<LessonSuggestionDto> GetLessonSuggestion(

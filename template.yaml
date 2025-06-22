@@ -492,6 +492,6 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
         GetLessons:
           Type: Api
           Properties:
-            Path: /api/lesson-suggestion/{studentExternalId}
+            Path: /api/lesson-suggestion/student
             Method: get
             RestApiId: !Ref KorepetycjeApi
