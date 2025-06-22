@@ -32,7 +32,7 @@ public class EditLessonTests
             .MustHaveHappenedOnceExactly();
         A.CallTo(() => _dao.CreateSchedule(A<DbSchedule>.That.Matches(
                 s => s.Lessons
-                    .Select(l => l.Timeslot.StartTime)
+                    .Select(l => l.Timeslot!.StartTime)
                     .SequenceEqual(new[] { _newStartTime }))))
             .MustHaveHappenedOnceExactly();
         A.CallTo(() => _dao.RemoveEmptySchedules()).MustHaveHappenedOnceExactly();
@@ -50,7 +50,7 @@ public class EditLessonTests
         A.CallTo(() => _dao.CreateSchedule(A<DbSchedule>.That.Matches(s =>
                 s.Period == _week
                 && s.AddressId == AddressId
-                && s.Lessons.Select(l => l.Timeslot.StartTime)
+                && s.Lessons.Select(l => l.Timeslot!.StartTime)
                     .SequenceEqual(new[] { _newStartTime, _newStartTime + _week })
                 && s.Lessons.Select(l => l.TutorInfo).SequenceEqual(new[] { "info 1", "info 2" })
             )))
@@ -66,7 +66,7 @@ public class EditLessonTests
         A.CallTo(() => _dao.RemoveLessonsCascading(Ids(12, 13)))
             .MustHaveHappenedOnceExactly();
         A.CallTo(() => _dao.CreateSchedule(A<DbSchedule>.That.Matches(s =>
-                s.Lessons.Select(l => l.Timeslot.StartTime)
+                s.Lessons.Select(l => l.Timeslot!.StartTime)
                     .SequenceEqual(new[] { _newStartTime, _newStartTime + _week })
                 && s.Lessons.Select(l => l.TutorInfo).SequenceEqual(new[] { "info 1", "info 2" })
             )))

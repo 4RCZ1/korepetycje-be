@@ -42,7 +42,7 @@ public class TimetableService : ITimetableService
         return new LessonDto
         {
             LessonId = EncodeExternalId(lesson.Id),
-            StartTime = lesson.Timeslot.StartTime,
+            StartTime = lesson.Timeslot!.StartTime,
             EndTime = lesson.Timeslot.EndTime,
             Address = lesson.Schedule!.Address!.AddressData,
             Description = lesson.TutorInfo ?? string.Empty,
@@ -67,7 +67,7 @@ public class TimetableService : ITimetableService
         return new LessonDto
         {
             LessonId = EncodeExternalId(lesson.Id),
-            StartTime = lesson.Timeslot.StartTime,
+            StartTime = lesson.Timeslot!.StartTime,
             EndTime = lesson.Timeslot.EndTime,
             Address = lesson.Schedule!.Address!.AddressData,
             Description = string.Empty,
@@ -205,7 +205,7 @@ public class TimetableService : ITimetableService
         DbSchedule schedule, int lessonId, bool pickFutureLessons)
     {
         // Sorting might not be strictly necessary here, however not sorting would be brittle.
-        var sortedLessons = schedule.Lessons.OrderBy(l => l.Timeslot.StartTime);
+        var sortedLessons = schedule.Lessons.OrderBy(l => l.Timeslot!.StartTime);
         if (pickFutureLessons)
         {
             return sortedLessons.SkipWhile(l => l.Id != lessonId).ToList();
@@ -220,7 +220,7 @@ public class TimetableService : ITimetableService
         ICollection<DbLesson> lessons, DateTimeOffset newStartTime, DateTimeOffset newEndTime)
     {
         var newLessonTimes = _scheduler.RescheduleSeries(
-            lessons.Select(l => l.Timeslot.AsRange()).ToList(),
+            lessons.Select(l => l.Timeslot!.AsRange()).ToList(),
             newStartTime,
             newEndTime);
 

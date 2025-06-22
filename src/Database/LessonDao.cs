@@ -69,13 +69,13 @@ public class LessonDao : ILessonDao
             .AsNoTracking()
             .Include(s => s.Lessons)
             .ThenInclude(l => l.Timeslot)
-            .Include(s => s.Lessons.OrderBy(l => l.Timeslot.StartTime))
+            .Include(s => s.Lessons.OrderBy(l => l.Timeslot!.StartTime))
             .SingleOrDefault(s => s.Id == scheduleId);
     }
 
     public void CreateSchedule(DbSchedule schedule)
     {
-        var timeslotsToTake = schedule.Lessons.Select(l => l.Timeslot).ToList();
+        var timeslotsToTake = schedule.Lessons.Select(l => l.Timeslot!).ToList();
         if (DetectCollisions(timeslotsToTake))
             throw new ApplicationException("There are colliding lessons!");
         _context.Add(schedule);
