@@ -49,6 +49,7 @@ public class LessonSuggestionTests
         _service.AcceptSuggestion(ExternalSuggestionId, true, _role);
         A.CallTo(() => _lessonDao.RemoveLessonsCascading(new List<int> { OriginalLessonId }))
             .MustHaveHappenedOnceExactly();
+        A.CallTo(() => _lessonDao.RemoveEmptySchedules()).MustHaveHappened();
     }
 
     [Fact]

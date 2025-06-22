@@ -171,7 +171,10 @@ public class TimetableService : ITimetableService
             });
             t.LessonSuggestionDao.DeleteSuggestionPreservingTimeslot(suggestionId);
             if (suggestion.LessonId.HasValue)
+            {
                 t.LessonDao.RemoveLessonsCascading([suggestion.LessonId.Value]);
+                t.LessonDao.RemoveEmptySchedules();
+            }
         }
         else
         {
