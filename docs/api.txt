@@ -408,3 +408,17 @@ Modyfikuje sugerowany adres lekcji:
 }
 Oczywiście wszystkie powyższe mogą być dowolnie łączone.
 Zwraca: kod sukcesu/błędu
+
+
+Zatwierdzanie/odrzucanie sugestii lekcji (jako uczeń):
+POST /api/lesson-suggestion/1/accept
+Body:
+{
+    "accept": true
+}
+zaakceptuje sugestię lekcji o identyfikatorze "1".
+Schemat body:
+private class AcceptLessonSuggestionBody
+{
+    public required bool Accept { get; set; }
+}
