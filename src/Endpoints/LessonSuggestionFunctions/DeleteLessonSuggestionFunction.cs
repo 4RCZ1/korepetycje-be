@@ -11,7 +11,7 @@ public class DeleteLessonSuggestionFunction
         {
             var role = identity.RequireTutor();
             var service = await ServiceFactory.CreateLessonSuggestionServiceAsync();
-            var externalId = RestIo.GetPathParameter(request, "externalId");
+            var externalId = RestIo.GetPathParameter(request, "suggestionId");
             service.DeleteLessonSuggestion(externalId, role);
             return "";
         });

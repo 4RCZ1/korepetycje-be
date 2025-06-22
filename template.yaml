@@ -460,7 +460,7 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
         GetLessons:
           Type: Api
           Properties:
-            Path: /api/lesson-suggestion/{externalId}
+            Path: /api/lesson-suggestion/{suggestionId}
             Method: delete
             RestApiId: !Ref KorepetycjeApi
 
@@ -478,7 +478,7 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
         GetLessons:
           Type: Api
           Properties:
-            Path: /api/lesson-suggestion/{externalId}
+            Path: /api/lesson-suggestion/{suggestionId}
             Method: patch
             RestApiId: !Ref KorepetycjeApi
 

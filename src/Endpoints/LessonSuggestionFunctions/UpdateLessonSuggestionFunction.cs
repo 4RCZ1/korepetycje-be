@@ -12,7 +12,7 @@ public class UpdateLessonSuggestionFunction
         {
             var role = identity.RequireTutor();
             var service = await ServiceFactory.CreateLessonSuggestionServiceAsync();
-            var externalId = RestIo.GetPathParameter(request, "externalId");
+            var externalId = RestIo.GetPathParameter(request, "suggestionId");
             LessonSuggestionDto updatedLessonSuggestion = RestIo.ReadBody<LessonSuggestionDto>(request);
             service.UpdateLessonSuggestion(externalId, updatedLessonSuggestion, role);
             return "";
