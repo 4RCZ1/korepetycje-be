@@ -135,7 +135,7 @@ private class DeleteLessonRequestBody
 
 
 Zmiana czasu lekcji:
-PATCH localhost:3000/api/lesson/35
+POST /api/lesson/35/rebook
 Request body:
 {
     "startTime": "2025-08-01T12:00:00.0000000Z",
@@ -421,4 +421,18 @@ Schemat body:
 private class AcceptLessonSuggestionBody
 {
     public required bool Accept { get; set; }
+}
+
+
+Zmiana szczegółów lekcji (jako korepetytor):
+PATCH /api/lesson/16
+Body:
+{
+    "description": "weź cyrkiel"
+}
+zmieni notatkę na lekcji na podaną.
+Schemat body:
+private class EditLessonDetailsRequestBody
+{
+    public required string Description { get; set; }
 }
