@@ -110,13 +110,13 @@ public class LessonSuggestionService : ILessonSuggestionService
             LessonSuggestionDto lessSuggToGet = new LessonSuggestionDto()
             {
                 ExternalId = ls.Id.ToString(),
-                SuggestedStart = ls.Timeslot.StartTime,
-                SuggestedEnd = ls.Timeslot.EndTime,
+                SuggestedStart = ls.Timeslot?.StartTime,
+                SuggestedEnd = ls.Timeslot?.EndTime,
                 Address = new AddressDto()
                 {
-                    ExternalId = ls.Address.Id.ToString(),
-                    AddressData = ls.Address.AddressData,
-                    AddressName = ls.Address.AddressName
+                    ExternalId = ls.Address?.Id.ToString(),
+                    AddressData = ls.Address?.AddressData,
+                    AddressName = ls.Address?.AddressName
                 },
                 Lesson = ls.Lesson is null ? null : new LessonDto()
                 {
@@ -134,17 +134,59 @@ public class LessonSuggestionService : ILessonSuggestionService
                 },
                 Student = new StudentDto()
                 {
-                    ExternalId = ls.Student.Id.ToString(),
-                    Name = ls.Student.Name,
-                    Surname = ls.Student.Surname,
-                    PhoneNumber = ls.Student.PhoneNumber,
-                    IsDeleted = ls.Student.IsDeleted,
+                    ExternalId = ls.Student?.Id.ToString(),
+                    Name = ls.Student?.Name,
+                    Surname = ls.Student?.Surname,
+                    PhoneNumber = ls.Student?.PhoneNumber,
+                    IsDeleted = ls.Student?.IsDeleted,
                     Address = new AddressDto()
                     {
                         ExternalId = ls.Student?.Address?.Id.ToString(),
                         AddressData = ls.Student?.Address?.AddressData,
                         AddressName = ls.Student?.Address?.AddressName
                     }
+                }
+            };
+            lessonSuggestionsDto.Add(lessSuggToGet);
+        }
+
+        return lessonSuggestionsDto;
+    }
+
+    public List<LessonSuggestionDto> GetLessSuggsAsStudent(
+        string? suggestedStart, string? suggestedEnd, StudentRole role)
+    {
+        var startOffset = TryParseDateTime(suggestedStart) ?? DateTimeOffset.MinValue;
+        var endOffset = TryParseDateTime(suggestedEnd) ?? DateTimeOffset.MaxValue;
+        var studentId = int.Parse(role.ExternalStudentId);
+        using var t = _transactor.BeginTransaction();
+        var lessonSuggestions = t.LessonSuggestionDao.GetLessSugg(startOffset, endOffset, studentId);
+        List<LessonSuggestionDto> lessonSuggestionsDto = new List<LessonSuggestionDto>();
+        foreach (var ls in lessonSuggestions)
+        {
+            LessonSuggestionDto lessSuggToGet = new LessonSuggestionDto()
+            {
+                ExternalId = ls.Id.ToString(),
+                SuggestedStart = ls.Timeslot?.StartTime,
+                SuggestedEnd = ls.Timeslot?.EndTime,
+                Address = new AddressDto()
+                {
+                    ExternalId = ls.Address?.Id.ToString(),
+                    AddressData = ls.Address?.AddressData,
+                },
+                Lesson = ls.Lesson is null ? null : new LessonDto()
+                {
+                    LessonId = ls.Lesson?.Id.ToString() ?? "BRAK",
+                    Address = ls.Lesson?.Schedule?.Address?.AddressData ?? "BRAK",
+                    Attendances = ls.Lesson?.Attendances.Select(a => new AttendanceDto()
+                    {
+                        Confirmed = a.IsConfirmed,
+                        StudentName = a.Student?.Name ?? "BRAK",
+                        StudentSurname = a.Student?.Surname ?? "BRAK"
+                    }).ToList() ?? new List<AttendanceDto>(),
+                    Description = "",
+                    StartTime = ls.Lesson!.Timeslot.StartTime,
+                    EndTime = ls.Lesson!.Timeslot.EndTime
                 }
             };
             lessonSuggestionsDto.Add(lessSuggToGet);
