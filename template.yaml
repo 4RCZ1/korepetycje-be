@@ -34,6 +34,12 @@ Parameters:
   ProdCognitoData:
     Type: String
     Default: "prod/cognito"
+  DevCognitoPool:
+    Type: String
+    Default: "eu-central-1_bR9t8UHwC"
+  ProdCognitoPool:
+    Type: String
+    Default: "eu-central-1_Abc123456"
 
 Conditions:
   IsDevOrFeature: !Or
@@ -93,7 +99,23 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
                     - IsDevOrFeature
                     - !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${DevCognitoData}*"
                     - !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${ProdCognitoData}*"
-
+        - PolicyName: CognitoAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cognito-idp:AdminListGroupsForUser
+                  - cognito-idp:AdminGetUser
+                  - cognito-idp:AdminInitiateAuth
+                  - cognito-idp:AdminRespondToAuthChallenge
+                  - cognito-idp:AdminCreateUser
+                  - cognito-idp:AdminAddUserToGroup
+                Resource:
+                  - !If
+                    - IsDevOrFeature
+                    - !Sub "arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${DevCognitoPool}"
+                    - !Sub "arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${ProdCognitoPool}"
   RegisterStudentFunction:
     Type: AWS::Serverless::Function
     Properties:
