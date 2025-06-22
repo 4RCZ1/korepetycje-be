@@ -49,7 +49,15 @@ public class LessonSuggestionService : ILessonSuggestionService
         };
 
         if (int.TryParse(lessonSuggestionToAdd.Lesson?.LessonId, out var lessonId))
+        {
             lSuggestion.Lesson = t.LessonDao.GetLessonById(lessonId);
+            if(lSuggestion.Lesson == null)
+                throw new BadRequestException("The requested lesson does not exist!");
+            if(lSuggestion.Lesson.Attendances.Count>1)
+                throw new BadRequestException("Cannot create lesson suggestion for multiple students lesson!");
+            if(lSuggestion.Lesson!.Attendances.SingleOrDefault()!.Student!.Id != studentConnected.Id)
+                throw new BadRequestException("The chosen student do not attend to chosen lesson!");
+        }
 
         t.LessonSuggestionDao.SaveLessonSuggestion(lSuggestion);
         t.Commit();
