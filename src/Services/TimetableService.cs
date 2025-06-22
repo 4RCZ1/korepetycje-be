@@ -261,6 +261,17 @@ public class TimetableService : ITimetableService
         }
     }
 
+    public void EditLessonDetails(string externalLessonId, string newDescription, TutorRole role)
+    {
+        using var t = _transactor.BeginTransaction();
+        var lesson = t.LessonDao.GetLessonById(DecodeExternalId(externalLessonId));
+        if (lesson is null)
+            throw new BadRequestException("Lesson not found.");
+        lesson.TutorInfo = newDescription;
+        t.LessonDao.SaveLesson(lesson);
+        t.Commit();
+    }
+
     private static int DecodeExternalId(string externalId)
     {
         return int.Parse(externalId);

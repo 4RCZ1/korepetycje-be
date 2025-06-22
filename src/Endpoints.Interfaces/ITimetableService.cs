@@ -25,4 +25,5 @@ public interface ITimetableService
     void AcceptSuggestion(string externalSuggestionId, bool accept, StudentRole role);
     void DeleteLesson(string externalLessonId, bool deleteFutureLessons, TutorRole role);
     void ConfirmLesson(bool confirmed, string lessonExternalId, StudentRole role);
+    void EditLessonDetails(string externalLessonId, string newDescription, TutorRole role);
 }

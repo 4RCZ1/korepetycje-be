@@ -7,6 +7,7 @@ public interface ILessonDao
     DbAttendance? GetAttendance(int lessonId, int studentId);
     void SaveAttendance(DbAttendance attendance);
     DbLesson? GetLessonById(int lessonId);
+    void SaveLesson(DbLesson lesson);
     IList<DbLesson> GetLessonsInRange(
         DateTimeOffset startTime, DateTimeOffset endTime);
     IList<DbLesson> GetStudentLessonsInRange(

@@ -27,6 +27,11 @@ public class LessonDao : ILessonDao
         return _context.Lessons.AsNoTracking().SingleOrDefault(l => l.Id == lessonId);
     }
 
+    public void SaveLesson(DbLesson lesson)
+    {
+        _context.Lessons.Update(lesson);
+    }
+
     public IList<DbLesson> GetLessonsInRange(DateTimeOffset startTime, DateTimeOffset endTime)
     {
         return GetLessons()

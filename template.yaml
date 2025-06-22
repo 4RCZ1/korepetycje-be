@@ -238,6 +238,27 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
         GetLessons:
           Type: Api
           Properties:
+            Path: /api/lesson/{lessonId}/rebook
+            Method: post
+            RestApiId: !Ref KorepetycjeApi
+
+  EditLessonDetailsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/Endpoints/
+      Handler: Endpoints::Endpoints.EditLessonDetailsFunction::EditLessonDetails
+      Runtime: dotnet8
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Environment:
+        Variables:
+          ENVIRONMENT: !Ref Environment
+      Events:
+        GetLessons:
+          Type: Api
+          Properties:
             Path: /api/lesson/{lessonId}
             Method: patch
             RestApiId: !Ref KorepetycjeApi
