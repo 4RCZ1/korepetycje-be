@@ -48,11 +48,7 @@ public class LessonSuggestionService : ILessonSuggestionService
             Student = studentConnected,
         };
 
-        if (int.TryParse(lessonSuggestionToAdd.Lesson?.LessonId, out var lessonId))
-        {
-            lSuggestion.Lesson = t.LessonDao.GetLessonById(lessonId);
-            IsLessonAcceptable(lSuggestion.Lesson, studentConnected);
-        }
+        lSuggestion.Lesson = FetchAndVerifyLesson(t, lessonSuggestionToAdd, studentConnected);
 
         t.LessonSuggestionDao.SaveLessonSuggestion(lSuggestion);
         t.Commit();
@@ -70,24 +66,20 @@ public class LessonSuggestionService : ILessonSuggestionService
         string externalId, LessonSuggestionDto updatedLessonSuggestion, TutorRole role)
     {
         int id = int.Parse(externalId);
-        DbLesson? connectedLesson = null;
         DbAddress? connectedAddress = null;
         using var t = _transactor.BeginTransaction();
-        
+
         var lessSuggToUpdate = t.LessonSuggestionDao.GetLessSuggById(id);
         if(lessSuggToUpdate == null)
             throw new BadRequestException("The requested lesson suggestion does not exist!");
-        
-        if (int.TryParse(updatedLessonSuggestion.Lesson?.LessonId, out var lessonId))
-        {
-            connectedLesson = t.LessonDao.GetLessonById(lessonId);
-            IsLessonAcceptable(connectedLesson, lessSuggToUpdate.Student!);
-        }
+
+        var connectedLesson = FetchAndVerifyLesson(
+            t, updatedLessonSuggestion, lessSuggToUpdate.Student!);
 
         if(int.TryParse(updatedLessonSuggestion.Address?.ExternalId, out var addressId))
             connectedAddress = t.AddressDao.GetAddress(addressId);
 
-        
+
         lessSuggToUpdate.Timeslot.StartTime = updatedLessonSuggestion.SuggestedStart
                                               ?? lessSuggToUpdate.Timeslot.StartTime;
         lessSuggToUpdate.Timeslot.EndTime = updatedLessonSuggestion.SuggestedEnd
@@ -106,13 +98,26 @@ public class LessonSuggestionService : ILessonSuggestionService
         t.Commit();
     }
 
+    private static DbLesson? FetchAndVerifyLesson(
+        ITransaction t, LessonSuggestionDto suggestion, DbStudent student)
+    {
+        if (suggestion.Lesson is null)
+            return null;
+        var externalLessonId = suggestion.Lesson.LessonId;
+        if (!int.TryParse(externalLessonId, out var lessonId))
+            throw new BadRequestException("Invalid lesson ID.");
+        var lesson = t.LessonDao.GetLessonByIdWithAttendances(lessonId);
+        IsLessonAcceptable(lesson, student);
+        return lesson;
+    }
+
     private static void IsLessonAcceptable(DbLesson? lesson, DbStudent student)
     {
         if(lesson == null)
             throw new BadRequestException("The requested lesson does not exist!");
         if(lesson.Attendances.Count>1)
             throw new BadRequestException("Cannot create lesson suggestion for multiple students lesson!");
-        if(lesson.Attendances.SingleOrDefault()!.Student!.Id != student.Id)
+        if(lesson.Attendances.Single().StudentId != student.Id)
             throw new BadRequestException("The chosen student do not attend to chosen lesson!");
     }
 

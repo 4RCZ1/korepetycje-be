@@ -30,6 +30,15 @@ public class LessonDao : ILessonDao
             .SingleOrDefault(l => l.Id == lessonId);
     }
 
+    public DbLesson? GetLessonByIdWithAttendances(int lessonId)
+    {
+        return _context.Lessons
+            .AsNoTracking()
+            .Include(l => l.Timeslot)
+            .Include(l => l.Attendances)
+            .SingleOrDefault(l => l.Id == lessonId);
+    }
+
     public void SaveLesson(DbLesson lesson)
     {
         _context.Lessons.Update(lesson);
