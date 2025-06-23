@@ -40,6 +40,18 @@ public class EditLessonTests
     }
 
     [Fact]
+    public void CreateNullAttendances()
+    {
+        A.CallTo(() => _dao.GetScheduleById(ScheduleId))
+            .Returns(ScheduleWith([LessonToday]));
+        _service.EditLesson("12", _newStartTime, _newEndTime, false, _role);
+        A.CallTo(() => _dao.CreateSchedule(A<DbSchedule>.That.Matches(s =>
+            s.Lessons.Single().Attendances.Single().StudentId == StudentId
+            && s.Lessons.Single().Attendances.Single().IsConfirmed == null
+            ))).MustHaveHappenedOnceExactly();
+    }
+
+    [Fact]
     public void ValidateTimeRange()
     {
         var action = () => _service.EditLesson("12", _newEndTime, _newStartTime, false, _role);
@@ -139,6 +151,10 @@ public class EditLessonTests
             StartTime = _oldStartTime,
             EndTime = _oldEndTime,
         },
+        Attendances =
+        [
+            new DbAttendance { LessonId = 12, StudentId = StudentId, IsConfirmed = true }
+        ]
     };
 
     private DbLesson LessonInAWeek => new()
@@ -176,6 +192,7 @@ public class EditLessonTests
     private const int EditedLessonId = 12;
     private const int AddressId = 101;
     private const int ScheduleId = 201;
+    private const int StudentId = 301;
 
     private readonly TutorRole _role = new();
     private readonly ITransactor _transactor = A.Fake<ITransactor>();

@@ -255,6 +255,12 @@ public class TimetableService : ITimetableService
         {
             TutorInfo = lesson.TutorInfo,
             Timeslot = new DbTimeslot { StartTime = range.Start, EndTime = range.End },
+            Attendances = lesson.Attendances.Select(a => new DbAttendance
+            {
+                StudentId = a.StudentId,
+                IsConfirmed = null,
+                HasOccurred = false,
+            }).ToList(),
         }).ToList();
     }
 
