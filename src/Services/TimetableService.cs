@@ -99,6 +99,7 @@ public class TimetableService : ITimetableService
     {
         ValidateTimeRange(firstStart, firstEnd);
         ValidateTimeRange(firstStart, scheduleEnd);
+        ValidateSchedulePeriod(periodInDays);
         var plan = _scheduler.Plan(
             new TimeRange { Start = firstStart, End = firstEnd },
             scheduleEnd,
@@ -124,6 +125,13 @@ public class TimetableService : ITimetableService
         using var t = _transactor.BeginTransaction();
         t.LessonDao.CreateSchedule(schedule);
         t.Commit();
+    }
+
+    private static void ValidateSchedulePeriod(int periodInDays)
+    {
+        List<int> allowedPeriods = [7, 14];
+        if (!allowedPeriods.Contains(periodInDays))
+            throw new BadRequestException("Nieprawidłowa okresowość lekcji.");
     }
 
     public void EditLesson(
