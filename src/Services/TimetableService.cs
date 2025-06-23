@@ -97,6 +97,8 @@ public class TimetableService : ITimetableService
         IList<string> externalStudentIds,
         TutorRole role)
     {
+        ValidateTimeRange(firstStart, firstEnd);
+        ValidateTimeRange(firstStart, scheduleEnd);
         var plan = _scheduler.Plan(
             new TimeRange { Start = firstStart, End = firstEnd },
             scheduleEnd,
@@ -131,6 +133,7 @@ public class TimetableService : ITimetableService
         bool editFutureLessons,
         TutorRole role)
     {
+        ValidateTimeRange(newStartTime, newEndTime);
         using var t = _transactor.BeginTransaction();
         var lessonId = int.Parse(lessonExternalId);
         var lessonToEdit = t.LessonDao.GetLessonById(lessonId);
@@ -147,6 +150,12 @@ public class TimetableService : ITimetableService
         });
         t.LessonDao.RemoveEmptySchedules();
         t.Commit();
+    }
+
+    private static void ValidateTimeRange(DateTimeOffset start, DateTimeOffset end)
+    {
+        if (end <= start)
+            throw new BadRequestException("Przekazano niepoprawne czasy.");
     }
 
     public void AcceptSuggestion(string externalSuggestionId, bool accept, StudentRole role)

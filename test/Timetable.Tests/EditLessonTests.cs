@@ -40,6 +40,13 @@ public class EditLessonTests
     }
 
     [Fact]
+    public void ValidateTimeRange()
+    {
+        var action = () => _service.EditLesson("12", _newEndTime, _newStartTime, false, _role);
+        Assert.Throws<BadRequestException>(action);
+    }
+
+    [Fact]
     public void EditWholeSchedule()
     {
         A.CallTo(() => _dao.GetScheduleById(ScheduleId))
