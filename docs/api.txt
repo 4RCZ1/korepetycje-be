@@ -229,9 +229,6 @@ W sytuacji poniższej:
 Zostanie utworzony nowy adres, a "AddressData" zostanie skopiowane z dotychczasowego adresu ucznia
 Zwraca: kod sukcesu/błędu
 
-Usuwanie ucznia:
-/api/student/{studentExternalId}
-Zwraca: kod sukcesu/błędu
 _________
 ADDRESS
 Pobieranie adresu:
