@@ -17,7 +17,15 @@ public class RegisterStudentFunction
             var authService = await ServiceFactory.CreateAuthenticationService();
             var studentService = await ServiceFactory.CreateStudentServiceAsync();
             var externalStudentId = studentService.AddStudent(body, role);
-            await authService.RegisterStudentAsync(externalStudentId, body.Email, role);
+            try
+            {
+                await authService.RegisterStudentAsync(externalStudentId, body.Email, role);
+            }
+            catch (Exception)
+            {
+                studentService.DeleteStudent(externalStudentId, role);
+                throw;
+            }
             return string.Empty;
         });
     }
