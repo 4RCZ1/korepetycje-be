@@ -87,6 +87,7 @@ public class LessonDao : ILessonDao
             .Include(s => s.Lessons)
             .ThenInclude(l => l.Timeslot)
             .Include(s => s.Lessons.OrderBy(l => l.Timeslot!.StartTime))
+            .ThenInclude(l => l.Attendances)
             .SingleOrDefault(s => s.Id == scheduleId);
     }
 
