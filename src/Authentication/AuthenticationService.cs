@@ -1,5 +1,3 @@
-using System.Security.Cryptography;
-using System.Text;
 using Amazon.CognitoIdentityProvider;
 using Amazon.CognitoIdentityProvider.Model;
 using Endpoints.Interfaces;
@@ -21,48 +19,29 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task RegisterStudentAsync(string externalStudentId, string email, TutorRole role)
     {
-        var createUserResponse = await _identityProvider.AdminCreateUserAsync(
-            new AdminCreateUserRequest
-            {
-                DesiredDeliveryMediums = ["EMAIL"],
-                UserPoolId = _userPoolId,
-                Username = email,
-                UserAttributes =
-                [
-                    new AttributeType
-                    {
-                        Name = "email",
-                        Value = email,
-                    },
-                    new AttributeType
-                    {
-                        Name = StudentIdAttributeName,
-                        Value = externalStudentId,
-                    },
-                ],
-            });
-        await _identityProvider.AdminAddUserToGroupAsync(
-            new AdminAddUserToGroupRequest
-            {
-                UserPoolId = _userPoolId,
-                Username = createUserResponse.User.Username,
-                GroupName = StudentGroupName,
-            });
+        var createUserResponse = await _client.AdminCreateUserAsync(
+            username: email,
+            _userPoolId,
+            [
+                new AttributeType
+                {
+                    Name = "email",
+                    Value = email,
+                },
+                new AttributeType
+                {
+                    Name = StudentIdAttributeName,
+                    Value = externalStudentId,
+                },
+            ]);
+        await _client.AdminAddUserToGroupAsync(
+            createUserResponse.User.Username, StudentGroupName, _userPoolId);
     }
 
     public async Task<LoginDto> LogInAsync(string username, string password)
     {
-        var initAuthResponse = await _identityProvider.InitiateAuthAsync(new InitiateAuthRequest
-        {
-            AuthFlow = AuthFlowType.USER_PASSWORD_AUTH,
-            AuthParameters = new Dictionary<string, string>
-            {
-                { "USERNAME", username },
-                { "PASSWORD", password },
-                { "SECRET_HASH", ComputeSecretHash(username) },
-            },
-            ClientId = _appClientId,
-        });
+        var initAuthResponse = await _client.InitiateAuthAsync(
+            username, password, _appClientId, _appClientSecret);
         if (initAuthResponse.AuthenticationResult is not null)
             return await SuccessfulLogin(initAuthResponse.AuthenticationResult.AccessToken);
 
@@ -82,35 +61,18 @@ public class AuthenticationService : IAuthenticationService
     public async Task<LoginDto> ChangePasswordAsync(
         string authSession, string username, string newPassword)
     {
-        var response = await _identityProvider.RespondToAuthChallengeAsync(
-            new RespondToAuthChallengeRequest
-            {
-                ChallengeName = ChallengeNameType.NEW_PASSWORD_REQUIRED,
-                ClientId = _appClientId,
-                Session = authSession,
-                ChallengeResponses = new Dictionary<string, string>
-                {
-                    { "USERNAME", username },
-                    { "NEW_PASSWORD", newPassword },
-                    { "SECRET_HASH", ComputeSecretHash(username) },
-                },
-            });
+        var response = await _client.RespondToAuthChallengeAsync(
+            authSession, username, newPassword, _appClientId, _appClientSecret);
         if (response.AuthenticationResult is not null)
             return await SuccessfulLogin(response.AuthenticationResult.AccessToken);
-
         throw new ApplicationException($"Further challenge: {response.ChallengeName.Value}");
     }
 
     public async Task<UserIdentity> AuthenticateAsync(string accessToken)
     {
-        var response = await _identityProvider.GetUserAsync(
-            new GetUserRequest { AccessToken = accessToken });
-        var groupResponse = await _identityProvider.AdminListGroupsForUserAsync(
-            new AdminListGroupsForUserRequest
-            {
-                Username = response.Username,
-                UserPoolId = _userPoolId,
-            });
+        var response = await _client.GetUserAsync(accessToken);
+        var groupResponse = await _client.AdminListGroupsForUserAsync(
+            response.Username, _userPoolId);
         if (groupResponse.Groups.Any(g => g.GroupName == StudentGroupName))
         {
             var studentIdAttribute =
@@ -126,14 +88,6 @@ public class AuthenticationService : IAuthenticationService
         if (groupResponse.Groups.Any(g => g.GroupName == TutorGroupName))
             return new UserIdentity { AsTutor = new TutorRole() };
         throw new ApplicationException(UserWithoutGroupErrorMessage);
-    }
-
-    private string ComputeSecretHash(string username)
-    {
-        var ascii = new ASCIIEncoding();
-        var hmac = new HMACSHA256(ascii.GetBytes(_appClientSecret));
-        var hash = hmac.ComputeHash(ascii.GetBytes(username + _appClientId));
-        return Convert.ToBase64String(hash);
     }
 
     private async Task<LoginDto> SuccessfulLogin(string accessToken)
@@ -164,5 +118,5 @@ public class AuthenticationService : IAuthenticationService
     private readonly string _userPoolId;
     private readonly string _appClientId;
     private readonly string _appClientSecret;
-    private readonly AmazonCognitoIdentityProviderClient _identityProvider = new();
+    private readonly CognitoClient _client = new();
 }
