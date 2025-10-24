@@ -1,3 +1,4 @@
+using Endpoints.Dto;
 using Endpoints.Interfaces.Authorization;
 
 namespace Endpoints.Interfaces;

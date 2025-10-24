@@ -1,4 +1,5 @@
 using Amazon.Lambda.APIGatewayEvents;
+using Endpoints.Dto;
 using Endpoints.Interfaces;
 using Endpoints.Interfaces.Authorization;
 

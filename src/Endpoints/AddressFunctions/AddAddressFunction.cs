@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
+using Endpoints.Dto;
 using Endpoints.Interfaces;
 using Endpoints.Interfaces.Authorization;
 
