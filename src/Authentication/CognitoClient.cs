@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Amazon.CognitoIdentityProvider;
 using Amazon.CognitoIdentityProvider.Model;
+using Endpoints.Interfaces;
 
 namespace Authentication;
 
@@ -9,7 +10,16 @@ internal class CognitoClient
 {
     public async Task<GetUserResponse> GetUserAsync(string accessToken)
     {
-        return await _impl.GetUserAsync(new GetUserRequest { AccessToken = accessToken });
+        try
+        {
+            return await _impl.GetUserAsync(new GetUserRequest { AccessToken = accessToken });
+        }
+        catch (NotAuthorizedException)
+        {
+            throw new BadRequestException(
+                "Wystąpił błąd uwierzytelniania." +
+                " Spróbuj odświeżyć stronę lub zalogować się ponownie.");
+        }
     }
 
     public async Task<AdminListGroupsForUserResponse> AdminListGroupsForUserAsync(
