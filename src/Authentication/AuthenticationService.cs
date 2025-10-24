@@ -1,5 +1,6 @@
 using Amazon.CognitoIdentityProvider;
 using Amazon.CognitoIdentityProvider.Model;
+using Endpoints.Dto;
 using Endpoints.Interfaces;
 using Endpoints.Interfaces.Authorization;
 

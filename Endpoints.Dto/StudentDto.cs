@@ -1,4 +1,4 @@
-﻿namespace Endpoints.Interfaces;
+﻿namespace Endpoints.Dto;
 
 public class StudentDto
 {
