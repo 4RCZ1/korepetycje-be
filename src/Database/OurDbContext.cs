@@ -1,18 +1,13 @@
 ﻿using Database.Entities;
 using Microsoft.EntityFrameworkCore;
-using Timetable.Interfaces;
 
 namespace Database;
 
-public class OurDbContext : DbContext, ITransaction
+public class OurDbContext : DbContext
 {
     public OurDbContext(string connection)
     {
         _connection = connection;
-        LessonDao = new LessonDao(this);
-        StudentDao = new StudentDao(this);
-        AddressDao = new AddressDao(this);
-        LessonSuggestionDao = new LessonSuggestionDao(this);
     }
 
     public OurDbContext()
@@ -27,16 +22,6 @@ public class OurDbContext : DbContext, ITransaction
     public DbSet<DbLessonSuggestion> LessonSuggestions { get; set; }
     public DbSet<DbAttendance> Attendances { get; set; }
     public DbSet<DbAddress> Addresses { get; set; }
-
-    public ILessonDao LessonDao { get; }
-    public IStudentDao StudentDao { get; }
-    public IAddressDao AddressDao { get; }
-    public ILessonSuggestionDao LessonSuggestionDao { get; }
-
-    public void Commit()
-    {
-        SaveChanges();
-    }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

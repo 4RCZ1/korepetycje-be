@@ -5,14 +5,15 @@ using Timetable.Interfaces;
 
 namespace Database;
 
-public class LessonSuggestionDao : ILessonSuggestionDao
+internal class LessonSuggestionDao : ILessonSuggestionDao
 {
-    private readonly OurDbContext _context;
+    private readonly TenantContext _context;
 
-    public LessonSuggestionDao(OurDbContext context)
+    public LessonSuggestionDao(TenantContext context)
     {
         _context = context;
     }
+
     public void SaveLessonSuggestion(DbLessonSuggestion lessonSuggestion)
     {
         _context.LessonSuggestions.Update(lessonSuggestion);
@@ -21,6 +22,7 @@ public class LessonSuggestionDao : ILessonSuggestionDao
     public void DeleteLessonSuggestion(int id)
     {
         var suggestionToDelete = _context.LessonSuggestions
+            .Query()
             .Include(s => s.Timeslot)
             .SingleOrDefault(s => s.Id == id);
         if (suggestionToDelete is not null)
@@ -33,6 +35,7 @@ public class LessonSuggestionDao : ILessonSuggestionDao
     public void DeleteSuggestionPreservingTimeslot(int id)
     {
         var suggestionToDelete = _context.LessonSuggestions
+            .Query()
             .SingleOrDefault(s => s.Id == id);
         if (suggestionToDelete is not null)
             _context.LessonSuggestions.Remove(suggestionToDelete);
@@ -40,7 +43,7 @@ public class LessonSuggestionDao : ILessonSuggestionDao
 
     public List<DbLessonSuggestion> GetLessSugg(DateTimeOffset start, DateTimeOffset end, int? studentId)
     {
-        var lessonSuggestions = _context.LessonSuggestions
+        var lessonSuggestions = _context.LessonSuggestions.Query()
             .Include(ls => ls.Student)
                 .ThenInclude(s => s.Address)
             .Include(ls => ls.Lesson)
@@ -61,7 +64,7 @@ public class LessonSuggestionDao : ILessonSuggestionDao
 
     public DbLessonSuggestion GetLessSuggById(int id)
     {
-        var lessSugg = _context.LessonSuggestions
+        var lessSugg = _context.LessonSuggestions.Query()
             .Include(ls => ls.Student)
                 .ThenInclude(s => s.Address)
             .Include(ls => ls.Address)

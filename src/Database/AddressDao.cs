@@ -4,21 +4,21 @@ using Timetable.Interfaces;
 
 namespace Database;
 
-public class AddressDao : IAddressDao
+internal class AddressDao : IAddressDao
 {
-    public AddressDao(OurDbContext context)
+    public AddressDao(TenantContext context)
     {
         _context = context;
     }
 
     public DbAddress? GetAddress(int addressId)
     {
-        return _context.Addresses.AsNoTracking().SingleOrDefault(x => x.Id == addressId);
+        return _context.Addresses.Query().AsNoTracking().SingleOrDefault(x => x.Id == addressId);
     }
 
     public List<DbAddress> GetAddresses()
     {
-        return _context.Addresses.AsNoTracking().ToList();
+        return _context.Addresses.Query().AsNoTracking().ToList();
     }
 
     public void SaveAddress(DbAddress address)
@@ -28,17 +28,19 @@ public class AddressDao : IAddressDao
 
     public void DeleteAddress(int addressId)
     {
-        var addressToDelete = _context.Addresses.SingleOrDefault(x => x.Id == addressId);
+        var addressToDelete = _context.Addresses.Query().SingleOrDefault(x => x.Id == addressId);
         if (addressToDelete != null)
             _context.Addresses.Remove(addressToDelete);
     }
 
     public List<DbStudent> GetStudents(int addressId)
     {
-        return _context.Students.AsNoTracking().Where(x => x.AddressId == addressId).ToList();
+        return _context.Students
+            .Query()
+            .AsNoTracking()
+            .Where(x => x.AddressId == addressId)
+            .ToList();
     }
 
-    private readonly OurDbContext _context;
-
-
+    private readonly TenantContext _context;
 }

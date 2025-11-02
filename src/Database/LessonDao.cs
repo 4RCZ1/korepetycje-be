@@ -4,16 +4,16 @@ using Timetable.Interfaces;
 
 namespace Database;
 
-public class LessonDao : ILessonDao
+internal class LessonDao : ILessonDao
 {
-    public LessonDao(OurDbContext context)
+    public LessonDao(TenantContext context)
     {
         _context = context;
     }
 
     public DbAttendance? GetAttendance(int lessonId, int studentId)
     {
-        return _context.Attendances.AsNoTracking().SingleOrDefault(
+        return _context.Attendances.Query().AsNoTracking().SingleOrDefault(
             a => a.LessonId == lessonId && a.StudentId == studentId);
     }
 
@@ -25,6 +25,7 @@ public class LessonDao : ILessonDao
     public DbLesson? GetLessonById(int lessonId)
     {
         return _context.Lessons
+            .Query()
             .AsNoTracking()
             .Include(l => l.Timeslot)
             .SingleOrDefault(l => l.Id == lessonId);
@@ -33,6 +34,7 @@ public class LessonDao : ILessonDao
     public DbLesson? GetLessonByIdWithAttendances(int lessonId)
     {
         return _context.Lessons
+            .Query()
             .AsNoTracking()
             .Include(l => l.Timeslot)
             .Include(l => l.Attendances)
@@ -63,6 +65,7 @@ public class LessonDao : ILessonDao
     private IQueryable<DbLesson> GetLessons()
     {
         return _context.Lessons
+            .Query()
             .AsNoTracking()
             .Include(l => l.Schedule)
             .ThenInclude(s => s!.Address)
@@ -73,8 +76,9 @@ public class LessonDao : ILessonDao
 
     public void RemoveLessonsCascading(IList<int> lessonIds)
     {
-        var lessonsToRemove = _context.Lessons.Where(l => lessonIds.Contains(l.Id));
+        var lessonsToRemove = _context.Lessons.Query().Where(l => lessonIds.Contains(l.Id));
         var timeslotsToCascade = _context.Timeslots
+            .Query()
             .Where(t => lessonsToRemove.Any(l => l.TimeslotId == t.Id));
         _context.Lessons.RemoveRange(lessonsToRemove);
         _context.Timeslots.RemoveRange(timeslotsToCascade);
@@ -83,6 +87,7 @@ public class LessonDao : ILessonDao
     public DbSchedule? GetScheduleById(int scheduleId)
     {
         return _context.Schedules
+            .Query()
             .AsNoTracking()
             .Include(s => s.Lessons)
             .ThenInclude(l => l.Timeslot)
@@ -96,17 +101,18 @@ public class LessonDao : ILessonDao
         var timeslotsToTake = schedule.Lessons.Select(l => l.Timeslot!).ToList();
         if (DetectCollisions(timeslotsToTake))
             throw new ApplicationException("There are colliding lessons!");
-        _context.Add(schedule);
+        _context.Schedules.Add(schedule);
     }
 
     private bool DetectCollisions(List<DbTimeslot> timeslotsToSave)
     {
-        var deletedTimeslotIds = _context.ChangeTracker.Entries<DbTimeslot>()
-            .Where(entry => entry.State == EntityState.Deleted)
-            .Select(entry => entry.Entity.Id)
+        var deletedTimeslotIds = _context.Timeslots
+            .GetFreshlyDeleted()
+            .Select(ts => ts.Id)
             .ToList();
         // Updating timeslots is not supported here.
         return timeslotsToSave.Where(IsTimeslotNew).Any(nts => _context.Timeslots
+            .Query()
             .AsNoTracking()
             .Where(ts => !deletedTimeslotIds.Contains(ts.Id))
             .Any(TimeslotDaoConditions.TimeslotOverlap(nts)));
@@ -120,6 +126,7 @@ public class LessonDao : ILessonDao
     public List<DbTimeslot> GetTimeslots()
     {
         return _context.Timeslots
+            .Query()
             .AsNoTracking()
             .ToList();
     }
@@ -132,8 +139,8 @@ public class LessonDao : ILessonDao
 
     public void RemoveEmptySchedules()
     {
-        var emptySchedules = _context.Schedules.Where(s => s.Lessons.Count == 0);
-        _context.RemoveRange(emptySchedules);
+        var emptySchedules = _context.Schedules.Query().Where(s => s.Lessons.Count == 0);
+        _context.Schedules.RemoveRange(emptySchedules);
     }
 
     private static List<DbTimeslot> GetCollidingTimeslots(
@@ -146,5 +153,5 @@ public class LessonDao : ILessonDao
             .ToList();
     }
 
-    private readonly OurDbContext _context;
+    private readonly TenantContext _context;
 }

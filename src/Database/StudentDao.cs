@@ -4,11 +4,11 @@ using Timetable.Interfaces;
 
 namespace Database;
 
-public class StudentDao : IStudentDao
+internal class StudentDao : IStudentDao
 {
-    private readonly OurDbContext _context;
+    private readonly TenantContext _context;
 
-    public StudentDao(OurDbContext context)
+    public StudentDao(TenantContext context)
     {
         _context = context;
     }
@@ -27,14 +27,15 @@ public class StudentDao : IStudentDao
     private IQueryable<DbStudent> QueryStudents(bool includeDeleted, int? lessonId)
     {
         IQueryable<DbStudent> query = _context.Students
+            .Query()
             .AsNoTracking()
             .Include(s => s.Address);
         if (includeDeleted)
             query = query.IgnoreQueryFilters();
         if (lessonId is not null)
         {
-            query = query.Where(s =>
-                _context.Attendances.Any(a => a.LessonId == lessonId && a.StudentId == s.Id));
+            query = query.Where(s => _context.Attendances
+                .Query().Any(a => a.LessonId == lessonId && a.StudentId == s.Id));
         }
         return query;
     }
@@ -46,7 +47,7 @@ public class StudentDao : IStudentDao
 
     public void DeleteStudent(int studentId)
     {
-        var studentToDelete = _context.Students.SingleOrDefault(s => s.Id == studentId);
+        var studentToDelete = _context.Students.Query().SingleOrDefault(s => s.Id == studentId);
         if (studentToDelete is not null)
         {
             studentToDelete.Address = null;
