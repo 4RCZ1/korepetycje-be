@@ -11,7 +11,7 @@ public class GetLessonSuggestionsFunction
         {
             var suggestedStart = RestIo.GetOptionalQueryParameter(request, "suggestedStart");
             var suggestedEnd = RestIo.GetOptionalQueryParameter(request, "suggestedEnd");
-            var service = await ServiceFactory.CreateLessonSuggestionServiceAsync();
+            var service = await ServiceFactory.CreateLessonSuggestionServiceAsync(identity);
             if (identity.AsStudent.HasValue)
             {
                 var role = identity.RequireStudent();

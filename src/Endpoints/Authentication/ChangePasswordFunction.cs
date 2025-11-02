@@ -1,4 +1,3 @@
-using Amazon.CognitoIdentityProvider.Model;
 using Amazon.Lambda.APIGatewayEvents;
 
 namespace Endpoints.Authentication;

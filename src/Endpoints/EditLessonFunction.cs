@@ -17,7 +17,7 @@ public class EditLessonFunction
         return RestIo.HandleRestBoilerplateAsync(request, async identity =>
         {
             var role = identity.RequireTutor();
-            var service = await ServiceFactory.CreateTimetableServiceAsync();
+            var service = await ServiceFactory.CreateTimetableServiceAsync(identity);
             var lessonExternalId = RestIo.GetPathParameter(request, "lessonId");
             var body = RestIo.ReadBody<EditLessonRequestBody>(request);
             service.EditLesson(

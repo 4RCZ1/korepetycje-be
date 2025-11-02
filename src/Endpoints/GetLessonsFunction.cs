@@ -9,7 +9,7 @@ public class GetLessonsFunction
     {
         return RestIo.HandleRestBoilerplateAsync(request, async identity =>
         {
-            var service = await ServiceFactory.CreateTimetableServiceAsync();
+            var service = await ServiceFactory.CreateTimetableServiceAsync(identity);
             if (identity.AsStudent.HasValue)
             {
                 return service.GetLessonsAsStudent(

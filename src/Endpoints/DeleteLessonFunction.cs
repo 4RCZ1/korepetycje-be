@@ -16,7 +16,7 @@ public class DeleteLessonFunction
         return RestIo.HandleRestBoilerplateAsync(request, async identity =>
         {
             var role = identity.RequireTutor();
-            var service = await ServiceFactory.CreateTimetableServiceAsync();
+            var service = await ServiceFactory.CreateTimetableServiceAsync(identity);
             var body = RestIo.ReadBody<DeleteLessonRequestBody>(request);
             service.DeleteLesson(body.LessonId, body.DeleteFutureLessons, role);
             return string.Empty;

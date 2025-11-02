@@ -5,6 +5,7 @@ using Amazon.SecretsManager.Model;
 using Authentication;
 using Database;
 using Endpoints.Interfaces;
+using Endpoints.Interfaces.Authorization;
 using Services;
 using Timetable.Interfaces;
 
@@ -21,11 +22,11 @@ internal static class ServiceFactory
             cognitoSecret["client_app_secret"]);
     }
 
-    public static async Task<ITimetableService> CreateTimetableServiceAsync()
+    public static async Task<ITimetableService> CreateTimetableServiceAsync(UserIdentity identity)
     {
-        var connection = await Connection;
+        var transactor = await CreateTransactor(identity);
         var timeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Warsaw");
-        return new TimetableService(new Transactor(connection), timeZone, new Clock());
+        return new TimetableService(transactor, timeZone, new Clock());
     }
 
     private class Clock : IClock
@@ -33,22 +34,23 @@ internal static class ServiceFactory
         public DateTimeOffset Now => DateTimeOffset.UtcNow;
     }
 
-    public static async Task<IAddressService> CreateAddressServiceAsync()
+    public static async Task<IAddressService> CreateAddressServiceAsync(UserIdentity identity)
     {
-        var connection = await Connection;
-        return new AddressService(new Transactor(connection));
+        var transactor = await CreateTransactor(identity);
+        return new AddressService(transactor);
     }
 
-    public static async Task<IStudentService> CreateStudentServiceAsync()
+    public static async Task<IStudentService> CreateStudentServiceAsync(UserIdentity identity)
     {
-        var connection = await Connection;
-        return new StudentService(new Transactor(connection));
+        var transactor = await CreateTransactor(identity);
+        return new StudentService(transactor);
     }
 
-    public static async Task<ILessonSuggestionService> CreateLessonSuggestionServiceAsync()
+    public static async Task<ILessonSuggestionService> CreateLessonSuggestionServiceAsync(
+        UserIdentity identity)
     {
-        var connection = await Connection;
-        return new LessonSuggestionService(new Transactor(connection));
+        var transactor = await CreateTransactor(identity);
+        return new LessonSuggestionService(transactor);
     }
 
     private static async Task<string> GetConnectionStringAsync()
@@ -67,7 +69,7 @@ internal static class ServiceFactory
                $"User Id={usernamePassword["username"]};Password={usernamePassword["password"]}";
     }
 
-    public static async Task<IDictionary<string, string>> GetSecretAsync(string secretName)
+    private static async Task<IDictionary<string, string>> GetSecretAsync(string secretName)
     {
         const string region = "eu-central-1";
 
@@ -80,6 +82,12 @@ internal static class ServiceFactory
         var response = await client.GetSecretValueAsync(request);
         return JsonSerializer.Deserialize<IDictionary<string, string>>(response.SecretString)
                ?? throw new Exception("AWS secret deserialized to null.");
+    }
+
+    private static async Task<ITransactor> CreateTransactor(UserIdentity identity)
+    {
+        var connection = await Connection;
+        return new Transactor(connection, identity.ExternalTenantId);
     }
 
     private static readonly Task<string> Connection = GetConnectionStringAsync();

@@ -18,7 +18,7 @@ public class AcceptLessonSuggestionFunction
             var role = identity.RequireStudent();
             var suggestionId = RestIo.GetPathParameter(request, "suggestionId");
             var body = RestIo.ReadBody<AcceptLessonSuggestionBody>(request);
-            var service = await ServiceFactory.CreateTimetableServiceAsync();
+            var service = await ServiceFactory.CreateTimetableServiceAsync(identity);
             service.AcceptSuggestion(suggestionId, body.Accept, role);
             return string.Empty;
         });

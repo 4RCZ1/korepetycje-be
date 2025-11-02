@@ -10,7 +10,7 @@ public class GetStudentsFunction
         return await RestIo.HandleRestBoilerplateAsync(request, async identity =>
         {
             var role = identity.RequireTutor();
-            var service = await ServiceFactory.CreateStudentServiceAsync();
+            var service = await ServiceFactory.CreateStudentServiceAsync(identity);
             var includeDeletedString = RestIo.GetOptionalQueryParameter(request, "includeDeleted");
             bool.TryParse(includeDeletedString, out var includeDeleted);
             var lessonExternalId = RestIo.GetOptionalQueryParameter(request, "lessonId");

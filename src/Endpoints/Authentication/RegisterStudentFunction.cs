@@ -16,11 +16,12 @@ public class RegisterStudentFunction
             if (body.Email is null)
                 throw new BadRequestException("Email is required.");
             var authService = await ServiceFactory.CreateAuthenticationService();
-            var studentService = await ServiceFactory.CreateStudentServiceAsync();
+            var studentService = await ServiceFactory.CreateStudentServiceAsync(identity);
             var externalStudentId = studentService.AddStudent(body, role);
             try
             {
-                await authService.RegisterStudentAsync(externalStudentId, body.Email, role);
+                await authService.RegisterStudentAsync(
+                    externalStudentId, body.Email, identity.ExternalTenantId, role);
             }
             catch (Exception)
             {

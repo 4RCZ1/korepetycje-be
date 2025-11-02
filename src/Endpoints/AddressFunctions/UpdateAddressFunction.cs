@@ -1,8 +1,5 @@
-﻿using System.Text.Json;
-using Amazon.Lambda.APIGatewayEvents;
-using Amazon.Lambda.Core;
+﻿using Amazon.Lambda.APIGatewayEvents;
 using Endpoints.Dto;
-using Endpoints.Interfaces;
 using Endpoints.Interfaces.Authorization;
 
 namespace Endpoints.AddressFunctions;
@@ -15,7 +12,7 @@ public class UpdateAddressFunction
         return await RestIo.HandleRestBoilerplateAsync(request, async identity =>
         {
             var role = identity.RequireTutor();
-            var service = await ServiceFactory.CreateAddressServiceAsync();
+            var service = await ServiceFactory.CreateAddressServiceAsync(identity);
             if (request.Body is null)
             {
                 throw new NullReferenceException("Request body is null");

@@ -11,7 +11,7 @@ public class GetAddressesFunction
         return await RestIo.HandleRestBoilerplateAsync(request, async identity =>
         {
             var role = identity.RequireTutor();
-            var service = await ServiceFactory.CreateAddressServiceAsync();
+            var service = await ServiceFactory.CreateAddressServiceAsync(identity);
             var addresses = service.GetAddresses(role);
             return addresses;
         });

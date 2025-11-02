@@ -20,7 +20,7 @@ public class PlanLessonsFunction
         return RestIo.HandleRestBoilerplateAsync(request, async identity =>
         {
             var role = identity.RequireTutor();
-            var service = await ServiceFactory.CreateTimetableServiceAsync();
+            var service = await ServiceFactory.CreateTimetableServiceAsync(identity);
             var body = RestIo.ReadBody<PlanLessonsRequestBody>(request);
             service.PlanLessons(
                 body.FirstStartTime,

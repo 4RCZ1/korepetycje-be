@@ -18,7 +18,7 @@ public class EditLessonDetailsFunction
             var role = identity.RequireTutor();
             var externalLessonId = RestIo.GetPathParameter(request, "lessonId");
             var body = RestIo.ReadBody<EditLessonDetailsRequestBody>(request);
-            var service = await ServiceFactory.CreateTimetableServiceAsync();
+            var service = await ServiceFactory.CreateTimetableServiceAsync(identity);
             service.EditLessonDetails(externalLessonId, body.Description, role);
             return string.Empty;
         });

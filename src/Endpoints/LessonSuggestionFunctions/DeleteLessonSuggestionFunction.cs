@@ -10,7 +10,7 @@ public class DeleteLessonSuggestionFunction
         return RestIo.HandleRestBoilerplateAsync(request, async identity =>
         {
             var role = identity.RequireTutor();
-            var service = await ServiceFactory.CreateLessonSuggestionServiceAsync();
+            var service = await ServiceFactory.CreateLessonSuggestionServiceAsync(identity);
             var externalId = RestIo.GetPathParameter(request, "suggestionId");
             service.DeleteLessonSuggestion(externalId, role);
             return "";

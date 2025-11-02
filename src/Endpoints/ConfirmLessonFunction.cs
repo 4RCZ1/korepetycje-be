@@ -15,7 +15,7 @@ public class ConfirmLessonFunction
         return RestIo.HandleRestBoilerplateAsync(request, async identity =>
         {
             var role = identity.RequireStudent();
-            var service = await ServiceFactory.CreateTimetableServiceAsync();
+            var service = await ServiceFactory.CreateTimetableServiceAsync(identity);
             var lessonExternalId = RestIo.GetPathParameter(request, "lessonId");
             var body = RestIo.ReadBody<ConfirmLessonRequestBody>(request);
             service.ConfirmLesson(body.Confirmed, lessonExternalId, role);
