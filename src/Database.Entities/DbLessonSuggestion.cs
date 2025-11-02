@@ -1,12 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Database.Entities;
 
+[PrimaryKey(nameof(Id), nameof(TenantId))]
 [Table("lesson_suggestion")]
-public class DbLessonSuggestion
+public class DbLessonSuggestion : TenantEntity
 {
-    [Key]
     [Column("lesson_suggestion_id")]
     public int Id { get; set; }
 
@@ -25,15 +26,15 @@ public class DbLessonSuggestion
     [Column("address_id")]
     public int AddressId { get; set; }
 
-    [ForeignKey(nameof(LessonId))]
+    [ForeignKey($"{nameof(LessonId)}, {nameof(TenantId)}")]
     public DbLesson? Lesson { get; set; }
 
-    [ForeignKey(nameof(TimeslotId))]
+    [ForeignKey($"{nameof(TimeslotId)}, {nameof(TenantId)}")]
     public DbTimeslot? Timeslot { get; set; }
 
-    [ForeignKey(nameof(StudentId))]
+    [ForeignKey($"{nameof(StudentId)}, {nameof(TenantId)}")]
     public DbStudent? Student { get; set; }
 
-    [ForeignKey(nameof(AddressId))]
+    [ForeignKey($"{nameof(AddressId)}, {nameof(TenantId)}")]
     public DbAddress? Address { get; set; }
 }

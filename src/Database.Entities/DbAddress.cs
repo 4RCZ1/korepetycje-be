@@ -1,12 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Database.Entities;
 
+[PrimaryKey(nameof(Id), nameof(TenantId))]
 [Table("address")]
-public class DbAddress
+public class DbAddress : TenantEntity
 {
-    [Key]
     [Column("address_id")]
     public int Id { get; set; }
 

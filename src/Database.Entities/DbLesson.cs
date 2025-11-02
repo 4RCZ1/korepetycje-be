@@ -1,12 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Database.Entities;
 
+[PrimaryKey(nameof(Id), nameof(TenantId))]
 [Table("lesson")]
-public class DbLesson
+public class DbLesson : TenantEntity
 {
-    [Key]
     [Column("lesson_id")]
     public int Id { get; set; }
 
@@ -22,10 +23,10 @@ public class DbLesson
     [Column("tutor_info")]
     public string? TutorInfo { get; set; }
 
-    [ForeignKey(nameof(TimeslotId))]
+    [ForeignKey($"{nameof(TimeslotId)}, {nameof(TenantId)}")]
     public DbTimeslot? Timeslot { get; set; }
 
-    [ForeignKey(nameof(ScheduleId))]
+    [ForeignKey($"{nameof(ScheduleId)}, {nameof(TenantId)}")]
     public DbSchedule? Schedule { get; set; }
 
     public ICollection<DbAttendance> Attendances { get; set; } = new List<DbAttendance>();

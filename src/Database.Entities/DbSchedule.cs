@@ -1,12 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Database.Entities;
 
+[PrimaryKey(nameof(Id), nameof(TenantId))]
 [Table("schedule")]
-public class DbSchedule
+public class DbSchedule : TenantEntity
 {
-    [Key]
     [Column("schedule_id")]
     public int Id { get; set; }
 
@@ -17,7 +18,7 @@ public class DbSchedule
     [Column("period")]
     public TimeSpan? Period { get; set; }
 
-    [ForeignKey(nameof(AddressId))]
+    [ForeignKey($"{nameof(AddressId)}, {nameof(TenantId)}")]
     public DbAddress? Address { get; set; }
 
     public ICollection<DbLesson> Lessons { get; set; } = new List<DbLesson>();
