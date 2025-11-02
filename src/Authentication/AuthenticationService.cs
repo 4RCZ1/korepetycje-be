@@ -18,7 +18,8 @@ public class AuthenticationService : IAuthenticationService
         _appClientSecret = appClientSecret;
     }
 
-    public async Task RegisterStudentAsync(string externalStudentId, string email, TutorRole role)
+    public async Task RegisterStudentAsync(
+        string externalStudentId, string email, string externalTenantId, TutorRole role)
     {
         var createUserResponse = await _client.AdminCreateUserAsync(
             username: email,
@@ -33,6 +34,11 @@ public class AuthenticationService : IAuthenticationService
                 {
                     Name = StudentIdAttributeName,
                     Value = externalStudentId,
+                },
+                new AttributeType
+                {
+                    Name = TenantIdAttributeName,
+                    Value = externalTenantId,
                 },
             ]);
         await _client.AdminAddUserToGroupAsync(
@@ -76,19 +82,37 @@ public class AuthenticationService : IAuthenticationService
             response.Username, _userPoolId);
         if (groupResponse.Groups.Any(g => g.GroupName == StudentGroupName))
         {
-            var studentIdAttribute =
-                response.UserAttributes.Find(a => a.Name == StudentIdAttributeName);
-            if (studentIdAttribute is null)
-                throw new ApplicationException("Student without ID encountered.");
             return new UserIdentity
             {
-                AsStudent = new StudentRole { ExternalStudentId = studentIdAttribute.Value },
+                AsStudent = new StudentRole
+                {
+                    ExternalStudentId = GetUserAttribute(response, StudentIdAttributeName),
+                },
+                ExternalTenantId = GetUserAttribute(response, TenantIdAttributeName),
             };
         }
 
         if (groupResponse.Groups.Any(g => g.GroupName == TutorGroupName))
-            return new UserIdentity { AsTutor = new TutorRole() };
+        {
+            return new UserIdentity
+            {
+                AsTutor = new TutorRole(),
+                ExternalTenantId = GetUserAttribute(response, TenantIdAttributeName),
+            };
+        }
+
         throw new ApplicationException(UserWithoutGroupErrorMessage);
+    }
+
+    private static string GetUserAttribute(GetUserResponse response, string attributeName)
+    {
+        var attribute = response.UserAttributes.Find(a => a.Name == attributeName);
+        if (attribute is null)
+        {
+            throw new ApplicationException(
+                $"Missing user attribute {attribute} for user {response.Username}");
+        }
+        return attribute.Value;
     }
 
     private async Task<LoginDto> SuccessfulLogin(string accessToken)
@@ -114,6 +138,7 @@ public class AuthenticationService : IAuthenticationService
     private const string StudentGroupName = "students";
     private const string TutorGroupName = "tutors";
     private const string StudentIdAttributeName = "custom:student_id";
+    private const string TenantIdAttributeName = "custom:tenant_id";
     private const string UserWithoutGroupErrorMessage = "User not in any group encountered.";
 
     private readonly string _userPoolId;
