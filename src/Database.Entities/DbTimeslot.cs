@@ -1,13 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Database.Entities;
 
-[PrimaryKey(nameof(Id), nameof(TenantId))]
 [Table("timeslot")]
 public class DbTimeslot : TenantEntity
 {
+    [Key]
     [Column("timeslot_id")]
     public int Id { get; set; }
 

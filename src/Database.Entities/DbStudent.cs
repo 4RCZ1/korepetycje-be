@@ -1,13 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Database.Entities;
 
-[PrimaryKey(nameof(Id), nameof(TenantId))]
 [Table("student")]
 public class DbStudent : TenantEntity, ISoftDelete
 {
+    [Key]
     [Column("student_id")]
     public int Id { get; set; }
 
@@ -36,6 +35,6 @@ public class DbStudent : TenantEntity, ISoftDelete
     [Column("deleted_at")]
     public DateTimeOffset? DeletedAt { get; set; }
 
-    [ForeignKey($"{nameof(AddressId)}, {nameof(TenantId)}")]
+    [ForeignKey(nameof(AddressId))]
     public DbAddress? Address { get; set; }
 }

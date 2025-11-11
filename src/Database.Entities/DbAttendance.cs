@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Database.Entities;
 
-[PrimaryKey(nameof(LessonId), nameof(StudentId), nameof(TenantId))]
+[PrimaryKey(nameof(LessonId), nameof(StudentId))]
 [Table("attendance")]
 public class DbAttendance : TenantEntity
 {
@@ -21,9 +21,9 @@ public class DbAttendance : TenantEntity
     [Column("has_occurred")]
     public bool HasOccurred { get; set; }
 
-    [ForeignKey($"{nameof(StudentId)}, {nameof(TenantId)}")]
+    [ForeignKey(nameof(StudentId))]
     public DbStudent? Student { get; set; }
 
-    [ForeignKey($"{nameof(LessonId)}, {nameof(TenantId)}")]
+    [ForeignKey(nameof(LessonId))]
     public DbLesson? Lesson { get; set; }
 }
