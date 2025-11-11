@@ -110,7 +110,7 @@ public class AuthenticationService : IAuthenticationService
         if (attribute is null)
         {
             throw new ApplicationException(
-                $"Missing user attribute {attribute} for user {response.Username}");
+                $"Missing user attribute {attributeName} for user {response.Username}");
         }
         return attribute.Value;
     }
@@ -138,7 +138,7 @@ public class AuthenticationService : IAuthenticationService
     private const string StudentGroupName = "students";
     private const string TutorGroupName = "tutors";
     private const string StudentIdAttributeName = "custom:student_id";
-    private const string TenantIdAttributeName = "custom:tenant_id";
+    private const string TenantIdAttributeName = "custom:tenant_id_2";
     private const string UserWithoutGroupErrorMessage = "User not in any group encountered.";
 
     private readonly string _userPoolId;
