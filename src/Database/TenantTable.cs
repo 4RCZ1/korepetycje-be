@@ -27,13 +27,13 @@ public class TenantTable<TEntity> : ITable<TEntity> where TEntity : TenantEntity
 
     public void Add(TEntity entity)
     {
-        entity.TenantId = _tenantId;
+        entity.SetTenantId(_tenantId);
         _impl.Add(entity);
     }
 
     public void Update(TEntity entity)
     {
-        entity.TenantId = _tenantId;
+        entity.SetTenantId(_tenantId);
         _impl.Update(entity);
     }
 
