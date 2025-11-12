@@ -1,7 +1,7 @@
 ﻿using Database.Entities;
 using Endpoints.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Timetable.Interfaces;
+using Services.Interfaces;
 
 namespace Database;
 

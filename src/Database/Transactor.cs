@@ -1,4 +1,4 @@
-using Timetable.Interfaces;
+using Services.Interfaces;
 
 namespace Database;
 

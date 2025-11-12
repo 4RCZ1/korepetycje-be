@@ -21,7 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\Timetable.Interfaces\Timetable.Interfaces.csproj" />
+      <ProjectReference Include="..\..\src\Services.Interfaces\Services.Interfaces.csproj" />
       <ProjectReference Include="..\..\src\Services\Services.csproj" />
     </ItemGroup>
 

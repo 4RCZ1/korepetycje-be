@@ -538,3 +538,39 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
             Path: /api/lesson-suggestion/{suggestionId}/accept
             Method: post
             RestApiId: !Ref KorepetycjeApi
+
+  DownloadResource:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/Endpoints/
+      Handler: Endpoints::Endpoints.Resources.DownloadResourceFunction::DownloadResource
+      Runtime: dotnet8
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        GetLessons:
+          Type: Api
+          Properties:
+            Path: /api/resource/{resourceGuid}
+            Method: get
+            RestApiId: !Ref KorepetycjeApi
+
+  UploadResource:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/Endpoints/
+      Handler: Endpoints::Endpoints.Resources.UploadResourceFunction::UploadResource
+      Runtime: dotnet8
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        GetLessons:
+          Type: Api
+          Properties:
+            Path: /api/resource/
+            Method: post
+            RestApiId: !Ref KorepetycjeApi

@@ -6,8 +6,9 @@ using Authentication;
 using Database;
 using Endpoints.Interfaces;
 using Endpoints.Interfaces.Authorization;
+using FileStorage;
 using Services;
-using Timetable.Interfaces;
+using Services.Interfaces;
 
 namespace Endpoints;
 
@@ -51,6 +52,13 @@ internal static class ServiceFactory
     {
         var transactor = await CreateTransactor(identity);
         return new LessonSuggestionService(transactor);
+    }
+
+    public static async Task<IResourceService> CreateResourceServiceAsync(UserIdentity identity)
+    {
+        var transactor = await CreateTransactor(identity);
+        const string bucketName = "tutorea-resources-dev-f863b0d1-02a3-4948-a64d-50d602431542";
+        return new ResourceService(transactor, new S3Client(bucketName));
     }
 
     private static async Task<string> GetConnectionStringAsync()

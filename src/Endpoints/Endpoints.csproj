@@ -19,7 +19,8 @@
     <ItemGroup>
       <ProjectReference Include="..\Authentication\Authentication.csproj" />
       <ProjectReference Include="..\Database\Database.csproj" />
-      <ProjectReference Include="..\Timetable.Interfaces\Timetable.Interfaces.csproj" />
+      <ProjectReference Include="..\FileStorage\FileStorage.csproj" />
+      <ProjectReference Include="..\Services.Interfaces\Services.Interfaces.csproj" />
       <ProjectReference Include="..\Services\Services.csproj" />
     </ItemGroup>
 </Project>

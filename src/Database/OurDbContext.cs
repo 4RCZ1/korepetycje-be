@@ -22,6 +22,13 @@ public class OurDbContext : DbContext
     public DbSet<DbLessonSuggestion> LessonSuggestions { get; set; }
     public DbSet<DbAttendance> Attendances { get; set; }
     public DbSet<DbAddress> Addresses { get; set; }
+    public DbSet<DbTutor> Tutors { get; set; }
+    public DbSet<DbResource> Resources { get; set; }
+    public DbSet<DbResourceGroup> ResourceGroups { get; set; }
+    public DbSet<DbResourceMembership> ResourceMemberships { get; set; }
+    public DbSet<DbStudentGroup> StudentGroups { get; set; }
+    public DbSet<DbStudentMembership> StudentMemberships { get; set; }
+    public DbSet<DbAccessPolicy> AccessPolicies { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

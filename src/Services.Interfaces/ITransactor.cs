@@ -1,4 +1,4 @@
-namespace Timetable.Interfaces;
+namespace Services.Interfaces;
 
 public interface ITransactor
 {

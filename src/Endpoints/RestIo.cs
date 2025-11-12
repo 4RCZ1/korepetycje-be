@@ -102,6 +102,13 @@ public static class RestIo
         return parameter;
     }
 
+    public static Guid GetPathGuid(APIGatewayProxyRequest request, string name)
+    {
+        if (!Guid.TryParse(GetPathParameter(request, name), out var guid))
+            throw new BadRequestException($"Bad GUID: {name}");
+        return guid;
+    }
+
     private static APIGatewayProxyResponse OkJson(Object objectToSerialize)
     {
         return new APIGatewayProxyResponse

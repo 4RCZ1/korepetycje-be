@@ -2,7 +2,7 @@
 using Endpoints.Dto;
 using Endpoints.Interfaces;
 using Endpoints.Interfaces.Authorization;
-using Timetable.Interfaces;
+using Services.Interfaces;
 
 namespace Services;
 

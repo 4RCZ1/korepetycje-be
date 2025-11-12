@@ -7,8 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Endpoints.Interfaces\Endpoints.Interfaces.csproj" />
       <ProjectReference Include="..\Services.Interfaces\Services.Interfaces.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="AWSSDK.S3" Version="4.0.11.1" />
     </ItemGroup>
 
 </Project>

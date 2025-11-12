@@ -9,7 +9,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Database.Entities\Database.Entities.csproj" />
       <ProjectReference Include="..\Endpoints.Interfaces\Endpoints.Interfaces.csproj" />
-      <ProjectReference Include="..\Timetable.Interfaces\Timetable.Interfaces.csproj" />
+      <ProjectReference Include="..\Services.Interfaces\Services.Interfaces.csproj" />
     </ItemGroup>
 
     <ItemGroup>

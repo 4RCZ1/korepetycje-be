@@ -2,11 +2,11 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Endpoints", "src\Endpoints\Endpoints.csproj", "{CD608D3D-8F73-4523-8285-479B834D9E80}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Timetable.Interfaces", "src\Timetable.Interfaces\Timetable.Interfaces.csproj", "{610CF6C7-3337-44CA-8AF5-434A33D0A410}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.Interfaces", "src\Services.Interfaces\Services.Interfaces.csproj", "{610CF6C7-3337-44CA-8AF5-434A33D0A410}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "src\Services\Services.csproj", "{E5EF0DB8-313C-4DD3-A3C6-9615F39DF762}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Timetable.Tests", "test\Timetable.Tests\Timetable.Tests.csproj", "{56B8692C-C15B-4894-8923-E2C5FDB18F2D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.Tests", "test\Services.Tests\Services.Tests.csproj", "{56B8692C-C15B-4894-8923-E2C5FDB18F2D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database", "src\Database\Database.csproj", "{D5AAE659-E260-42DF-AAA9-3A93031A1ADB}"
 EndProject
@@ -19,6 +19,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authentication", "src\Authentication\Authentication.csproj", "{DD74B117-7D47-40AA-BF7C-CF0F0218AC77}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Endpoints.Dto", "Endpoints.Dto\Endpoints.Dto.csproj", "{51EB8ECA-9746-47A4-8557-1C1778F42D7D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileStorage", "src\FileStorage\FileStorage.csproj", "{C1FE7F57-D74E-42D2-AC34-E9CB08739420}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -66,5 +68,9 @@ Global
 		{51EB8ECA-9746-47A4-8557-1C1778F42D7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{51EB8ECA-9746-47A4-8557-1C1778F42D7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{51EB8ECA-9746-47A4-8557-1C1778F42D7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1FE7F57-D74E-42D2-AC34-E9CB08739420}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1FE7F57-D74E-42D2-AC34-E9CB08739420}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1FE7F57-D74E-42D2-AC34-E9CB08739420}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1FE7F57-D74E-42D2-AC34-E9CB08739420}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

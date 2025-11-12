@@ -1,6 +1,6 @@
 ﻿using Database.Entities;
 using Microsoft.EntityFrameworkCore;
-using Timetable.Interfaces;
+using Services.Interfaces;
 
 namespace Database;
 

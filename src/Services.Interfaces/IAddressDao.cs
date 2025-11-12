@@ -1,6 +1,6 @@
 ﻿using Database.Entities;
 
-namespace Timetable.Interfaces;
+namespace Services.Interfaces;
 
 public interface IAddressDao
 {

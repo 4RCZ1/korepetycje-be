@@ -1,6 +1,4 @@
-using Services;
-
-namespace Timetable.Tests;
+namespace Services.Tests;
 
 public class SchedulerTimezoneTests
 {

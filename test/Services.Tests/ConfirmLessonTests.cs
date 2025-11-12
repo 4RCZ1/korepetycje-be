@@ -2,10 +2,9 @@ using Database.Entities;
 using Endpoints.Interfaces;
 using Endpoints.Interfaces.Authorization;
 using FakeItEasy;
-using Services;
-using Timetable.Interfaces;
+using Services.Interfaces;
 
-namespace Timetable.Tests;
+namespace Services.Tests;
 
 public class ConfirmLessonTests
 {
