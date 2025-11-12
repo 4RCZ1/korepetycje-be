@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Endpoints.Dto\Endpoints.Dto.csproj" />
+      <ProjectReference Include="..\Endpoints.Dto\Endpoints.Dto.csproj" />
     </ItemGroup>
 
 </Project>
