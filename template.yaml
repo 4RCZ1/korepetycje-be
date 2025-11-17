@@ -71,12 +71,6 @@ Resources:
         Status: Enabled
       LifecycleConfiguration:
         Rules:
-          - Id: DeleteOldVersions
-            Status: Enabled
-            NoncurrentVersionExpirationInDays: 7
-            NoncurrentVersionTransitions:
-              - StorageClass: GLACIER
-                TransitionInDays: 3
           - Id: ExpireOldVersions
             Status: Enabled
             NoncurrentVersionExpiration:
