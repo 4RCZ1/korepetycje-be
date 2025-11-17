@@ -81,6 +81,21 @@ Resources:
             Transitions:
               - StorageClass: GLACIER_IR
                 TransitionInDays: 30
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - '*'
+            AllowedMethods:
+              - GET
+              - PUT
+              - POST
+              - DELETE
+              - HEAD
+            AllowedOrigins:
+              - '*'
+            ExposedHeaders:
+              - ETag
+            MaxAge: 3000
       Tags:
         - Key: Environment
           Value: !Ref Environment
