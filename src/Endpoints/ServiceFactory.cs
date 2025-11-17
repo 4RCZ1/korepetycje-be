@@ -57,7 +57,8 @@ internal static class ServiceFactory
     public static async Task<IResourceService> CreateResourceServiceAsync(UserIdentity identity)
     {
         var transactor = await CreateTransactor(identity);
-        const string bucketName = "tutorea-resources-dev-f863b0d1-02a3-4948-a64d-50d602431542";
+        var bucketName = Environment.GetEnvironmentVariable("S3_BUCKET_NAME")
+                         ?? throw new Exception("S3_BUCKET_NAME environment variable not set");
         return new ResourceService(transactor, new S3Client(bucketName));
     }
 

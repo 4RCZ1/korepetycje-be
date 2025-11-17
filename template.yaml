@@ -54,8 +54,46 @@ Globals:
     Environment:
       Variables:
         KOREPETYCJE_POSTGRES: ""
+        S3_BUCKET_NAME: !Ref ResourcesBucket
 
-Resources:  # IAM Role for Lambda functions with SecretsManager access to environment-specific secrets
+Resources:
+  # S3 Bucket for storing tutor resources (files, documents, etc.)
+  ResourcesBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub 'korepetycje-resources-${Environment}-${AWS::AccountId}'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteOldVersions
+            Status: Enabled
+            NoncurrentVersionExpirationInDays: 7
+            NoncurrentVersionTransitions:
+              - StorageClass: GLACIER
+                TransitionInDays: 3
+          - Id: ExpireOldVersions
+            Status: Enabled
+            NoncurrentVersionExpiration:
+              NoncurrentDays: 7
+              NewerNoncurrentVersions: 3
+          - Id: ArchiveInactiveFiles
+            Status: Enabled
+            Transitions:
+              - StorageClass: GLACIER_IR
+                Days: 30
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Application
+          Value: Korepetycje
+
+  # IAM Role for Lambda functions with SecretsManager and S3 access to environment-specific secrets
   KorepetycjeApi:
     Type: AWS::Serverless::Api
     Properties:
@@ -116,6 +154,19 @@ Resources:  # IAM Role for Lambda functions with SecretsManager access to enviro
                     - IsDevOrFeature
                     - !Sub "arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${DevCognitoPool}"
                     - !Sub "arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${ProdCognitoPool}"
+        - PolicyName: S3Access
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:DeleteObject
+                  - s3:ListBucket
+                Resource:
+                  - !GetAtt ResourcesBucket.Arn
+                  - !Sub '${ResourcesBucket.Arn}/*'
   RegisterStudentFunction:
     Type: AWS::Serverless::Function
     Properties:
