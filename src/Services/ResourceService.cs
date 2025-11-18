@@ -14,6 +14,16 @@ public class ResourceService : IResourceService
         _fileStorage = fileStorage;
     }
 
+    public IList<ResourceDto> GetResources(TutorRole role)
+    {
+        using var t = _transactor.BeginTransaction();
+        return t.ResourceDao.GetAllResources().Select(r => new ResourceDto
+        {
+            Id = r.Guid.ToString(),
+            Name = r.Filename,
+        }).ToList();
+    }
+
     public ResourceUrlDto GetDownloadUrlForTutor(Guid externalResourceId, TutorRole role)
     {
         using var t = _transactor.BeginTransaction();

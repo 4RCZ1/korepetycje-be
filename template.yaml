@@ -599,6 +599,24 @@ Resources:
             Method: post
             RestApiId: !Ref KorepetycjeApi
 
+  GetResources:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/Endpoints/
+      Handler: Endpoints::Endpoints.Resources.GetResourcesFunction::GetResources
+      Runtime: dotnet8
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        GetLessons:
+          Type: Api
+          Properties:
+            Path: /api/resource/list
+            Method: get
+            RestApiId: !Ref KorepetycjeApi
+
   DownloadResource:
     Type: AWS::Serverless::Function
     Properties:

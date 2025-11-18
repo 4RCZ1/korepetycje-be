@@ -15,6 +15,11 @@ internal class ResourceDao : IResourceDao
         return _context.Resources.Query().SingleOrDefault(r => r.Guid == guid);
     }
 
+    public IList<DbResource> GetAllResources()
+    {
+        return _context.Resources.Query().ToList();
+    }
+
     public void SaveSingleResource(string filename, string singleGroupName)
     {
         _context.ResourceMemberships.Add(new DbResourceMembership
