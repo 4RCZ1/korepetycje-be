@@ -20,28 +20,30 @@ public class ResourceService : IResourceService
         var resource = t.ResourceDao.GetResourceByGuid(externalResourceId);
         return new ResourceUrlDto
         {
-            Url = GetDownloadUrl(resource),
+            Url = GetDownloadUrl(resource, t),
         };
     }
 
-    private string? GetDownloadUrl(DbResource? resource)
+    private string? GetDownloadUrl(DbResource? resource, ITransaction t)
     {
         if (resource == null)
             return null;
-        return _fileStorage.GetDownloadUrl(resource.FilePath);
+        return _fileStorage.GetDownloadUrl(GetFilePath(resource.Filename, t));
     }
 
     public ResourceUrlDto BeginUpload(string filename, TutorRole role)
     {
         using var t = _transactor.BeginTransaction();
-        var tutor = t.TutorDao.GetTutor();
-        var filePath = $"{tutor.ResourcePathPrefix}/{filename}";
-        t.ResourceDao.SaveSingleResource(filePath, $"(single) {filename}");
+        var url = _fileStorage.GetUploadUrl(GetFilePath(filename, t));
+        t.ResourceDao.SaveSingleResource(filename, $"(single) {filename}");
         t.Commit();
-        return new ResourceUrlDto
-        {
-            Url = _fileStorage.GetUploadUrl(filePath),
-        };
+        return new ResourceUrlDto { Url = url };
+    }
+
+    private static string GetFilePath(string filename, ITransaction t)
+    {
+        var tutor = t.TutorDao.GetTutor();
+        return $"{tutor.ResourcePathPrefix}/{filename}";
     }
 
     private readonly IFileStorageClient _fileStorage;

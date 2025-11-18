@@ -24,7 +24,7 @@ public class ResourceServiceTests
     {
         A.CallTo(() => _resourceDao.GetResourceByGuid(_resourceGuid)).Returns(new DbResource
         {
-            FilePath = "tutor/resource_name",
+            Filename = "resource_name",
         });
         A.CallTo(() => _fileStorage.GetDownloadUrl("tutor/resource_name"))
             .Returns("protocol://tutor/resource_name");
@@ -47,7 +47,7 @@ public class ResourceServiceTests
             .Returns("protocol://tutor/geometry.pdf");
         var dto = _service.BeginUpload("geometry.pdf", new TutorRole());
         A.CallTo(() => _resourceDao.SaveSingleResource(
-                "tutor/geometry.pdf", "(single) geometry.pdf"))
+                "geometry.pdf", "(single) geometry.pdf"))
             .MustHaveHappenedOnceExactly();
         A.CallTo(() => _transaction.Commit()).MustHaveHappenedOnceExactly();
         Assert.Equal("protocol://tutor/geometry.pdf", dto.Url);

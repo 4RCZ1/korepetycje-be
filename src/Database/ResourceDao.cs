@@ -15,11 +15,11 @@ internal class ResourceDao : IResourceDao
         return _context.Resources.Query().SingleOrDefault(r => r.Guid == guid);
     }
 
-    public void SaveSingleResource(string filePath, string singleGroupName)
+    public void SaveSingleResource(string filename, string singleGroupName)
     {
         _context.ResourceMemberships.Add(new DbResourceMembership
         {
-            Resource = new DbResource { FilePath = filePath },
+            Resource = new DbResource { Filename = filename },
             Group = new DbResourceGroup
             {
                 IsSingle = true,
