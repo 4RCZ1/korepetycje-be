@@ -55,28 +55,53 @@ public class ResourceService : IResourceService
         var tutor = t.TutorDao.GetTutor();
         return $"{tutor.ResourcePathPrefix}/{filename}";
     }
-    
+
     public void DeleteResource(Guid externalResourceId, TutorRole role)
     {
         using var t = _transactor.BeginTransaction();
-    
+
         var resource = t.ResourceDao.GetResourceByGuid(externalResourceId);
 
         if (resource == null)
             return;
-        
+
         t.ResourceDao.DeleteResource(resource);
-        
+
         var resourceGroup = t.ResourceDao.GetResourceSingleGroupByResourceId(resource.Id);
         t.ResourceDao.DeleteGroup(resourceGroup);
-    
+
         t.Commit();
-        
+
         var filePath = GetFilePath(resource.Filename, t);
         _fileStorage.DeleteFile(filePath);
     }
-    
-    
+
+    public void CreateResourceGroup(ResourceGroupDto group, TutorRole role)
+    {
+        using var t = _transactor.BeginTransaction();
+        var memberships = group.Resources.Select(r =>
+        {
+            var resource = t.ResourceDao.GetResourceByGuid(Guid.Parse(r.Id));
+            if (resource == null)
+            {
+                throw new BadRequestException(
+                    "Nie znaleziono jednego z podanych zasobów."
+                    + " Prawdopodobnie został usunięty. Odśwież stronę i spróbuj ponownie.");
+            }
+            return new DbResourceMembership
+            {
+                ResourceId = resource.Id,
+            };
+        }).ToList();
+        t.ResourceDao.SaveResourceGroup(new DbResourceGroup
+        {
+            IsSingle = false,
+            Name = group.Name,
+            Memberships = memberships,
+        });
+        t.Commit();
+    }
+
     private readonly IFileStorageClient _fileStorage;
     private readonly ITransactor _transactor;
 }

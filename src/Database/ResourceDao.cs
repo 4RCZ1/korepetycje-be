@@ -32,10 +32,15 @@ internal class ResourceDao : IResourceDao
             },
         });
     }
-    
+
     public void DeleteResource(DbResource resource)
     {
         _context.Resources.Remove(resource);
+    }
+
+    public void SaveResourceGroup(DbResourceGroup group)
+    {
+        _context.ResourceGroups.Add(group);
     }
 
     public void DeleteGroup(DbResourceGroup group)
