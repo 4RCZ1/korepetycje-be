@@ -11,7 +11,7 @@ public class DeleteResourceFunction
         {
             var role = identity.RequireTutor();
             var service = await ServiceFactory.CreateResourceServiceAsync(identity);
-            var resourceId = RestIo.GetPathGuid(request, "resourceId");
+            var resourceId = RestIo.GetPathGuid(request, "resourceGuid");
     
             service.DeleteResourceForTutor(resourceId, role);
     

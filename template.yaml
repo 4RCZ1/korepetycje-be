@@ -652,3 +652,21 @@ Resources:
             Path: /api/resource/
             Method: post
             RestApiId: !Ref KorepetycjeApi
+            
+  DeleteResource:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/Endpoints/
+      Handler: Endpoints::Endpoints.Resources.DeleteResourceFunction::DeleteResource
+      Runtime: dotnet8
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        GetLessons:
+          Type: Api
+          Properties:
+            Path: /api/resource/{resourceGuid}
+            Method: delete
+            RestApiId: !Ref KorepetycjeApi
