@@ -32,6 +32,11 @@ internal class ResourceDao : IResourceDao
             },
         });
     }
+    
+    public void DeleteResource(DbResource resource)
+    {
+        _context.Resources.Remove(resource);
+    }
 
     private readonly TenantContext _context;
 }

@@ -55,6 +55,23 @@ public class ResourceService : IResourceService
         var tutor = t.TutorDao.GetTutor();
         return $"{tutor.ResourcePathPrefix}/{filename}";
     }
+    
+    public void DeleteResourceForTutor(Guid externalResourceId, TutorRole role)
+    {
+        using var t = _transactor.BeginTransaction();
+    
+        var resource = t.ResourceDao.GetResourceByGuid(externalResourceId);
+    
+        if (resource == null)
+            throw new BadRequestException("Resource not found");
+        
+        var filePath = GetFilePath(resource.Filename, t);
+        _fileStorage.DeleteFile(filePath);
+        
+        t.ResourceDao.DeleteResource(resource);
+    
+        t.Commit();
+    }
 
     private readonly IFileStorageClient _fileStorage;
     private readonly ITransactor _transactor;
