@@ -69,10 +69,16 @@ public class ResourceService : IResourceService
         _fileStorage.DeleteFile(filePath);
         
         t.ResourceDao.DeleteResource(resource);
+        DeleteSingleResourceGroup(resource.Filename, t);
     
         t.Commit();
     }
 
+    private void DeleteSingleResourceGroup(string filename, ITransaction t)
+    {
+        t.ResourceDao.DeleteSingleGroup($"(single) {filename}");
+    }
+    
     private readonly IFileStorageClient _fileStorage;
     private readonly ITransactor _transactor;
 }

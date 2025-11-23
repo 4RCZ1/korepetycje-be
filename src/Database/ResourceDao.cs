@@ -38,5 +38,18 @@ internal class ResourceDao : IResourceDao
         _context.Resources.Remove(resource);
     }
 
+    public void DeleteSingleGroup(string groupName)
+    {
+        _context.ResourceGroups.Remove(GetResourceGroupByName(groupName));
+    }
+
+    private DbResourceGroup GetResourceGroupByName(string groupName)
+    {
+        var group = _context.ResourceGroups.Query()?.Where(g => g.Name == groupName).FirstOrDefault();
+        if(group == null)
+            throw new FileNotFoundException("No such resource group");
+        return group;
+    }
+
     private readonly TenantContext _context;
 }
