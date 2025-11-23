@@ -38,16 +38,20 @@ internal class ResourceDao : IResourceDao
         _context.Resources.Remove(resource);
     }
 
-    public void DeleteSingleGroup(string groupName)
+    public void DeleteGroup(DbResourceGroup group)
     {
-        _context.ResourceGroups.Remove(GetResourceGroupByName(groupName));
+        _context.ResourceGroups.Remove(group);
     }
 
-    private DbResourceGroup GetResourceGroupByName(string groupName)
+    public DbResourceGroup GetResourceGroupByResourceId(int resourceId)
     {
-        var group = _context.ResourceGroups.Query()?.Where(g => g.Name == groupName).FirstOrDefault();
+        var group = _context.ResourceMemberships.Query()
+            .Where(m => m.ResourceId == resourceId)
+            .Select(m => m.Group)
+            .Where(g => g != null && g.IsSingle)?
+            .FirstOrDefault();
         if(group == null)
-            throw new FileNotFoundException("No such resource group");
+            throw new FileNotFoundException("Single resource group not found");
         return group;
     }
 
