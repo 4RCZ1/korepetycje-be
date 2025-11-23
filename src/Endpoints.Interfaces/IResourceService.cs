@@ -9,4 +9,5 @@ public interface IResourceService
     ResourceUrlDto GetDownloadUrlForTutor(Guid externalResourceId, TutorRole role);
     ResourceUrlDto BeginUpload(string filename, TutorRole role);
     void DeleteResource(Guid externalResourceId, TutorRole role);
+    void CreateResourceGroup(ResourceGroupDto group, TutorRole role);
 }
