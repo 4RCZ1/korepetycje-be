@@ -43,7 +43,7 @@ internal class ResourceDao : IResourceDao
         _context.ResourceGroups.Remove(group);
     }
 
-    public DbResourceGroup GetResourceGroupByResourceId(int resourceId)
+    public DbResourceGroup GetResourceSingleGroupByResourceId(int resourceId)
     {
         var group = _context.ResourceMemberships.Query()
             .Where(m => m.ResourceId == resourceId)
@@ -51,6 +51,16 @@ internal class ResourceDao : IResourceDao
             .FirstOrDefault(g => g != null && g.IsSingle);
         if(group == null)
             throw new ApplicationException("Single resource group not found");
+        return group;
+    }
+    
+    public DbResourceGroup GetResourceGroupById(int resourceGroupId)
+    {
+        var group = _context.ResourceGroups.Query()
+            .Where(r => r.Id == resourceGroupId)?
+            .FirstOrDefault();
+        if (group == null)
+            throw new ApplicationException("Resource group not found");
         return group;
     }
 

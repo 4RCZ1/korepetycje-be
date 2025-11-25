@@ -75,6 +75,15 @@ public class ResourceService : IResourceService
         var filePath = GetFilePath(resource.Filename, t);
         _fileStorage.DeleteFile(filePath);
     }
+
+    public void DeleteResourceGroup(int groupId, TutorRole role)
+    {
+        using var t = _transactor.BeginTransaction();
+        var group = t.ResourceDao.GetResourceGroupById(groupId);
+        t.ResourceDao.DeleteGroup(group);
+        t.Commit();
+        
+    }
     
     
     private readonly IFileStorageClient _fileStorage;
