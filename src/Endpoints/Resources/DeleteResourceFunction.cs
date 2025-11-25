@@ -13,16 +13,9 @@ public class DeleteResourceFunction
             var service = await ServiceFactory.CreateResourceServiceAsync(identity);
             var resourceId = RestIo.GetPathGuid(request, "resourceGuid");
     
-            service.DeleteResourceForTutor(resourceId, role);
+            service.DeleteResource(resourceId, role);
     
-            return new APIGatewayProxyResponse
-            {
-                StatusCode = 204, 
-                Headers = new Dictionary<string, string>
-                {
-                    { "Content-Type", "application/json" }
-                }
-            };
+            return string.Empty;
         });
 
 

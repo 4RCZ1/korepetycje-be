@@ -48,10 +48,9 @@ internal class ResourceDao : IResourceDao
         var group = _context.ResourceMemberships.Query()
             .Where(m => m.ResourceId == resourceId)
             .Select(m => m.Group)
-            .Where(g => g != null && g.IsSingle)?
-            .FirstOrDefault();
+            .FirstOrDefault(g => g != null && g.IsSingle);
         if(group == null)
-            throw new FileNotFoundException("Single resource group not found");
+            throw new ApplicationException("Single resource group not found");
         return group;
     }
 
