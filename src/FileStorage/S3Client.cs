@@ -37,6 +37,15 @@ public class S3Client : IFileStorageClient
     {
         return DateTime.UtcNow.AddMinutes(3);
     }
+    
+    public void DeleteFile(string filePath)
+    {
+        _s3.DeleteObjectAsync(new DeleteObjectRequest
+        {
+            BucketName = _bucketName,
+            Key = filePath
+        }).GetAwaiter().GetResult();
+    }
 
     private readonly string _bucketName;
     private readonly AmazonS3Client _s3 = new();

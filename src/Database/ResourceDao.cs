@@ -32,6 +32,28 @@ internal class ResourceDao : IResourceDao
             },
         });
     }
+    
+    public void DeleteResource(DbResource resource)
+    {
+        _context.Resources.Remove(resource);
+    }
+
+    public void DeleteGroup(DbResourceGroup group)
+    {
+        _context.ResourceGroups.Remove(group);
+    }
+
+    public DbResourceGroup GetResourceGroupByResourceId(int resourceId)
+    {
+        var group = _context.ResourceMemberships.Query()
+            .Where(m => m.ResourceId == resourceId)
+            .Select(m => m.Group)
+            .Where(g => g != null && g.IsSingle)?
+            .FirstOrDefault();
+        if(group == null)
+            throw new FileNotFoundException("Single resource group not found");
+        return group;
+    }
 
     private readonly TenantContext _context;
 }

@@ -16,6 +16,6 @@ public class DbResource : TenantEntity
 
     [Required]
     [MaxLength(500)]
-    [Column("file_name")]
+    [Column("file_path")]
     public required string Filename { get; set; }
 }
