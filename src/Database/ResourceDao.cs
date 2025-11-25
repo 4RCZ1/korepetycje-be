@@ -43,7 +43,7 @@ internal class ResourceDao : IResourceDao
         _context.ResourceGroups.Remove(group);
     }
 
-    public DbResourceGroup GetResourceGroupByResourceId(int resourceId)
+    public DbResourceGroup GetResourceSingleGroupByResourceId(int resourceId)
     {
         var group = _context.ResourceMemberships.Query()
             .Where(m => m.ResourceId == resourceId)
