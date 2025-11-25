@@ -10,5 +10,4 @@ public interface IResourceDao
     void DeleteResource(DbResource resource);
     void DeleteGroup(DbResourceGroup group);
     DbResourceGroup GetResourceSingleGroupByResourceId(int resourceId);
-    DbResourceGroup GetResourceGroupById(int resourceGroupId);
 }
