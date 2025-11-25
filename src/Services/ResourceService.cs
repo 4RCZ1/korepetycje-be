@@ -56,31 +56,26 @@ public class ResourceService : IResourceService
         return $"{tutor.ResourcePathPrefix}/{filename}";
     }
     
-    public void DeleteResourceForTutor(Guid externalResourceId, TutorRole role)
+    public void DeleteResource(Guid externalResourceId, TutorRole role)
     {
         using var t = _transactor.BeginTransaction();
     
         var resource = t.ResourceDao.GetResourceByGuid(externalResourceId);
-    
+
         if (resource == null)
-            throw new BadRequestException("Resource not found");
-        
-        var filePath = GetFilePath(resource.Filename, t);
-        _fileStorage.DeleteFile(filePath);
+            return;
         
         t.ResourceDao.DeleteResource(resource);
         
-        var resourceGroup = t.ResourceDao.GetResourceGroupByResourceId(resource.Id);
-        DeleteSingleResourceGroup(resourceGroup, t);
+        var resourceGroup = t.ResourceDao.GetResourceSingleGroupByResourceId(resource.Id);
+        t.ResourceDao.DeleteGroup(resourceGroup);
     
         t.Commit();
+        
+        var filePath = GetFilePath(resource.Filename, t);
+        _fileStorage.DeleteFile(filePath);
     }
     
-    
-    private void DeleteSingleResourceGroup(DbResourceGroup group, ITransaction t)
-    {
-        t.ResourceDao.DeleteGroup(group);
-    }
     
     private readonly IFileStorageClient _fileStorage;
     private readonly ITransactor _transactor;
