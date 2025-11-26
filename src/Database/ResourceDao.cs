@@ -22,7 +22,7 @@ internal class ResourceDao : IResourceDao
     
     public IList<DbResourceGroup> GetAllResourceGroups()
     {
-        return _context.ResourceGroups.Query().ToList();
+        return _context.ResourceGroups.Query().Where(g => !g.IsSingle).ToList();
     }
 
     public void SaveSingleResource(string filename, string singleGroupName)

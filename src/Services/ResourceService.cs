@@ -82,7 +82,6 @@ public class ResourceService : IResourceService
         return t.ResourceDao.GetAllResourceGroups().Select(r => new ResourceGroupDto
         {
             Guid = r.Guid.ToString(),
-            IsSingle = r.IsSingle,
             Name = r.Name,
         }).ToList();
     }
