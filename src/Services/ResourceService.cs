@@ -76,6 +76,17 @@ public class ResourceService : IResourceService
         _fileStorage.DeleteFile(filePath);
     }
     
+    public IList<ResourceGroupDto> GetResourceGroups(TutorRole role)
+    {
+        using var t = _transactor.BeginTransaction();
+        return t.ResourceDao.GetAllResourceGroups().Select(r => new ResourceGroupDto
+        {
+            Guid = r.Guid.ToString(),
+            IsSingle = r.IsSingle,
+            Name = r.Name,
+        }).ToList();
+    }
+    
     
     private readonly IFileStorageClient _fileStorage;
     private readonly ITransactor _transactor;

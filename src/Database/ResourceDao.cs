@@ -19,6 +19,11 @@ internal class ResourceDao : IResourceDao
     {
         return _context.Resources.Query().ToList();
     }
+    
+    public IList<DbResourceGroup> GetAllResourceGroups()
+    {
+        return _context.ResourceGroups.Query().ToList();
+    }
 
     public void SaveSingleResource(string filename, string singleGroupName)
     {
