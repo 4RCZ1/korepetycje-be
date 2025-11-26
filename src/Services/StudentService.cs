@@ -143,6 +143,17 @@ public class StudentService : IStudentService
         t.StudentDao.DeleteStudent(int.Parse(studentExternalId));
         t.Commit();
     }
+    
+    public List<StudentGroupDto> GetStudentGroups(TutorRole role)
+    {
+        using var t = _transactor.BeginTransaction();
+        return t.StudentDao.GetAllStudentGroups().Select(s => new StudentGroupDto
+        {
+            Guid = s.Guid.ToString(),
+            IsSingle = s.IsSingle,
+            Name = s.Name,
+        }).ToList();
+    }
 
     private readonly ITransactor _transactor;
 }
