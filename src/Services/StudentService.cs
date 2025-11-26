@@ -150,7 +150,6 @@ public class StudentService : IStudentService
         return t.StudentDao.GetAllStudentGroups().Select(s => new StudentGroupDto
         {
             Guid = s.Guid.ToString(),
-            IsSingle = s.IsSingle,
             Name = s.Name,
         }).ToList();
     }
