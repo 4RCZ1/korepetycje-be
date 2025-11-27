@@ -75,13 +75,40 @@ public class ResourceService : IResourceService
         var filePath = GetFilePath(resource.Filename, t);
         _fileStorage.DeleteFile(filePath);
     }
+
+    public void CreateResourceGroup(ResourceGroupDto group, TutorRole role)
+    {
+        using var t = _transactor.BeginTransaction();
+        var memberships = group.Resources.Select(r =>
+        {
+            var resource = t.ResourceDao.GetResourceByGuid(Guid.Parse(r.Id));
+            if (resource == null)
+            {
+                throw new BadRequestException(
+                    "Nie znaleziono jednego z podanych zasobów."
+                    + " Prawdopodobnie został usunięty. Odśwież stronę i spróbuj ponownie.");
+            }
+            return new DbResourceMembership
+            {
+                ResourceId = resource.Id,
+            };
+        }).ToList();
+        t.ResourceDao.SaveResourceGroup(new DbResourceGroup
+        {
+            IsSingle = false,
+            Name = group.Name,
+            Memberships = memberships
+        });
+        t.Commit();
+    }
+
     
     public IList<ResourceGroupDto> GetResourceGroups(TutorRole role)
     {
         using var t = _transactor.BeginTransaction();
         return t.ResourceDao.GetAllResourceGroups().Select(r => new ResourceGroupDto
         {
-            Guid = r.Guid.ToString(),
+            Id = r.Guid.ToString(),
             Name = r.Name,
         }).ToList();
     }
