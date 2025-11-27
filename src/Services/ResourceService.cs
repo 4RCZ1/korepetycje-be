@@ -110,6 +110,11 @@ public class ResourceService : IResourceService
         {
             Id = r.Guid.ToString(),
             Name = r.Name,
+            Resources = r.Memberships.Select(m => new ResourceDto()
+            {
+                Id = r.Guid.ToString(),
+                Name = r.Name
+            }).ToList()
         }).ToList();
     }
     
