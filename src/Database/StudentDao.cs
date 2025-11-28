@@ -44,6 +44,22 @@ internal class StudentDao : IStudentDao
     {
         _context.Students.Update(student);
     }
+    
+    public void SaveSingleStudent(DbStudent student, string singleGroupName)
+    {
+        var group = new DbStudentGroup
+        {
+            IsSingle = true,
+            Name = singleGroupName
+        };
+    
+        var membership = new DbStudentMembership
+        {
+            Student = student,
+            Group = group
+        };
+        _context.StudentMemberships.Add(membership);
+    }
 
     public void DeleteStudent(int studentId)
     {

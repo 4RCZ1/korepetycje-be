@@ -12,8 +12,31 @@ public class StudentService : IStudentService
     {
         _transactor = transactor;
     }
-
     public string AddStudent(StudentDto studentToAdd, TutorRole role)
+    {
+        DbAddress? addressToAdd = null;
+        using var t = _transactor.BeginTransaction();
+        if (int.TryParse(studentToAdd?.Address?.ExternalId, out var addressId))
+            addressToAdd = t.AddressDao.GetAddress(addressId);
+        var student = new DbStudent
+        {
+            Name = studentToAdd?.Name ?? "",
+            Surname = studentToAdd?.Surname ?? "",
+            PhoneNumber = studentToAdd?.PhoneNumber ?? "",
+            Address = addressToAdd ?? new DbAddress()
+            {
+                AddressName = studentToAdd?.Address?.AddressName ?? "NOWY ADRES",
+                AddressData = studentToAdd?.Address?.AddressData ?? "Uzupełnij dane"
+            }
+        };
+        t.StudentDao.SaveSingleStudent(student, $"(single) {student.Name}_{student.Surname}");
+        t.Commit();
+        return student.Id.ToString();
+    }
+    
+    
+    
+    /*public string AddStudent(StudentDto studentToAdd, TutorRole role)
     {
         DbAddress? addressToAdd = null;
         using var t = _transactor.BeginTransaction();
@@ -34,7 +57,7 @@ public class StudentService : IStudentService
         t.StudentDao.SaveStudent(student);
         t.Commit();
         return student.Id.ToString(); // Reading IDs of saved entities is specific to EF Core.
-    }
+    }*/
 
     public StudentDto GetStudent(
         string studentExternalId, TutorRole role, bool includeDeleted = false)
