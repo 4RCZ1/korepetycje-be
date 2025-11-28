@@ -112,8 +112,8 @@ public class ResourceService : IResourceService
             Name = r.Name,
             Resources = r.Memberships.Select(m => new ResourceDto()
             {
-                Id = r.Guid.ToString(),
-                Name = r.Name
+                Id = m.Resource?.Guid.ToString() ?? String.Empty,
+                Name = m.Resource?.Filename ?? String.Empty,
             }).ToList()
         }).ToList();
     }
