@@ -147,10 +147,24 @@ public class StudentService : IStudentService
     public List<StudentGroupDto> GetStudentGroups(TutorRole role)
     {
         using var t = _transactor.BeginTransaction();
-        return t.StudentDao.GetAllStudentGroups().Select(s => new StudentGroupDto
+        return t.StudentDao.GetAllStudentGroups().Select(r => new StudentGroupDto
         {
-            Guid = s.Guid.ToString(),
-            Name = s.Name,
+            Id = r.Guid.ToString(),
+            Name = r.Name,
+            Students = r.Memberships.Select(m => new StudentDto()
+            {
+                ExternalId = m.Student?.Id.ToString(),
+                Name = m.Student?.Name,
+                Surname = m.Student?.Surname,
+                PhoneNumber = m.Student?.PhoneNumber,
+                IsDeleted = m.Student?.IsDeleted,    
+                Address = new AddressDto()
+                {
+                    ExternalId = m.Student?.Address?.Id.ToString(),
+                    AddressName = m.Student?.Address?.AddressName,
+                    AddressData = m.Student?.Address?.AddressData,
+                }
+            }).ToList()
         }).ToList();
     }
 

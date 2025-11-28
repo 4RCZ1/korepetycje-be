@@ -58,6 +58,10 @@ internal class StudentDao : IStudentDao
     
     public List<DbStudentGroup> GetAllStudentGroups()
     {
-        return _context.StudentGroups.Query().Where(g => !g.IsSingle).ToList();
+        return _context.StudentGroups.Query()
+            .Include(g => g.Memberships)
+            .ThenInclude(m => m.Student)
+            .ThenInclude(s => s.Address)
+            .Where(g => !g.IsSingle).ToList();
     }
 }
