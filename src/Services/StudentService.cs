@@ -157,13 +157,7 @@ public class StudentService : IStudentService
                 Name = m.Student?.Name,
                 Surname = m.Student?.Surname,
                 PhoneNumber = m.Student?.PhoneNumber,
-                IsDeleted = m.Student?.IsDeleted,    
-                Address = new AddressDto()
-                {
-                    ExternalId = m.Student?.Address?.Id.ToString(),
-                    AddressName = m.Student?.Address?.AddressName,
-                    AddressData = m.Student?.Address?.AddressData,
-                }
+                IsDeleted = m.Student?.IsDeleted
             }).ToList()
         }).ToList();
     }

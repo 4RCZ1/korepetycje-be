@@ -61,7 +61,6 @@ internal class StudentDao : IStudentDao
         return _context.StudentGroups.Query()
             .Include(g => g.Memberships)
             .ThenInclude(m => m.Student)
-            .ThenInclude(s => s.Address)
             .Where(g => !g.IsSingle).ToList();
     }
 }
