@@ -676,6 +676,24 @@ Resources:
     Properties:
       CodeUri: ./src/Endpoints/
       Handler: Endpoints::Endpoints.StudentFunctions.GetStudentGroupsFunction::GetStudentGroups
+       Runtime: dotnet8
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        GetLessons:
+          Type: Api
+          Properties:
+            Path: /api/student-group
+            Method: get
+            RestApiId: !Ref KorepetycjeApi
+          
+  GetResourceGroups:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/Endpoints/
+      Handler: Endpoints::Endpoints.Resources.GetResourceGroupsFunction::GetResourceGroups
       Runtime: dotnet8
       Architectures:
         - x86_64
@@ -685,7 +703,24 @@ Resources:
         GetLessons:
           Type: Api
           Properties:
-            Path: /api/student-groups
+            Path: /api/resource-group
             Method: get
             RestApiId: !Ref KorepetycjeApi
 
+  CreateResourceGroup:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/Endpoints/
+      Handler: Endpoints::Endpoints.Resources.CreateResourceGroupFunction::CreateResourceGroup
+      Runtime: dotnet8
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        GetLessons:
+          Type: Api
+          Properties:
+            Path: /api/resource-group
+            Method: post
+            RestApiId: !Ref KorepetycjeApi

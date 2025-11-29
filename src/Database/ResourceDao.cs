@@ -1,4 +1,5 @@
 using Database.Entities;
+using Microsoft.EntityFrameworkCore;
 using Services.Interfaces;
 
 namespace Database;
@@ -19,6 +20,15 @@ internal class ResourceDao : IResourceDao
     {
         return _context.Resources.Query().ToList();
     }
+    
+    public IList<DbResourceGroup> GetAllResourceGroups()
+    {
+        return _context.ResourceGroups.Query()
+            .Include(g => g.Memberships)
+                .ThenInclude(m => m.Resource)
+            .Where(g => !g.IsSingle)
+            .ToList();
+    }
 
     public void SaveSingleResource(string filename, string singleGroupName)
     {
@@ -32,10 +42,15 @@ internal class ResourceDao : IResourceDao
             },
         });
     }
-    
+
     public void DeleteResource(DbResource resource)
     {
         _context.Resources.Remove(resource);
+    }
+
+    public void SaveResourceGroup(DbResourceGroup group)
+    {
+        _context.ResourceGroups.Add(group);
     }
 
     public void DeleteGroup(DbResourceGroup group)
