@@ -1,5 +1,6 @@
 using Database.Entities;
 using Services.Interfaces;
+using Microsoft.EntityFrameworkCore; 
 
 namespace Database;
 
@@ -57,6 +58,22 @@ internal class ResourceDao : IResourceDao
         if(group == null)
             throw new ApplicationException("Single resource group not found");
         return group;
+    }
+    
+    public IList<DbResource> GetStudentResources(int studentId)
+    {
+        return _context.Resources.Query()
+            .Include(r => r.Memberships)
+                .ThenInclude(rm => rm.Group)
+                    .ThenInclude(rg => rg!.AccessPolicies)
+                        .ThenInclude(ap => ap.StudentGroup)
+                            .ThenInclude(sg => sg!.Memberships)
+            .Where(resource => resource.Memberships
+                .Any(rm => rm.Group != null && rm.Group.AccessPolicies
+                    .Any(ap => ap.StudentGroup != null && ap.StudentGroup.Memberships
+                        .Any(sm => sm.StudentId == studentId))))
+
+            .ToList();
     }
 
     private readonly TenantContext _context;

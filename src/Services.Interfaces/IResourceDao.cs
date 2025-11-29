@@ -11,4 +11,5 @@ public interface IResourceDao
     void SaveResourceGroup(DbResourceGroup group);
     void DeleteGroup(DbResourceGroup group);
     DbResourceGroup GetResourceSingleGroupByResourceId(int resourceId);
+    IList<DbResource> GetStudentResources(int studentId);
 }

@@ -46,7 +46,7 @@ public class TenantTable<TEntity> : ITable<TEntity> where TEntity : TenantEntity
     {
         _impl.RemoveRange(range);
     }
-
+    
     private readonly DbSet<TEntity> _impl;
     private readonly DbContext _context;
     private readonly int _tenantId;

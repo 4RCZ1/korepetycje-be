@@ -101,6 +101,21 @@ public class ResourceService : IResourceService
         });
         t.Commit();
     }
+    
+    public IList<ResourceDto> GetResourcesAsStudent(StudentRole role)
+    {
+        using var t = _transactor.BeginTransaction();
+        
+        var studentId = int.Parse(role.ExternalStudentId);
+        
+        return t.ResourceDao.GetStudentResources(studentId)
+            .Select(r => new ResourceDto()
+            {
+                Id = r.Guid.ToString(),
+                Name = r.Filename
+            })
+            .ToList();
+    }
 
     private readonly IFileStorageClient _fileStorage;
     private readonly ITransactor _transactor;

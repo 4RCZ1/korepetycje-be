@@ -25,4 +25,6 @@ public class DbResourceGroup : TenantEntity
 
     public ICollection<DbResourceMembership> Memberships { get; set; } =
         new List<DbResourceMembership>();
+    
+    public ICollection<DbAccessPolicy> AccessPolicies { get; set; } = new List<DbAccessPolicy>();
 }

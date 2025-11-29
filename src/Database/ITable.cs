@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore.Query;
+
 namespace Database;
 
 public interface ITable<TEntity>

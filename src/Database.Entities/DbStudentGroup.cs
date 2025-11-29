@@ -22,4 +22,8 @@ public class DbStudentGroup : TenantEntity
     [MaxLength(100)]
     [Column("name")]
     public required string Name { get; set; }
+    
+    public ICollection<DbAccessPolicy> AccessPolicies { get; set; } = new List<DbAccessPolicy>();
+    public ICollection<DbStudentMembership> Memberships { get; set; } =
+        new List<DbStudentMembership>();
 }
