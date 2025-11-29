@@ -685,7 +685,7 @@ Resources:
         GetLessons:
           Type: Api
           Properties:
-            Path: /api/resource-groups/
+            Path: /api/resource-group
             Method: get
             RestApiId: !Ref KorepetycjeApi
 
