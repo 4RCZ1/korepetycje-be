@@ -8,4 +8,5 @@ public interface IStudentDao
     List<DbStudent> GetStudents(int? lessonId = null, bool includeDeleted = false);
     void SaveStudent(DbStudent student);
     void DeleteStudent(int studentId);
+    List<DbStudentGroup> GetAllStudentGroups();
 }

@@ -55,4 +55,12 @@ internal class StudentDao : IStudentDao
             _context.Students.Remove(studentToDelete);
         }
     }
+    
+    public List<DbStudentGroup> GetAllStudentGroups()
+    {
+        return _context.StudentGroups.Query()
+            .Include(g => g.Memberships)
+            .ThenInclude(m => m.Student)
+            .Where(g => !g.IsSingle).ToList();
+    }
 }
