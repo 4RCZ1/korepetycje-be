@@ -54,10 +54,10 @@ internal class ResourceDao : IResourceDao
         return group;
     }
     
-    public DbResourceGroup GetResourceGroupById(int resourceGroupId)
+    public DbResourceGroup GetResourceGroupById(Guid resourceGroupId)
     {
         var group = _context.ResourceGroups.Query()
-            .Where(r => r.Id == resourceGroupId)?
+            .Where(r => r.Guid == resourceGroupId)?
             .FirstOrDefault();
         if (group == null)
             throw new ApplicationException("Resource group not found");
