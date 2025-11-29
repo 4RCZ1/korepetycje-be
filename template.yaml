@@ -676,7 +676,7 @@ Resources:
     Properties:
       CodeUri: ./src/Endpoints/
       Handler: Endpoints::Endpoints.StudentFunctions.GetStudentGroupsFunction::GetStudentGroups
-       Runtime: dotnet8
+      Runtime: dotnet8
       Architectures:
         - x86_64
       MemorySize: 512
