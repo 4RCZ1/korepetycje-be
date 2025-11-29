@@ -68,7 +68,7 @@ public class ResourceService : IResourceService
         t.ResourceDao.DeleteResource(resource);
         
         var resourceGroup = t.ResourceDao.GetResourceSingleGroupByResourceId(resource.Id);
-        t.ResourceDao.DeleteGroup(resourceGroup);
+        t.ResourceDao.DeleteGroupByGuid(resourceGroup.Guid);
     
         t.Commit();
         
@@ -79,8 +79,7 @@ public class ResourceService : IResourceService
     public void DeleteResourceGroup(Guid groupId, TutorRole role)
     {
         using var t = _transactor.BeginTransaction();
-        var group = t.ResourceDao.GetResourceGroupById(groupId);
-        t.ResourceDao.DeleteGroup(group);
+        t.ResourceDao.DeleteGroupByGuid(groupId);
         t.Commit();
         
     }
