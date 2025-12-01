@@ -12,6 +12,11 @@ public interface IResourceDao
     void DeleteGroupByGuid(Guid groupId);
     DbResourceGroup GetResourceGroupById(Guid resourceGroupId);
     void SaveResourceGroup(DbResourceGroup group);
+    void EmptyResourceGroup(int groupId);
+    void DeleteGroup(DbResourceGroup group);
     DbResourceGroup GetResourceSingleGroupByResourceId(int resourceId);
     IList<DbResource> GetStudentResources(int studentId);
+    DbResourceGroup? GetResourceGroupByGuid(Guid groupGuid);
+    void SaveAccessPolicyIfNotExists(int studentGroupId, int resourceGroupId);
+    void DeleteAccessPolicy(int studentGroupId, int resourceGroupId);
 }
