@@ -96,4 +96,9 @@ internal class StudentDao : IStudentDao
     {
         return _context.StudentGroups.Query().SingleOrDefault(g => g.Guid == groupGuid);
     }
+
+    public void SaveStudentGroup(DbStudentGroup group)
+    {
+        _context.StudentGroups.Update(group);
+    }
 }

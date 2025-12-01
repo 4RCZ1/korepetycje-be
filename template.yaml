@@ -707,6 +707,24 @@ Resources:
             Method: get
             RestApiId: !Ref KorepetycjeApi
 
+  CreateStudentGroup:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/Endpoints/
+      Handler: Endpoints::Endpoints.StudentFunctions.CreateStudentGroupFunction::CreateStudentGroup
+      Runtime: dotnet8
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        GetLessons:
+          Type: Api
+          Properties:
+            Path: /api/student-group
+            Method: post
+            RestApiId: !Ref KorepetycjeApi
+
   GetResourceGroups:
     Type: AWS::Serverless::Function
     Properties:
