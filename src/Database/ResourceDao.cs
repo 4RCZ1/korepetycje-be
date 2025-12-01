@@ -21,7 +21,7 @@ internal class ResourceDao : IResourceDao
     {
         return _context.Resources.Query().ToList();
     }
-    
+
     public IList<DbResourceGroup> GetAllResourceGroups()
     {
         return _context.ResourceGroups.Query()
@@ -53,7 +53,13 @@ internal class ResourceDao : IResourceDao
 
     public void SaveResourceGroup(DbResourceGroup group)
     {
-        _context.ResourceGroups.Add(group);
+        _context.ResourceGroups.Update(group);
+    }
+
+    public void EmptyResourceGroup(int groupId)
+    {
+        _context.ResourceMemberships.RemoveRange(
+            _context.ResourceMemberships.Query().Where(m => m.GroupId == groupId));
     }
 
     public void DeleteGroupByGuid(Guid groupId)
@@ -98,6 +104,33 @@ internal class ResourceDao : IResourceDao
                         .Any(sm => sm.StudentId == studentId))))
 
             .ToList();
+    }
+
+    public DbResourceGroup? GetResourceGroupByGuid(Guid groupGuid)
+    {
+        return _context.ResourceGroups.Query().SingleOrDefault(g => g.Guid == groupGuid);
+    }
+
+    public void SaveAccessPolicyIfNotExists(int studentGroupId, int resourceGroupId)
+    {
+        var policy = _context.AccessPolicies.Query().SingleOrDefault(
+            p => p.StudentGroupId == studentGroupId && p.ResourceGroupId == resourceGroupId);
+        if (policy == null)
+        {
+            _context.AccessPolicies.Add(new DbAccessPolicy
+            {
+                StudentGroupId = studentGroupId,
+                ResourceGroupId = resourceGroupId,
+            });
+        }
+    }
+
+    public void DeleteAccessPolicy(int studentGroupId, int resourceGroupId)
+    {
+        var policy = _context.AccessPolicies.Query().SingleOrDefault(
+            p => p.StudentGroupId == studentGroupId && p.ResourceGroupId == resourceGroupId);
+        if (policy != null)
+            _context.AccessPolicies.Remove(policy);
     }
 
     private readonly TenantContext _context;
