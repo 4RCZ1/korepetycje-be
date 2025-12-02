@@ -196,5 +196,20 @@ public class StudentService : IStudentService
         }).ToList();
     }
 
+    public StudentAssignmentsDto GetStudentAssignments(string studentId, TutorRole role)
+    {
+        using var t = _transactor.BeginTransaction();
+        var assignedResources = t.ResourceDao.GetStudentResources(int.Parse(studentId));
+        return new StudentAssignmentsDto()
+        {
+            StudentId = studentId,
+            Resources = assignedResources.Select(r => new ResourceDto()
+            {
+                Id = r.Guid.ToString(),
+                Name = r.Filename
+            }).ToList()
+        };
+    }
+
     private readonly ITransactor _transactor;
 }
