@@ -11,4 +11,5 @@ public interface IStudentDao
     void DeleteStudent(int studentId);
     DbStudentGroup GetStudentSingleGroupByStudentId(int studentId);
     void DeleteStudentGroup(DbStudentGroup studentGroup);
+    List<DbStudentGroup> GetAllStudentGroups();
 }
