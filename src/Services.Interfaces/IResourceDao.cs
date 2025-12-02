@@ -14,4 +14,5 @@ public interface IResourceDao
     void SaveResourceGroup(DbResourceGroup group);
     DbResourceGroup GetResourceSingleGroupByResourceId(int resourceId);
     IList<DbResource> GetStudentResources(int studentId);
+    IList<DbStudent> GetResourceAssignments(Guid resourceId);
 }
