@@ -9,4 +9,6 @@ public interface IStudentDao
     void SaveStudent(DbStudent student);
     void SaveSingleStudent(DbStudent student, string singleGroupName);
     void DeleteStudent(int studentId);
+    DbStudentGroup GetStudentSingleGroupByStudentId(int studentId);
+    void DeleteStudentGroup(DbStudentGroup studentGroup);
 }

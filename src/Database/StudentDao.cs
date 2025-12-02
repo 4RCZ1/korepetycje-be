@@ -71,4 +71,21 @@ internal class StudentDao : IStudentDao
             _context.Students.Remove(studentToDelete);
         }
     }
+    
+    public DbStudentGroup GetStudentSingleGroupByStudentId(int studentId)
+    {
+        var group = _context.StudentMemberships.Query()
+            .Where(m => m.StudentId == studentId)
+            .Select(m => m.Group)
+            .FirstOrDefault(g => g != null && g.IsSingle);
+        if(group == null)
+            throw new ApplicationException("Single resource group not found");
+        return group;
+    }
+
+    public void DeleteStudentGroup(DbStudentGroup studentGroup)
+    {
+        _context.StudentGroups.Remove(studentGroup);
+    }
+    
 }
