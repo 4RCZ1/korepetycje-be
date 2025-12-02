@@ -14,7 +14,7 @@ public class ResourceService : IResourceService
         _fileStorage = fileStorage;
     }
 
-    public IList<ResourceDto> GetResources(TutorRole role)
+    public IList<ResourceDto> GetResourcesAsTutor(TutorRole role)
     {
         using var t = _transactor.BeginTransaction();
         return t.ResourceDao.GetAllResources().Select(r => new ResourceDto

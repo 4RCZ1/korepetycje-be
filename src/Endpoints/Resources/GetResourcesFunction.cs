@@ -16,7 +16,7 @@ public class GetResourcesFunction
                 return service.GetResourcesAsStudent(identity.RequireStudent());
             }
             var role = identity.RequireTutor();
-            return service.GetResources(role);
+            return service.GetResourcesAsTutor(role);
         });
     }
 }
