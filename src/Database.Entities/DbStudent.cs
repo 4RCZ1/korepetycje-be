@@ -37,4 +37,6 @@ public class DbStudent : TenantEntity, ISoftDelete
 
     [ForeignKey(nameof(AddressId))]
     public DbAddress? Address { get; set; }
+    
+    public ICollection<DbStudentMembership> Memberships { get; set; } = new List<DbStudentMembership>();
 }

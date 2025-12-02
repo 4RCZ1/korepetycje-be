@@ -14,7 +14,7 @@ public class ResourceService : IResourceService
         _fileStorage = fileStorage;
     }
 
-    public IList<ResourceDto> GetResources(TutorRole role)
+    public IList<ResourceDto> GetResourcesAsTutor(TutorRole role)
     {
         using var t = _transactor.BeginTransaction();
         return t.ResourceDao.GetAllResources().Select(r => new ResourceDto
@@ -100,6 +100,21 @@ public class ResourceService : IResourceService
             Memberships = memberships
         });
         t.Commit();
+    }
+    
+    public IList<ResourceDto> GetResourcesAsStudent(StudentRole role)
+    {
+        using var t = _transactor.BeginTransaction();
+        
+        var studentId = int.Parse(role.ExternalStudentId);
+        
+        return t.ResourceDao.GetStudentResources(studentId)
+            .Select(r => new ResourceDto()
+            {
+                Id = r.Guid.ToString(),
+                Name = r.Filename
+            })
+            .ToList();
     }
 
     
