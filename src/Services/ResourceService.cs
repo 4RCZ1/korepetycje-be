@@ -68,7 +68,7 @@ public class ResourceService : IResourceService
         t.ResourceDao.DeleteResource(resource);
         
         var resourceGroup = t.ResourceDao.GetResourceSingleGroupByResourceId(resource.Id);
-        t.ResourceDao.DeleteGroup(resourceGroup);
+        t.ResourceDao.DeleteGroupByGuid(resourceGroup.Guid);
     
         t.Commit();
         
@@ -76,6 +76,13 @@ public class ResourceService : IResourceService
         _fileStorage.DeleteFile(filePath);
     }
 
+    public void DeleteResourceGroup(Guid groupId, TutorRole role)
+    {
+        using var t = _transactor.BeginTransaction();
+        t.ResourceDao.DeleteGroupByGuid(groupId);
+        t.Commit();
+    }
+        
     public void CreateResourceGroup(ResourceGroupDto group, TutorRole role)
     {
         using var t = _transactor.BeginTransaction();

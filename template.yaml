@@ -671,6 +671,24 @@ Resources:
             Method: delete
             RestApiId: !Ref KorepetycjeApi
             
+  DeleteResourceGroup:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/Endpoints/
+      Handler: Endpoints::Endpoints.Resources.DeleteResourceGroupFunction::DeleteResourceGroup
+      Runtime: dotnet8
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        GetLessons:
+          Type: Api
+          Properties:
+            Path: /api/resource-group/{groupId}
+            Method: delete
+            RestApiId: !Ref KorepetycjeApi
+      
   GetStudentGroups:
     Type: AWS::Serverless::Function
     Properties:
@@ -684,7 +702,7 @@ Resources:
       Events:
         GetLessons:
           Type: Api
-          Properties:
+          Properties:       
             Path: /api/student-group
             Method: get
             RestApiId: !Ref KorepetycjeApi
