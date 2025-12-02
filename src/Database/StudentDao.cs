@@ -44,7 +44,7 @@ internal class StudentDao : IStudentDao
     {
         _context.Students.Update(student);
     }
-    
+
     public void SaveSingleStudent(DbStudent student, string singleGroupName)
     {
         var group = new DbStudentGroup
@@ -52,7 +52,7 @@ internal class StudentDao : IStudentDao
             IsSingle = true,
             Name = singleGroupName
         };
-    
+
         var membership = new DbStudentMembership
         {
             Student = student,
@@ -71,28 +71,34 @@ internal class StudentDao : IStudentDao
             _context.Students.Remove(studentToDelete);
         }
     }
-    
+
     public DbStudentGroup GetStudentSingleGroupByStudentId(int studentId)
     {
-        var group = _context.StudentMemberships.Query()
-            .Where(m => m.StudentId == studentId)
-            .Select(m => m.Group)
-            .FirstOrDefault(g => g != null && g.IsSingle);
-        if(group == null)
-            throw new ApplicationException("Single resource group not found");
-        return group;
+        return _context.StudentGroups.Query().SingleOrDefault(g => g.IsSingle
+                   && g.Memberships.Any(m => m.StudentId == studentId))
+               ?? throw new ApplicationException("Single student group not found");
     }
 
     public void DeleteStudentGroup(DbStudentGroup studentGroup)
     {
         _context.StudentGroups.Remove(studentGroup);
     }
-    
+
     public List<DbStudentGroup> GetAllStudentGroups()
     {
         return _context.StudentGroups.Query()
             .Include(g => g.Memberships)
             .ThenInclude(m => m.Student)
             .Where(g => !g.IsSingle).ToList();
+    }
+
+    public DbStudentGroup? GetStudentGroupByGuid(Guid groupGuid)
+    {
+        return _context.StudentGroups.Query().SingleOrDefault(g => g.Guid == groupGuid);
+    }
+
+    public void SaveStudentGroup(DbStudentGroup group)
+    {
+        _context.StudentGroups.Update(group);
     }
 }

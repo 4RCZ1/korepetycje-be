@@ -1,7 +1,6 @@
 using Database.Entities;
 using Microsoft.EntityFrameworkCore;
 using Services.Interfaces;
-using Microsoft.EntityFrameworkCore; 
 
 namespace Database;
 
@@ -21,7 +20,7 @@ internal class ResourceDao : IResourceDao
     {
         return _context.Resources.Query().ToList();
     }
-    
+
     public IList<DbResourceGroup> GetAllResourceGroups()
     {
         return _context.ResourceGroups.Query()
@@ -48,12 +47,16 @@ internal class ResourceDao : IResourceDao
     {
         _context.Resources.Remove(resource);
     }
-    
-    
 
     public void SaveResourceGroup(DbResourceGroup group)
     {
-        _context.ResourceGroups.Add(group);
+        _context.ResourceGroups.Update(group);
+    }
+
+    public void EmptyResourceGroup(int groupId)
+    {
+        _context.ResourceMemberships.RemoveRange(
+            _context.ResourceMemberships.Query().Where(m => m.GroupId == groupId));
     }
 
     public void DeleteGroupByGuid(Guid groupId)
@@ -74,16 +77,7 @@ internal class ResourceDao : IResourceDao
             throw new ApplicationException("Single resource group not found");
         return group;
     }
-    
-    public DbResourceGroup GetResourceGroupById(Guid resourceGroupId)
-    {
-        var group = _context.ResourceGroups.Query()
-            .FirstOrDefault(r => r.Guid == resourceGroupId);
-        if (group == null)
-            throw new ApplicationException("Resource group not found");
-        return group;
-    }    
-        
+
     public IList<DbResource> GetStudentResources(int studentId)
     {
         return _context.Resources.Query()
@@ -114,8 +108,34 @@ internal class ResourceDao : IResourceDao
                     .Any(ap => ap.ResourceGroup != null && ap.ResourceGroup.Memberships
                         .Any(rm => rm.Resource !=null && rm.Resource.Guid == resourceId))))
             .ToList();
+     }
 
 
+    public DbResourceGroup? GetResourceGroupByGuid(Guid groupGuid)
+    {
+        return _context.ResourceGroups.Query().SingleOrDefault(g => g.Guid == groupGuid);
+    }
+
+    public void SaveAccessPolicyIfNotExists(int studentGroupId, int resourceGroupId)
+    {
+        var policy = _context.AccessPolicies.Query().SingleOrDefault(
+            p => p.StudentGroupId == studentGroupId && p.ResourceGroupId == resourceGroupId);
+        if (policy == null)
+        {
+            _context.AccessPolicies.Add(new DbAccessPolicy
+            {
+                StudentGroupId = studentGroupId,
+                ResourceGroupId = resourceGroupId,
+            });
+        }
+    }
+
+    public void DeleteAccessPolicy(int studentGroupId, int resourceGroupId)
+    {
+        var policy = _context.AccessPolicies.Query().SingleOrDefault(
+            p => p.StudentGroupId == studentGroupId && p.ResourceGroupId == resourceGroupId);
+        if (policy != null)
+            _context.AccessPolicies.Remove(policy);
     }
 
     private readonly TenantContext _context;

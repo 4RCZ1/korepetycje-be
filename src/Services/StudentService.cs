@@ -143,7 +143,41 @@ public class StudentService : IStudentService
         t.StudentDao.DeleteStudentGroup(group);
         t.Commit();
     }
-    
+
+    public void CreateStudentGroup(StudentGroupDto group, TutorRole role)
+    {
+        using var t = _transactor.BeginTransaction();
+        var memberships = CreateMemberships(t.StudentDao, group);
+        t.StudentDao.SaveStudentGroup(new DbStudentGroup
+        {
+            IsSingle = false,
+            Name = group.Name,
+            Memberships = memberships
+        });
+        t.Commit();
+    }
+
+    private static List<DbStudentMembership> CreateMemberships(
+        IStudentDao dao, StudentGroupDto group)
+    {
+        return group.Students.Select(s =>
+        {
+            if (s.ExternalId == null)
+                throw new BadRequestException("Null student ID encountered.");
+            var student = dao.GetStudent(int.Parse(s.ExternalId));
+            if (student == null)
+            {
+                throw new BadRequestException(
+                    "Nie znaleziono jednego z podanych uczniów."
+                    + " Prawdopodobnie został usunięty. Odśwież stronę i spróbuj ponownie.");
+            }
+            return new DbStudentMembership
+            {
+                StudentId = student.Id,
+            };
+        }).ToList();
+    }
+
     public List<StudentGroupDto> GetStudentGroups(TutorRole role)
     {
         using var t = _transactor.BeginTransaction();

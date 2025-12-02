@@ -11,4 +11,5 @@ public interface IStudentService
     List<StudentGroupDto> GetStudentGroups(TutorRole role);
     void UpdateStudent(string externalStudentId, StudentDto student, TutorRole role);
     void DeleteStudent(string studentExternalId, TutorRole role);
+    void CreateStudentGroup(StudentGroupDto group, TutorRole role);
 }

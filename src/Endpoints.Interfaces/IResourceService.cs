@@ -15,4 +15,7 @@ public interface IResourceService
     IList<ResourceDto> GetResourcesAsStudent(StudentRole role);
     ResourceAssignmentsDto GetResourceAssignments(Guid resourceId, TutorRole role);
 
+    void GrantAccess(MultiAssignmentDto dto, TutorRole role);
+    void RevokeAccess(MultiAssignmentDto dto, TutorRole role);
+    void UpdateResourceGroup(Guid groupId, ResourceGroupDto newContent, TutorRole role);
 }

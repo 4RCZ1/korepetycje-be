@@ -12,4 +12,6 @@ public interface IStudentDao
     DbStudentGroup GetStudentSingleGroupByStudentId(int studentId);
     void DeleteStudentGroup(DbStudentGroup studentGroup);
     List<DbStudentGroup> GetAllStudentGroups();
+    DbStudentGroup? GetStudentGroupByGuid(Guid groupGuid);
+    void SaveStudentGroup(DbStudentGroup group);
 }
