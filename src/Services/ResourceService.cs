@@ -34,6 +34,19 @@ public class ResourceService : IResourceService
         };
     }
 
+    public ResourceUrlDto GetDownloadUrlForStudent(Guid externalResourceId, StudentRole role)
+    {
+        using var t = _transactor.BeginTransaction();
+        var studentId = int.Parse(role.ExternalStudentId);
+        if (!t.ResourceDao.StudentHasAccessToResource(studentId, externalResourceId))
+            throw new BadRequestException("Nie posiadasz dostępu do tego zasobu.");
+        var resource = t.ResourceDao.GetResourceByGuid(externalResourceId);
+        return new ResourceUrlDto
+        {
+            Url = GetDownloadUrl(resource, t),
+        };
+    }
+
     private string? GetDownloadUrl(DbResource? resource, ITransaction t)
     {
         if (resource == null)
