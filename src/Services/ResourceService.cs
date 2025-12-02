@@ -220,6 +220,23 @@ public class ResourceService : IResourceService
         }).ToList();
     }
 
+    public ResourceAssignmentsDto GetResourceAssignments(Guid resourceId, TutorRole role)
+    {
+        using var t = _transactor.BeginTransaction();
+        var assignedStudents = t.ResourceDao.GetResourceAssignments(resourceId);
+        return new ResourceAssignmentsDto()
+        {
+            resourdeGuid = resourceId.ToString(),
+            students = assignedStudents.Select(s => new StudentDto()
+            {
+                ExternalId = s.Id.ToString(),
+                Name = s.Name,
+                Surname = s.Surname,
+            }).ToList()
+        };
+    }
+    
+    
     public void UpdateResourceGroup(Guid groupId, ResourceGroupDto newContent, TutorRole role)
     {
         using var t = _transactor.BeginTransaction();

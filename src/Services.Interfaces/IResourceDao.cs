@@ -14,6 +14,7 @@ public interface IResourceDao
     void EmptyResourceGroup(int groupId);
     DbResourceGroup GetResourceSingleGroupByResourceId(int resourceId);
     IList<DbResource> GetStudentResources(int studentId);
+    IList<DbStudent> GetResourceAssignments(Guid resourceId);
     DbResourceGroup? GetResourceGroupByGuid(Guid groupGuid);
     void SaveAccessPolicyIfNotExists(int studentGroupId, int resourceGroupId);
     void DeleteAccessPolicy(int studentGroupId, int resourceGroupId);

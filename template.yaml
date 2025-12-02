@@ -760,6 +760,24 @@ Resources:
             Path: /api/resource-group
             Method: post
             RestApiId: !Ref KorepetycjeApi
+             
+  GetResourceAssignments:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/Endpoints/
+      Handler: Endpoints::Endpoints.Resources.GetResourceAssignmentsFunction::GetResourceAssignments
+      Runtime: dotnet8
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        GetLessons:
+          Type: Api
+          Properties:
+          Path: /api/assignment/resource/{resourceGuid}
+          Method: get
+          RestApiId: !Ref KorepetycjeApi
 
   UpdateResourceGroup:
     Type: AWS::Serverless::Function

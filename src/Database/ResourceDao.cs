@@ -94,6 +94,23 @@ internal class ResourceDao : IResourceDao
             .ToList();
     }
 
+    public IList<DbStudent> GetResourceAssignments(Guid resourceId)
+    {
+        return _context.Students.Query()
+            .Include(s => s.Memberships)
+            .ThenInclude(sm => sm.Group)
+            .ThenInclude(sg => sg!.AccessPolicies)
+            .ThenInclude(ap => ap.ResourceGroup)
+            .ThenInclude(rg => rg!.Memberships)
+            .ThenInclude(rm => rm.Resource)
+            .Where(s => s.Memberships
+                .Any(sm => sm.Group != null && sm.Group.AccessPolicies
+                    .Any(ap => ap.ResourceGroup != null && ap.ResourceGroup.Memberships
+                        .Any(rm => rm.Resource !=null && rm.Resource.Guid == resourceId))))
+            .ToList();
+     }
+
+
     public DbResourceGroup? GetResourceGroupByGuid(Guid groupGuid)
     {
         return _context.ResourceGroups.Query().SingleOrDefault(g => g.Guid == groupGuid);
