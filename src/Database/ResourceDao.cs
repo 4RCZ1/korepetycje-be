@@ -1,7 +1,6 @@
 using Database.Entities;
 using Microsoft.EntityFrameworkCore;
 using Services.Interfaces;
-using Microsoft.EntityFrameworkCore; 
 
 namespace Database;
 
@@ -48,8 +47,6 @@ internal class ResourceDao : IResourceDao
     {
         _context.Resources.Remove(resource);
     }
-    
-    
 
     public void SaveResourceGroup(DbResourceGroup group)
     {
@@ -80,16 +77,7 @@ internal class ResourceDao : IResourceDao
             throw new ApplicationException("Single resource group not found");
         return group;
     }
-    
-    public DbResourceGroup GetResourceGroupById(Guid resourceGroupId)
-    {
-        var group = _context.ResourceGroups.Query()
-            .FirstOrDefault(r => r.Guid == resourceGroupId);
-        if (group == null)
-            throw new ApplicationException("Resource group not found");
-        return group;
-    }    
-        
+
     public IList<DbResource> GetStudentResources(int studentId)
     {
         return _context.Resources.Query()
