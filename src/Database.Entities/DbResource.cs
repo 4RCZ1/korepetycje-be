@@ -18,4 +18,6 @@ public class DbResource : TenantEntity
     [MaxLength(500)]
     [Column("file_name")]
     public required string Filename { get; set; }
+    
+    public ICollection<DbResourceMembership> Memberships { get; set; } = new List<DbResourceMembership>();
 }

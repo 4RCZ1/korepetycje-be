@@ -10,9 +10,13 @@ public class GetResourcesFunction
     {
         return await RestIo.HandleRestBoilerplateAsync(request, async identity =>
         {
-            var role = identity.RequireTutor();
             var service = await ServiceFactory.CreateResourceServiceAsync(identity);
-            return service.GetResources(role);
+            if (identity.AsStudent.HasValue)
+            {
+                return service.GetResourcesAsStudent(identity.RequireStudent());
+            }
+            var role = identity.RequireTutor();
+            return service.GetResourcesAsTutor(role);
         });
     }
 }

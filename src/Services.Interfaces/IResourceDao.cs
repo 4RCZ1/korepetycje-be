@@ -6,9 +6,13 @@ public interface IResourceDao
 {
     DbResource? GetResourceByGuid(Guid guid);
     IList<DbResource> GetAllResources();
+    IList<DbResourceGroup> GetAllResourceGroups();
     void SaveSingleResource(string filename, string singleGroupName);
     void DeleteResource(DbResource resource);
     void DeleteGroupByGuid(Guid groupId);
     DbResourceGroup GetResourceSingleGroupByResourceId(int resourceId);
     DbResourceGroup GetResourceGroupById(Guid resourceGroupId);
+    void SaveResourceGroup(DbResourceGroup group);
+    DbResourceGroup GetResourceSingleGroupByResourceId(int resourceId);
+    IList<DbResource> GetStudentResources(int studentId);
 }

@@ -3,6 +3,7 @@ using System;
 using Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Database.Migrations
 {
     [DbContext(typeof(OurDbContext))]
-    partial class OurDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251126193322_ResourceGroupMemberships")]
+    partial class ResourceGroupMemberships
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -439,13 +442,13 @@ namespace Database.Migrations
             modelBuilder.Entity("Database.Entities.DbAccessPolicy", b =>
                 {
                     b.HasOne("Database.Entities.DbResourceGroup", "ResourceGroup")
-                        .WithMany("AccessPolicies")
+                        .WithMany()
                         .HasForeignKey("ResourceGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Database.Entities.DbStudentGroup", "StudentGroup")
-                        .WithMany("AccessPolicies")
+                        .WithMany()
                         .HasForeignKey("StudentGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -535,7 +538,7 @@ namespace Database.Migrations
                         .IsRequired();
 
                     b.HasOne("Database.Entities.DbResource", "Resource")
-                        .WithMany("Memberships")
+                        .WithMany()
                         .HasForeignKey("ResourceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -568,13 +571,13 @@ namespace Database.Migrations
             modelBuilder.Entity("Database.Entities.DbStudentMembership", b =>
                 {
                     b.HasOne("Database.Entities.DbStudentGroup", "Group")
-                        .WithMany("Memberships")
+                        .WithMany()
                         .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Database.Entities.DbStudent", "Student")
-                        .WithMany("Memberships")
+                        .WithMany()
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -589,33 +592,14 @@ namespace Database.Migrations
                     b.Navigation("Attendances");
                 });
 
-            modelBuilder.Entity("Database.Entities.DbResource", b =>
-                {
-                    b.Navigation("Memberships");
-                });
-
             modelBuilder.Entity("Database.Entities.DbResourceGroup", b =>
                 {
-                    b.Navigation("AccessPolicies");
-
                     b.Navigation("Memberships");
                 });
 
             modelBuilder.Entity("Database.Entities.DbSchedule", b =>
                 {
                     b.Navigation("Lessons");
-                });
-
-            modelBuilder.Entity("Database.Entities.DbStudent", b =>
-                {
-                    b.Navigation("Memberships");
-                });
-
-            modelBuilder.Entity("Database.Entities.DbStudentGroup", b =>
-                {
-                    b.Navigation("AccessPolicies");
-
-                    b.Navigation("Memberships");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,5 +1,7 @@
 using Database.Entities;
+using Microsoft.EntityFrameworkCore;
 using Services.Interfaces;
+using Microsoft.EntityFrameworkCore; 
 
 namespace Database;
 
@@ -19,6 +21,15 @@ internal class ResourceDao : IResourceDao
     {
         return _context.Resources.Query().ToList();
     }
+    
+    public IList<DbResourceGroup> GetAllResourceGroups()
+    {
+        return _context.ResourceGroups.Query()
+            .Include(g => g.Memberships)
+                .ThenInclude(m => m.Resource)
+            .Where(g => !g.IsSingle)
+            .ToList();
+    }
 
     public void SaveSingleResource(string filename, string singleGroupName)
     {
@@ -32,12 +43,19 @@ internal class ResourceDao : IResourceDao
             },
         });
     }
-    
+
     public void DeleteResource(DbResource resource)
     {
         _context.Resources.Remove(resource);
     }
     
+    
+
+    public void SaveResourceGroup(DbResourceGroup group)
+    {
+        _context.ResourceGroups.Add(group);
+    }
+
     public void DeleteGroupByGuid(Guid groupId)
     {
         var group = _context.ResourceGroups.Query().SingleOrDefault(r => r.Guid == groupId);
@@ -64,6 +82,22 @@ internal class ResourceDao : IResourceDao
         if (group == null)
             throw new ApplicationException("Resource group not found");
         return group;
+    }    
+        
+    public IList<DbResource> GetStudentResources(int studentId)
+    {
+        return _context.Resources.Query()
+            .Include(r => r.Memberships)
+                .ThenInclude(rm => rm.Group)
+                    .ThenInclude(rg => rg!.AccessPolicies)
+                        .ThenInclude(ap => ap.StudentGroup)
+                            .ThenInclude(sg => sg!.Memberships)
+            .Where(resource => resource.Memberships
+                .Any(rm => rm.Group != null && rm.Group.AccessPolicies
+                    .Any(ap => ap.StudentGroup != null && ap.StudentGroup.Memberships
+                        .Any(sm => sm.StudentId == studentId))))
+
+            .ToList();
     }
 
     private readonly TenantContext _context;

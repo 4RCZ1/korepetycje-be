@@ -14,7 +14,7 @@ public class ResourceService : IResourceService
         _fileStorage = fileStorage;
     }
 
-    public IList<ResourceDto> GetResources(TutorRole role)
+    public IList<ResourceDto> GetResourcesAsTutor(TutorRole role)
     {
         using var t = _transactor.BeginTransaction();
         return t.ResourceDao.GetAllResources().Select(r => new ResourceDto
@@ -81,7 +81,63 @@ public class ResourceService : IResourceService
         using var t = _transactor.BeginTransaction();
         t.ResourceDao.DeleteGroupByGuid(groupId);
         t.Commit();
+    }
         
+    public void CreateResourceGroup(ResourceGroupDto group, TutorRole role)
+    {
+        using var t = _transactor.BeginTransaction();
+        var memberships = group.Resources.Select(r =>
+        {
+            var resource = t.ResourceDao.GetResourceByGuid(Guid.Parse(r.Id));
+            if (resource == null)
+            {
+                throw new BadRequestException(
+                    "Nie znaleziono jednego z podanych zasobów."
+                    + " Prawdopodobnie został usunięty. Odśwież stronę i spróbuj ponownie.");
+            }
+            return new DbResourceMembership
+            {
+                ResourceId = resource.Id,
+            };
+        }).ToList();
+        t.ResourceDao.SaveResourceGroup(new DbResourceGroup
+        {
+            IsSingle = false,
+            Name = group.Name,
+            Memberships = memberships
+        });
+        t.Commit();
+    }
+    
+    public IList<ResourceDto> GetResourcesAsStudent(StudentRole role)
+    {
+        using var t = _transactor.BeginTransaction();
+        
+        var studentId = int.Parse(role.ExternalStudentId);
+        
+        return t.ResourceDao.GetStudentResources(studentId)
+            .Select(r => new ResourceDto()
+            {
+                Id = r.Guid.ToString(),
+                Name = r.Filename
+            })
+            .ToList();
+    }
+
+    
+    public IList<ResourceGroupDto> GetResourceGroups(TutorRole role)
+    {
+        using var t = _transactor.BeginTransaction();
+        return t.ResourceDao.GetAllResourceGroups().Select(r => new ResourceGroupDto
+        {
+            Id = r.Guid.ToString(),
+            Name = r.Name,
+            Resources = r.Memberships.Select(m => new ResourceDto()
+            {
+                Id = m.Resource?.Guid.ToString() ?? String.Empty,
+                Name = m.Resource?.Filename ?? String.Empty,
+            }).ToList()
+        }).ToList();
     }
     
     

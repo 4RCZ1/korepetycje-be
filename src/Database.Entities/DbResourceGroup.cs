@@ -22,4 +22,9 @@ public class DbResourceGroup : TenantEntity
     [MaxLength(100)]
     [Column("name")]
     public required string Name { get; set; }
+
+    public ICollection<DbResourceMembership> Memberships { get; set; } =
+        new List<DbResourceMembership>();
+    
+    public ICollection<DbAccessPolicy> AccessPolicies { get; set; } = new List<DbAccessPolicy>();
 }
