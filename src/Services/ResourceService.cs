@@ -55,23 +55,23 @@ public class ResourceService : IResourceService
         var tutor = t.TutorDao.GetTutor();
         return $"{tutor.ResourcePathPrefix}/{filename}";
     }
-
+    
     public void DeleteResource(Guid externalResourceId, TutorRole role)
     {
         using var t = _transactor.BeginTransaction();
-
+    
         var resource = t.ResourceDao.GetResourceByGuid(externalResourceId);
 
         if (resource == null)
             return;
-
+        
         t.ResourceDao.DeleteResource(resource);
-
+        
         var resourceGroup = t.ResourceDao.GetResourceSingleGroupByResourceId(resource.Id);
         t.ResourceDao.DeleteGroup(resourceGroup);
-
+    
         t.Commit();
-
+        
         var filePath = GetFilePath(resource.Filename, t);
         _fileStorage.DeleteFile(filePath);
     }
@@ -97,7 +97,7 @@ public class ResourceService : IResourceService
         {
             IsSingle = false,
             Name = group.Name,
-            Memberships = memberships,
+            Memberships = memberships
         });
         t.Commit();
     }
@@ -117,6 +117,23 @@ public class ResourceService : IResourceService
             .ToList();
     }
 
+    
+    public IList<ResourceGroupDto> GetResourceGroups(TutorRole role)
+    {
+        using var t = _transactor.BeginTransaction();
+        return t.ResourceDao.GetAllResourceGroups().Select(r => new ResourceGroupDto
+        {
+            Id = r.Guid.ToString(),
+            Name = r.Name,
+            Resources = r.Memberships.Select(m => new ResourceDto()
+            {
+                Id = m.Resource?.Guid.ToString() ?? String.Empty,
+                Name = m.Resource?.Filename ?? String.Empty,
+            }).ToList()
+        }).ToList();
+    }
+    
+    
     private readonly IFileStorageClient _fileStorage;
     private readonly ITransactor _transactor;
 }

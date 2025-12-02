@@ -3,19 +3,16 @@ using Endpoints.Interfaces.Authorization;
 
 namespace Endpoints.Resources;
 
-public class DeleteResourceFunction
+public class GetResourceGroupsFunction
 {
-    public static async Task<APIGatewayProxyResponse> DeleteResource(APIGatewayProxyRequest request)
+    public static async Task<APIGatewayProxyResponse> GetResourceGroups(APIGatewayProxyRequest request)
     {
         return await RestIo.HandleRestBoilerplateAsync(request, async identity =>
         {
             var role = identity.RequireTutor();
             var service = await ServiceFactory.CreateResourceServiceAsync(identity);
-            var resourceId = RestIo.GetPathGuid(request, "resourceGuid");
-    
-            service.DeleteResource(resourceId, role);
-    
-            return string.Empty;
+            
+            return service.GetResourceGroups(role);
         });
     }
 }

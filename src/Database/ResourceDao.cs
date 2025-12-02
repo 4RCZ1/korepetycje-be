@@ -1,4 +1,5 @@
 using Database.Entities;
+using Microsoft.EntityFrameworkCore;
 using Services.Interfaces;
 using Microsoft.EntityFrameworkCore; 
 
@@ -19,6 +20,15 @@ internal class ResourceDao : IResourceDao
     public IList<DbResource> GetAllResources()
     {
         return _context.Resources.Query().ToList();
+    }
+    
+    public IList<DbResourceGroup> GetAllResourceGroups()
+    {
+        return _context.ResourceGroups.Query()
+            .Include(g => g.Memberships)
+                .ThenInclude(m => m.Resource)
+            .Where(g => !g.IsSingle)
+            .ToList();
     }
 
     public void SaveSingleResource(string filename, string singleGroupName)
