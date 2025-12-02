@@ -12,7 +12,6 @@ public class StudentService : IStudentService
     {
         _transactor = transactor;
     }
-
     public string AddStudent(StudentDto studentToAdd, TutorRole role)
     {
         DbAddress? addressToAdd = null;
@@ -30,10 +29,9 @@ public class StudentService : IStudentService
                 AddressData = studentToAdd?.Address?.AddressData ?? "Uzupełnij dane"
             }
         };
-
-        t.StudentDao.SaveStudent(student);
+        t.StudentDao.SaveSingleStudent(student, $"(single) {student.Name}_{student.Surname}");
         t.Commit();
-        return student.Id.ToString(); // Reading IDs of saved entities is specific to EF Core.
+        return student.Id.ToString();
     }
 
     public StudentDto GetStudent(
@@ -140,7 +138,9 @@ public class StudentService : IStudentService
     public void DeleteStudent(string studentExternalId, TutorRole role)
     {
         using var t = _transactor.BeginTransaction();
+        var group = t.StudentDao.GetStudentSingleGroupByStudentId(int.Parse(studentExternalId));
         t.StudentDao.DeleteStudent(int.Parse(studentExternalId));
+        t.StudentDao.DeleteStudentGroup(group);
         t.Commit();
     }
     
