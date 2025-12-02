@@ -760,7 +760,7 @@ Resources:
             Path: /api/resource-group
             Method: post
             RestApiId: !Ref KorepetycjeApi
-             
+
   GetResourceAssignments:
     Type: AWS::Serverless::Function
     Properties:
@@ -775,9 +775,9 @@ Resources:
         GetLessons:
           Type: Api
           Properties:
-          Path: /api/assignment/resource/{resourceGuid}
-          Method: get
-          RestApiId: !Ref KorepetycjeApi
+            Path: /api/assignment/resource/{resourceGuid}
+            Method: get
+            RestApiId: !Ref KorepetycjeApi
 
   UpdateResourceGroup:
     Type: AWS::Serverless::Function
