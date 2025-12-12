@@ -148,6 +148,8 @@ public class StudentService : IStudentService
     {
         using var t = _transactor.BeginTransaction();
         var memberships = CreateMemberships(t.StudentDao, group);
+        if (group.Name == null)
+            throw new BadRequestException("Nazwa grupy musi zostać podana.");
         t.StudentDao.SaveStudentGroup(new DbStudentGroup
         {
             IsSingle = false,

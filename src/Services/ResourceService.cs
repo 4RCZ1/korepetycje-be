@@ -100,6 +100,8 @@ public class ResourceService : IResourceService
     {
         using var t = _transactor.BeginTransaction();
         var memberships = CreateMemberships(t.ResourceDao, group);
+        if (group.Name == null)
+            throw new BadRequestException("Nazwa grupy musi zostać podana.");
         t.ResourceDao.SaveResourceGroup(new DbResourceGroup
         {
             IsSingle = false,
@@ -248,8 +250,7 @@ public class ResourceService : IResourceService
             }).ToList()
         };
     }
-    
-    
+
     public void UpdateResourceGroup(Guid groupId, ResourceGroupDto newContent, TutorRole role)
     {
         using var t = _transactor.BeginTransaction();
@@ -258,7 +259,8 @@ public class ResourceService : IResourceService
             throw new BadRequestException("Aktualizowana grupa została już usunięta.");
         t.ResourceDao.EmptyResourceGroup(group.Id);
         group.Memberships = CreateMemberships(t.ResourceDao, newContent);
-        group.Name = newContent.Name;
+        if (newContent.Name != null)
+            group.Name = newContent.Name;
         t.ResourceDao.SaveResourceGroup(group);
         t.Commit();
     }
