@@ -8,5 +8,6 @@ public interface ITransaction : IDisposable
     public ILessonSuggestionDao LessonSuggestionDao { get; }
     public ITutorDao TutorDao { get; }
     public IResourceDao ResourceDao { get; }
+    public IStudentResourcesDao StudentResourcesDao { get; }
     public void Commit();
 }

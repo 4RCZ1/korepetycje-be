@@ -832,3 +832,21 @@ Resources:
             Path: /api/assignment
             Method: delete
             RestApiId: !Ref KorepetycjeApi
+
+  GetStudetResources:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/Endpoints/
+      Handler: Endpoints::Endpoints.GetStudentResourcesFunction::GetStudentResources
+      Runtime: dotnet8
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        GetLessons:
+          Type: Api
+          Properties:
+            Path: /api/resources/student/{studentId}
+            Method: get
+            RestApiId: !Ref KorepetycjeApi
