@@ -775,9 +775,9 @@ Resources:
         GetLessons:
           Type: Api
           Properties:
-          Path: /api/assignment/resource/{resourceGuid}
-          Method: get
-          RestApiId: !Ref KorepetycjeApi
+            Path: /api/assignment/resource/{resourceGuid}
+            Method: get
+            RestApiId: !Ref KorepetycjeApi
 
   UpdateResourceGroup:
     Type: AWS::Serverless::Function
@@ -837,7 +837,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ./src/Endpoints/
-      Handler: Endpoints::Endpoints.Resources.GetStudentAssignmentsFunction::GetStudentAssignments
+      Handler: Endpoints::Endpoints.StudentFunctions.GetStudentAssignmentsFunction::GetStudentAssignments
       Runtime: dotnet8
       Architectures:
         - x86_64
@@ -847,6 +847,9 @@ Resources:
         GetLessons:
           Type: Api
           Properties:
-          Path: /api/assignment/student/{studentId}
-          Method: get
-          RestApiId: !Ref KorepetycjeApi
+            Path: /api/assignment/student/{studentId}
+            Method: get
+            RestApiId: !Ref KorepetycjeApi
+
+
+
