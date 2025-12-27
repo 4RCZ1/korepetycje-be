@@ -5,7 +5,7 @@ namespace Endpoints.StudentFunctions;
 
 public class GetStudentAssignmentsFunction
 {
-    public static async Task<APIGatewayProxyResponse> GetResourceAssignments(APIGatewayProxyRequest request)
+    public static async Task<APIGatewayProxyResponse> GetStudentAssignments(APIGatewayProxyRequest request)
     {
         return await RestIo.HandleRestBoilerplateAsync(request, async identity =>
         {
