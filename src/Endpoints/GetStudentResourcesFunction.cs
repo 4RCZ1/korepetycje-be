@@ -14,7 +14,7 @@ public class GetStudentResourcesFunction
             var role = identity.RequireTutor();
             var service = await ServiceFactory.CreateStudentResourcesServiceAsync(identity);
             var studentId = Int32.Parse(RestIo.GetPathParameter(request, "studentId"));
-            var result = service.GetStudentWithResources(studentId);
+            var result = service.GetStudentWithResources(studentId, role);
             return result;
         });
     }

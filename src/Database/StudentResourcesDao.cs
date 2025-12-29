@@ -23,6 +23,7 @@ public class StudentResourcesDao : IStudentResourcesDao
                             .ThenInclude(sg => sg!.Memberships)
              .Where(resource => resource.Memberships
                 .Any(rm => rm.Group != null 
+                           && rm.Group.IsSingle
                            && rm.Group.AccessPolicies.Any(ap => ap.StudentGroup != null 
                                                                 && ap.StudentGroup.IsSingle == true
                            && ap.StudentGroup.Memberships.Any(sm => sm.StudentId == studentId))))

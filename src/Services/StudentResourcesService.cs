@@ -2,6 +2,7 @@
 using Database.Entities;
 using Endpoints.Dto;
 using Endpoints.Interfaces;
+using Endpoints.Interfaces.Authorization;
 using Services.Interfaces;
 
 namespace Services;
@@ -14,7 +15,7 @@ public class StudentResourcesService : IStudentResourcesService
         _transactor = transactor;
     }
 
-    public StudentResourcesResponse.StudentWithResourcesResponse? GetStudentWithResources(int studentId)
+    public StudentResourcesResponse.StudentWithResourcesResponse? GetStudentWithResources(int studentId, TutorRole role)
     {
         using var t = _transactor.BeginTransaction();
         var student = t.StudentDao.GetStudent(studentId);
