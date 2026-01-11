@@ -200,7 +200,12 @@ public class StudentService : IStudentService
 
     public ReportForInvoiceDto GetReportForInvoice(TutorRole role, string studentExternalId)
     {
+        var studentId = int.Parse(studentExternalId);
         using var t = _transactor.BeginTransaction();
+        var student = t.StudentDao.GetStudent(studentId, true);
+        if(student is null)
+            throw new BadRequestException("No student found.");
+            
         var minutesList = t.StudentDao.GetStudentMinutes(int.Parse(studentExternalId));
 
         var report = new ReportForInvoiceDto()
