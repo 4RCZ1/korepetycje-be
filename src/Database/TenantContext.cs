@@ -34,6 +34,7 @@ public class TenantContext : ITransaction
         TutorDao = new TutorDao(this);
         ResourceDao = new ResourceDao(this);
         StudentResourcesDao = new StudentResourcesDao(this);
+        ResourceStudentsDao = new ResourceStudentsDao(this);
     }
 
     public void Dispose()
@@ -68,6 +69,7 @@ public class TenantContext : ITransaction
     public ITutorDao TutorDao { get; }
     public IResourceDao ResourceDao { get; }
     public IStudentResourcesDao StudentResourcesDao { get; }
+    public IResourceStudentsDao ResourceStudentsDao { get; }
 
     private readonly OurDbContext _impl;
 }

@@ -10,10 +10,19 @@ public class DownloadResourceFunction
     {
         return await RestIo.HandleRestBoilerplateAsync(request, async identity =>
         {
-            var role = identity.RequireTutor();
-            var service = await ServiceFactory.CreateResourceServiceAsync(identity);
-            var resourceGuid = RestIo.GetPathGuid(request, "resourceGuid");
-            return service.GetDownloadUrlForTutor(resourceGuid, role);
+            if (identity.AsTutor.HasValue)
+            {
+                var service = await ServiceFactory.CreateResourceServiceAsync(identity);
+                var resourceGuid = RestIo.GetPathGuid(request, "resourceGuid");
+                return service.GetDownloadUrlForTutor(resourceGuid, identity.RequireTutor());
+            }
+            else
+            {
+                var role = identity.RequireStudent();
+                var service = await ServiceFactory.CreateResourceServiceAsync(identity);
+                var resourceGuid = RestIo.GetPathGuid(request, "resourceGuid");
+                return service.GetDownloadUrlForStudent(resourceGuid, role);
+            }
         });
     }
 }

@@ -105,6 +105,13 @@ internal static class ServiceFactory
         var connection = await Connection;
         return new Transactor(connection, identity.ExternalTenantId);
     }
+    
+    public static async Task<IResourceStudentsService> CreateResourceStudentsServiceAsync(
+        UserIdentity identity)
+    {
+        var transactor = await CreateTransactor(identity);
+        return new ResourceStudentsService(transactor);
+    }
 
     private static readonly Task<string> Connection = GetConnectionStringAsync();
 }

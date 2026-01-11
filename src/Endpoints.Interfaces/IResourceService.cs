@@ -7,6 +7,7 @@ public interface IResourceService
 {
     IList<ResourceDto> GetResourcesAsTutor(TutorRole role);
     ResourceUrlDto GetDownloadUrlForTutor(Guid externalResourceId, TutorRole role);
+    ResourceUrlDto GetDownloadUrlForStudent(Guid externalResourceId, StudentRole role);
     ResourceUrlDto BeginUpload(string filename, TutorRole role);
     void DeleteResource(Guid externalResourceId, TutorRole role);
     void DeleteResourceGroup(Guid groupId, TutorRole role);

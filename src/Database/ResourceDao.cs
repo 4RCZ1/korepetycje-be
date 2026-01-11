@@ -138,5 +138,12 @@ internal class ResourceDao : IResourceDao
             _context.AccessPolicies.Remove(policy);
     }
 
+    public bool StudentHasAccessToResource(int studentId, Guid resourceGuid)
+    {
+        return _context.AccessPolicies.Query().Any(p =>
+            p.ResourceGroup!.Memberships.Any(rm => rm.Resource!.Guid == resourceGuid)
+            && p.StudentGroup!.Memberships.Any(sm => sm.StudentId == studentId));
+    }
+
     private readonly TenantContext _context;
 }
