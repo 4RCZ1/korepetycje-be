@@ -198,5 +198,19 @@ public class StudentService : IStudentService
         }).ToList();
     }
 
+    public ReportForInvoiceDto GetReportForInvoice(TutorRole role, string studentExternalId)
+    {
+        using var t = _transactor.BeginTransaction();
+        var minutesList = t.StudentDao.GetStudentMinutes(int.Parse(studentExternalId));
+
+        var report = new ReportForInvoiceDto()
+        {
+            IndividualHours = (int)Math.Round(minutesList[0] / 60),
+            GroupHours = (int)Math.Round(minutesList[1] / 60)
+        };
+
+        return report;
+    }
+
     private readonly ITransactor _transactor;
 }
