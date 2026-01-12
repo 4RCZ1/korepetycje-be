@@ -97,12 +97,15 @@ internal class StudentDao : IStudentDao
         return _context.StudentGroups.Query().SingleOrDefault(g => g.Guid == groupGuid);
     }
 
-    public List<double> GetStudentMinutes(int studentId)
+    public List<double> GetStudentMinutes(int studentId, DateTimeOffset startTime, DateTimeOffset endTime)
     {
         var studentAttendances = _context.Attendances.Query()
             .Include(a => a.Lesson)
                 .ThenInclude(l => l.Timeslot)
-            .Where(a => a.StudentId == studentId && a.IsConfirmed == true).ToList();
+            .Where(ia => ia.Lesson != null && ia.Lesson.Timeslot != null)
+            .Where(a => a.StudentId == studentId && a.IsConfirmed == true
+            && a.Lesson!.Timeslot!.StartTime >= startTime
+            && a.Lesson.Timeslot.EndTime <= endTime).ToList();
         var studentLessonsIds = studentAttendances.Select(a => a.LessonId).ToList();
         var otherAttendances = _context.Attendances.Query()
             .Where(a => studentLessonsIds.Contains(a.LessonId) 
@@ -113,7 +116,6 @@ internal class StudentDao : IStudentDao
         var individualAttendances = studentAttendances
             .Where(sa => !groupLessons.Contains(sa.LessonId)).ToList();
         var individualTimeslots = individualAttendances
-            .Where(ia => ia.Lesson != null && ia.Lesson.Timeslot != null)
             .Select(ia => ia.Lesson!.Timeslot!).ToList();
         double individualMinutes = individualTimeslots.Select(it => (it.EndTime - it.StartTime).TotalMinutes).Sum();
         

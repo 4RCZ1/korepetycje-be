@@ -13,8 +13,10 @@ public class GetReportForInvoiceFunction
         {
             var role = identity.RequireTutor();
             var studentExternalId = RestIo.GetPathParameter(request, "studentExternalId");
+            var startTime = RestIo.GetQueryParameter(request, "startTime");
+            var endTime = RestIo.GetQueryParameter(request, "endTime");
             var service = await ServiceFactory.CreateStudentServiceAsync(identity);
-            var report = service.GetReportForInvoice(role, studentExternalId);
+            var report = service.GetReportForInvoice(role, studentExternalId, startTime, endTime);
             return report;
         });
     }
