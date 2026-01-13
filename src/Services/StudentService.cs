@@ -1,4 +1,5 @@
-﻿using Database.Entities;
+﻿using System.Globalization;
+using Database.Entities;
 using Endpoints.Dto;
 using Endpoints.Interfaces;
 using Endpoints.Interfaces.Authorization;
@@ -197,6 +198,49 @@ public class StudentService : IStudentService
                 IsDeleted = m.Student?.IsDeleted
             }).ToList()
         }).ToList();
+    }
+
+    public ReportForInvoiceDto GetReportForInvoice(TutorRole role, string studentExternalId,
+                                                            string startTime, string endTime)
+    {
+        var studentId = int.Parse(studentExternalId);
+        using var t = _transactor.BeginTransaction();
+        var student = t.StudentDao.GetStudent(studentId, true);
+        if(student is null)
+            throw new BadRequestException("No student found.");
+
+        var parsedStartTime = ParseDateTime(startTime);
+        parsedStartTime = new DateTimeOffset(parsedStartTime.Date, parsedStartTime.Offset);
+        
+        var parsedEndTime = ParseDateTime(endTime);
+        parsedEndTime = new DateTimeOffset(parsedEndTime.Date.AddDays(1), parsedEndTime.Offset);
+        
+        var minutesList = t.StudentDao.GetStudentMinutes(int.Parse(studentExternalId),parsedStartTime,
+            parsedEndTime);
+
+        var report = new ReportForInvoiceDto()
+        {
+            IndividualHours = (int)Math.Round(minutesList[0] / 60),
+            GroupHours = (int)Math.Round(minutesList[1] / 60)
+        };
+
+        return report;
+    }
+    
+    private static DateTimeOffset ParseDateTime(string s)
+    {
+        if (DateTimeOffset.TryParse(
+                s,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal,
+                out var time))
+        {
+            return time;
+        }
+        else
+        {
+            throw new BadRequestException("Invalid datetime.");
+        }
     }
 
     private readonly ITransactor _transactor;

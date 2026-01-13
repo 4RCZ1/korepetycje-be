@@ -97,6 +97,38 @@ internal class StudentDao : IStudentDao
         return _context.StudentGroups.Query().SingleOrDefault(g => g.Guid == groupGuid);
     }
 
+    public List<double> GetStudentMinutes(int studentId, DateTimeOffset startTime, DateTimeOffset endTime)
+    {
+        var studentAttendances = _context.Attendances.Query()
+            .Include(a => a.Lesson)
+                .ThenInclude(l => l.Timeslot)
+            .Where(ia => ia.Lesson != null && ia.Lesson.Timeslot != null)
+            .Where(a => a.StudentId == studentId && a.IsConfirmed == true
+            && a.Lesson!.Timeslot!.StartTime >= startTime
+            && a.Lesson.Timeslot.EndTime <= endTime).ToList();
+        var studentLessonsIds = studentAttendances.Select(a => a.LessonId).ToList();
+        var otherAttendances = _context.Attendances.Query()
+            .Where(a => studentLessonsIds.Contains(a.LessonId) 
+                        && a.StudentId != studentId
+                        && a.IsConfirmed == true).ToList();
+        var groupLessons = otherAttendances.Select(a => a.LessonId).ToList();
+        
+        var individualAttendances = studentAttendances
+            .Where(sa => !groupLessons.Contains(sa.LessonId)).ToList();
+        var individualTimeslots = individualAttendances
+            .Select(ia => ia.Lesson!.Timeslot!).ToList();
+        double individualMinutes = individualTimeslots.Select(it => (it.EndTime - it.StartTime).TotalMinutes).Sum();
+        
+        var groupAttendances = studentAttendances
+            .Where(sa => groupLessons.Contains(sa.LessonId)).ToList();
+        var groupTimeslots = groupAttendances
+            .Where(ga => ga.Lesson != null && ga.Lesson.Timeslot != null)
+            .Select(ga => ga.Lesson!.Timeslot!).ToList();        
+        double groupMinutes = groupTimeslots.Select(gt => (gt.EndTime - gt.StartTime).TotalMinutes).Sum();
+
+        return [individualMinutes, groupMinutes];
+    }
+
     public void SaveStudentGroup(DbStudentGroup group)
     {
         _context.StudentGroups.Update(group);
