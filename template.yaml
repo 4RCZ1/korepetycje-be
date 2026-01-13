@@ -850,7 +850,25 @@ Resources:
             Path: /api/assignment/student/{studentId}
             Method: get
             RestApiId: !Ref KorepetycjeApi
-            
+           
+  GetReportForInvoice:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/Endpoints/
+      Handler: Endpoints::Endpoints.GetReportForInvoiceFunction::GetReport
+      Runtime: dotnet8
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        GetLessons:
+          Type: Api
+          Properties:
+            Path: /api/report/{studentExternalId}
+            Method: get
+            RestApiId: !Ref KorepetycjeApi         
+           
   GetResourceStudents:
     Type: AWS::Serverless::Function
     Properties:
