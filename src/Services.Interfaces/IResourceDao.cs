@@ -19,4 +19,5 @@ public interface IResourceDao
     void SaveAccessPolicyIfNotExists(int studentGroupId, int resourceGroupId);
     void DeleteAccessPolicy(int studentGroupId, int resourceGroupId);
     bool StudentHasAccessToResource(int studentId, Guid resourceGuid);
+    DbResourceGroup GetResourceGroupAssignments(Guid resourceGroupId);
 }

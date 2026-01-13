@@ -265,6 +265,55 @@ public class ResourceService : IResourceService
         t.Commit();
     }
 
+    public ResourceGroupAssignmentsDto GetResourceGroupAssignments(Guid resourceGroupId, TutorRole role)
+    {
+        using var t = _transactor.BeginTransaction();
+        var group = t.ResourceDao.GetResourceGroupByGuid(resourceGroupId);
+        if (group == null)
+            throw new BadRequestException("Grupa nie istnieje.");
+        var response = t.ResourceDao.GetResourceGroupAssignments(resourceGroupId);
+
+        var directStudents = response.AccessPolicies
+            .Select(ac => ac.StudentGroup)
+                .Where(g => g != null && g.IsSingle)
+            .SelectMany(g => g!.Memberships)
+                .Where(m => m.Student != null)
+                .Select(m => m.Student!);
+
+        var resources = response.Memberships
+            .Where(m => m.Resource != null)
+            .Select(m => m.Resource!);
+
+        var studentGroups = response.AccessPolicies
+            .Where(ap => ap.StudentGroup != null && !ap.StudentGroup.IsSingle)
+            .Select(ac => ac.StudentGroup!);
+            
+
+        return new ResourceGroupAssignmentsDto()
+        {
+            Id = response.Guid.ToString(),
+            Name = response.Name,
+            DirectStudents = directStudents.Select(s => new StudentDto()
+            {
+                ExternalId = s.Id.ToString(),
+                Name = s.Name,
+                Surname = s.Surname,
+                PhoneNumber = s.PhoneNumber,
+                IsDeleted = s.IsDeleted,
+            }).ToList(),
+            Resources = resources.Select(r => new ResourceDto()
+            {
+                Id = r.Guid.ToString(),
+                Name = r.Filename
+            }).ToList(),
+            StudentGroups = studentGroups.Select(s => new StudentGroupDto()
+            {
+                Id = s.Guid.ToString(),
+                Name = s.Name
+            }).ToList()
+        };
+    }
+
     private readonly IFileStorageClient _fileStorage;
     private readonly ITransactor _transactor;
 }
