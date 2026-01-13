@@ -162,20 +162,31 @@ public class StudentService : IStudentService
     private static List<DbStudentMembership> CreateMemberships(
         IStudentDao dao, StudentGroupDto group)
     {
-        return group.Students.Select(s =>
+        List<int> ids = new List<int>();
+        if(group.StudentIds is null)
+            throw new BadRequestException("Nie podano uczniów");
+        
+        foreach (var externalId in group.StudentIds)
         {
-            if (s.ExternalId == null)
-                throw new BadRequestException("Null student ID encountered.");
-            var student = dao.GetStudent(int.Parse(s.ExternalId));
+            if (string.IsNullOrEmpty(externalId))
+                throw new BadRequestException("Podano puste id");
+                
+            var id = int.Parse(externalId);
+            var student = dao.GetStudent(id);
             if (student == null)
             {
                 throw new BadRequestException(
                     "Nie znaleziono jednego z podanych uczniów."
                     + " Prawdopodobnie został usunięty. Odśwież stronę i spróbuj ponownie.");
             }
+            ids.Add(id);
+        }
+        
+        return ids.Select(id =>
+        {
             return new DbStudentMembership
             {
-                StudentId = student.Id,
+                StudentId = id,
             };
         }).ToList();
     }

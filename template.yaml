@@ -833,7 +833,7 @@ Resources:
             Method: delete
             RestApiId: !Ref KorepetycjeApi
             
- GetStudetResources:
+  GetStudentResources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ./src/Endpoints/
