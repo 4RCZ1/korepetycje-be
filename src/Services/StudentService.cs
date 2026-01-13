@@ -105,31 +105,21 @@ public class StudentService : IStudentService
         studentToUpdate.PhoneNumber = String.IsNullOrEmpty(student.PhoneNumber)
             ? studentToUpdate.PhoneNumber : student.PhoneNumber;
         DbAddress? addressToUpdate = null;
-        if(int.TryParse(student?.Address?.ExternalId, out var addressId))
+        AddressDto? newAddress = student?.Address;
+        if (int.TryParse(newAddress?.ExternalId, out var addressId))
+        {
             addressToUpdate = t.AddressDao.GetAddress(addressId);
-        if (addressToUpdate is not null)
-        {
-            studentToUpdate!.Address!.AddressData = String.IsNullOrEmpty(student?.Address?.AddressData)
-                ? addressToUpdate.AddressData
-                : student.Address.AddressData;
-            studentToUpdate!.Address!.AddressName = String.IsNullOrEmpty(student?.Address?.AddressName)
-                ? addressToUpdate.AddressName
-                : student.Address.AddressName;
+            if(addressToUpdate is not null)
+                studentToUpdate.Address = addressToUpdate;
         }
-        else
+
+        if (addressToUpdate is null && newAddress is not null)
         {
-            if (student?.Address is not null)
+            studentToUpdate.Address = new DbAddress
             {
-                studentToUpdate.Address = new DbAddress
-                {
-                    AddressData = String.IsNullOrEmpty(student?.Address?.AddressData)
-                        ? studentToUpdate.Address!.AddressData
-                        : student.Address.AddressData,
-                    AddressName = String.IsNullOrEmpty(student?.Address?.AddressName)
-                        ? studentToUpdate.Address!.AddressName
-                        : student.Address.AddressName,
-                };
-            }
+                AddressData = newAddress!.AddressData ?? "",
+                AddressName = newAddress.AddressName ?? "",
+            };
         }
         t.StudentDao.SaveStudent(studentToUpdate);
         t.Commit();
