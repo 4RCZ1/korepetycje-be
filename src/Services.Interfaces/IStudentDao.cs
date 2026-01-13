@@ -14,5 +14,6 @@ public interface IStudentDao
     List<DbStudentGroup> GetAllStudentGroups();
     DbStudentGroup? GetStudentGroupByGuid(Guid groupGuid);
     void SaveStudentGroup(DbStudentGroup group);
-    public List<double> GetStudentMinutes(int studentId, DateTimeOffset startTime, DateTimeOffset endTim);
+    List<double> GetStudentMinutes(int studentId, DateTimeOffset startTime, DateTimeOffset endTim);
+    DbStudentGroup GetStudentGroupAssignments(Guid studentGroupId);
 }

@@ -13,4 +13,5 @@ public interface IStudentService
     void DeleteStudent(string studentExternalId, TutorRole role);
     void CreateStudentGroup(StudentGroupDto group, TutorRole role);
     ReportForInvoiceDto GetReportForInvoice(TutorRole role, string studentExternalId, string startTime, string endTime);
+    StudentGroupAssignmentsDto GetStudentGroupAssignments(Guid groupGuid, TutorRole role);
 }

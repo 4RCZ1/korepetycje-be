@@ -243,5 +243,57 @@ public class StudentService : IStudentService
         }
     }
 
+    public StudentGroupAssignmentsDto GetStudentGroupAssignments(Guid groupGuid, TutorRole role)
+    {
+        using var t = _transactor.BeginTransaction();
+        
+        var group = t.StudentDao.GetStudentGroupByGuid(groupGuid);
+        if (group == null)
+            throw new BadRequestException("Grupa nie istnieje.");
+        
+        var response = t.StudentDao.GetStudentGroupAssignments(groupGuid);
+
+        var directResources = response.AccessPolicies
+            .Select(ac => ac.ResourceGroup)
+            .Where(g => g != null && g.IsSingle)
+            .SelectMany(g => g!.Memberships)
+            .Where(m => m.Resource != null)
+            .Select(m => m.Resource!);
+
+        var students = response.Memberships
+            .Where(m => m.Student != null)
+            .Select(m => m.Student!);
+
+        var resourceGroups = response.AccessPolicies
+            .Where(ap => ap.ResourceGroup != null && !ap.ResourceGroup.IsSingle)
+            .Select(ac => ac.ResourceGroup!);
+            
+
+        return new StudentGroupAssignmentsDto()
+        {
+            Id = response.Guid.ToString(),
+            Name = response.Name,
+            DirectResources = directResources.Select(s => new ResourceDto()
+            {
+                Id = s.Guid.ToString(),
+                Name = s.Filename,
+            }).ToList(),
+            Students = students.Select(s => new StudentDto()
+            {
+                ExternalId = s.Id.ToString(),
+                Name = s.Name,
+                Surname = s.Surname,
+                PhoneNumber = s.PhoneNumber,
+                IsDeleted = s.IsDeleted,
+            }).ToList(),
+            ResourceGroups = resourceGroups.Select(s => new ResourceGroupDto()
+            {
+                Id = s.Guid.ToString(),
+                Name = s.Name,
+                Resources = []
+            }).ToList()
+        };
+    }
+
     private readonly ITransactor _transactor;
 }

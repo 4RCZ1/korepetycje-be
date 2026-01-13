@@ -128,6 +128,18 @@ internal class StudentDao : IStudentDao
 
         return [individualMinutes, groupMinutes];
     }
+    
+    public DbStudentGroup GetStudentGroupAssignments(Guid studentGroupId)
+    {
+        return _context.StudentGroups.Query()
+            .Include(g => g.Memberships)
+                .ThenInclude(rm => rm.Student)
+            .Include(g => g.AccessPolicies)
+                .ThenInclude(ap => ap.ResourceGroup)
+                    .ThenInclude(sg => sg.Memberships)
+                        .ThenInclude(sm => sm.Resource)
+            .SingleOrDefault(rg => rg.Guid == studentGroupId);
+    }
 
     public void SaveStudentGroup(DbStudentGroup group)
     {
