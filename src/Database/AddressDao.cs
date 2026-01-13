@@ -13,7 +13,7 @@ internal class AddressDao : IAddressDao
 
     public DbAddress? GetAddress(int addressId)
     {
-        return _context.Addresses.Query().AsNoTracking().SingleOrDefault(x => x.Id == addressId);
+        return _context.Addresses.Query().SingleOrDefault(x => x.Id == addressId);
     }
 
     public List<DbAddress> GetAddresses()

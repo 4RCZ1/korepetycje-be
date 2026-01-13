@@ -106,31 +106,21 @@ public class StudentService : IStudentService
         studentToUpdate.PhoneNumber = String.IsNullOrEmpty(student.PhoneNumber)
             ? studentToUpdate.PhoneNumber : student.PhoneNumber;
         DbAddress? addressToUpdate = null;
-        if(int.TryParse(student?.Address?.ExternalId, out var addressId))
+        AddressDto? newAddress = student?.Address;
+        if (int.TryParse(newAddress?.ExternalId, out var addressId))
+        {
             addressToUpdate = t.AddressDao.GetAddress(addressId);
-        if (addressToUpdate is not null)
-        {
-            studentToUpdate!.Address!.AddressData = String.IsNullOrEmpty(student?.Address?.AddressData)
-                ? addressToUpdate.AddressData
-                : student.Address.AddressData;
-            studentToUpdate!.Address!.AddressName = String.IsNullOrEmpty(student?.Address?.AddressName)
-                ? addressToUpdate.AddressName
-                : student.Address.AddressName;
+            if(addressToUpdate is not null)
+                studentToUpdate.Address = addressToUpdate;
         }
-        else
+
+        if (addressToUpdate is null && newAddress is not null)
         {
-            if (student?.Address is not null)
+            studentToUpdate.Address = new DbAddress
             {
-                studentToUpdate.Address = new DbAddress
-                {
-                    AddressData = String.IsNullOrEmpty(student?.Address?.AddressData)
-                        ? studentToUpdate.Address!.AddressData
-                        : student.Address.AddressData,
-                    AddressName = String.IsNullOrEmpty(student?.Address?.AddressName)
-                        ? studentToUpdate.Address!.AddressName
-                        : student.Address.AddressName,
-                };
-            }
+                AddressData = newAddress!.AddressData ?? "",
+                AddressName = newAddress.AddressName ?? "",
+            };
         }
         t.StudentDao.SaveStudent(studentToUpdate);
         t.Commit();
@@ -163,20 +153,31 @@ public class StudentService : IStudentService
     private static List<DbStudentMembership> CreateMemberships(
         IStudentDao dao, StudentGroupDto group)
     {
-        return group.Students.Select(s =>
+        List<int> ids = new List<int>();
+        if(group.StudentIds is null)
+            throw new BadRequestException("Nie podano uczniów");
+        
+        foreach (var externalId in group.StudentIds)
         {
-            if (s.ExternalId == null)
-                throw new BadRequestException("Null student ID encountered.");
-            var student = dao.GetStudent(int.Parse(s.ExternalId));
+            if (string.IsNullOrEmpty(externalId))
+                throw new BadRequestException("Podano puste id");
+                
+            var id = int.Parse(externalId);
+            var student = dao.GetStudent(id);
             if (student == null)
             {
                 throw new BadRequestException(
                     "Nie znaleziono jednego z podanych uczniów."
                     + " Prawdopodobnie został usunięty. Odśwież stronę i spróbuj ponownie.");
             }
+            ids.Add(id);
+        }
+        
+        return ids.Select(id =>
+        {
             return new DbStudentMembership
             {
-                StudentId = student.Id,
+                StudentId = id,
             };
         }).ToList();
     }

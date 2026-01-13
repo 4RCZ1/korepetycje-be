@@ -833,6 +833,24 @@ Resources:
             Method: delete
             RestApiId: !Ref KorepetycjeApi
             
+  GetStudentResources:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/Endpoints/
+      Handler: Endpoints::Endpoints.GetStudentResourcesFunction::GetStudentResources   
+      Runtime: dotnet8
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        GetLessons:
+          Type: Api
+          Properties:
+            Path: /api/assignment/student/{studentId}
+            Method: get
+            RestApiId: !Ref KorepetycjeApi
+           
   GetReportForInvoice:
     Type: AWS::Serverless::Function
     Properties:
@@ -849,6 +867,22 @@ Resources:
           Properties:
             Path: /api/report/{studentExternalId}
             Method: get
+            RestApiId: !Ref KorepetycjeApi         
+           
+  GetResourceStudents:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/Endpoints/
+      Handler: Endpoints::Endpoints.GetResourceStudentsFunction::GetResourceStudents
+      Runtime: dotnet8
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        GetLessons:
+          Type: Api
+          Properties:
+            Path: /api/students/resource/{resourceGuid}
+            Method: get
             RestApiId: !Ref KorepetycjeApi
-  
- 
