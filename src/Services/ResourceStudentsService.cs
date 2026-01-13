@@ -30,9 +30,9 @@ public class ResourceStudentsService : IResourceStudentsService
         };
     }
 
-    private List<StudentDto> MapToDto(List<DbStudent> students)
+    private List<StudentDto>? MapToDto(List<DbStudent>? students)
     {
-        return students.Select(s => new StudentDto
+        return students?.Select(s => new StudentDto
             { 
                 ExternalId = s.Id.ToString(),
                 Name = s.Name,
@@ -43,9 +43,9 @@ public class ResourceStudentsService : IResourceStudentsService
         ).ToList();
     }
 
-    private List<ResourceStudentsResponse.StudentGroupWithStudentsDto> MapToStudentGroupDto(List<DbStudentGroup> studentGroups)
+    private List<ResourceStudentsResponse.StudentGroupWithStudentsDto>? MapToStudentGroupDto(List<DbStudentGroup>? studentGroups)
     {
-        return studentGroups.Select(sg => new ResourceStudentsResponse.StudentGroupWithStudentsDto
+        return studentGroups?.Select(sg => new ResourceStudentsResponse.StudentGroupWithStudentsDto
         {
             Id = sg.Guid.ToString(), 
             Name = sg.Name, 
@@ -58,9 +58,9 @@ public class ResourceStudentsService : IResourceStudentsService
         }).ToList();
     }
 
-    private List<ResourceStudentsResponse.ResourceGroupWithStudentsDto> MapToDto(List<DbResourceGroup> resourceGroups)
+    private List<ResourceStudentsResponse.ResourceGroupWithStudentsDto>? MapToDto(List<DbResourceGroup>? resourceGroups)
     {
-        return resourceGroups.Select(rg => new ResourceStudentsResponse.ResourceGroupWithStudentsDto
+        return resourceGroups?.Select(rg => new ResourceStudentsResponse.ResourceGroupWithStudentsDto
         {
             Id = rg.Guid.ToString(), 
             Name = rg.Name, 
