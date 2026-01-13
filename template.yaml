@@ -868,3 +868,24 @@ Resources:
             Path: /api/students/resource/{resourceGuid}
             Method: get
             RestApiId: !Ref KorepetycjeApi
+            
+  GetResourceGroupAssignments:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/Endpoints/
+      Handler: Endpoints::Endpoints.Resources.GetResourcesGroupAssignmentsFunction::GetResourcesGroupAssignments
+      Runtime: dotnet8
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        GetLessons:
+          Type: Api
+          Properties:
+            Path: /api/assignment/resource-group/{resourceGroupGuid}
+            Method: get
+            RestApiId: !Ref KorepetycjeApi
+            
+            
+            

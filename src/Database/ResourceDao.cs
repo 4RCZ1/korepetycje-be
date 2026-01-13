@@ -145,5 +145,17 @@ internal class ResourceDao : IResourceDao
             && p.StudentGroup!.Memberships.Any(sm => sm.StudentId == studentId));
     }
 
+    public DbResourceGroup GetResourceGroupAssignments(Guid resourceGroupId)
+    {
+        return _context.ResourceGroups.Query()
+            .Include(g => g.Memberships)
+                .ThenInclude(rm => rm.Resource)
+            .Include(g => g.AccessPolicies)
+                .ThenInclude(ap => ap.StudentGroup)
+                    .ThenInclude(sg => sg.Memberships)
+                        .ThenInclude(sm => sm.Student)
+            .SingleOrDefault(rg => rg.Guid == resourceGroupId);
+    }
+
     private readonly TenantContext _context;
 }
