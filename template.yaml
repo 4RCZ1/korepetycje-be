@@ -797,6 +797,24 @@ Resources:
             Method: put
             RestApiId: !Ref KorepetycjeApi
 
+  UpdateStudentGroup:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/Endpoints/
+      Handler: Endpoints::Endpoints.StudentFunctions.UpdateStudentGroupFunction::UpdateStudentGroup
+      Runtime: dotnet8
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        GetLessons:
+          Type: Api
+          Properties:
+            Path: /api/student-group/{groupId}
+            Method: put
+            RestApiId: !Ref KorepetycjeApi
+
   CreateAccessPolicies:
     Type: AWS::Serverless::Function
     Properties:
@@ -832,12 +850,12 @@ Resources:
             Path: /api/assignment
             Method: delete
             RestApiId: !Ref KorepetycjeApi
-            
+
   GetStudentResources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ./src/Endpoints/
-      Handler: Endpoints::Endpoints.GetStudentResourcesFunction::GetStudentResources   
+      Handler: Endpoints::Endpoints.GetStudentResourcesFunction::GetStudentResources
       Runtime: dotnet8
       Architectures:
         - x86_64
@@ -850,7 +868,7 @@ Resources:
             Path: /api/assignment/student/{studentId}
             Method: get
             RestApiId: !Ref KorepetycjeApi
-           
+
   GetReportForInvoice:
     Type: AWS::Serverless::Function
     Properties:
@@ -867,8 +885,8 @@ Resources:
           Properties:
             Path: /api/report/{studentExternalId}
             Method: get
-            RestApiId: !Ref KorepetycjeApi         
-           
+            RestApiId: !Ref KorepetycjeApi
+
   GetResourceStudents:
     Type: AWS::Serverless::Function
     Properties:
@@ -886,7 +904,7 @@ Resources:
             Path: /api/students/resource/{resourceGuid}
             Method: get
             RestApiId: !Ref KorepetycjeApi
-            
+
   GetResourceGroupAssignments:
     Type: AWS::Serverless::Function
     Properties:
@@ -922,7 +940,3 @@ Resources:
             Path: /api/assignment/student-group/{studentGroupGuid}
             Method: get
             RestApiId: !Ref KorepetycjeApi
-            
-            
-            
-  

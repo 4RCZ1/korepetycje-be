@@ -108,27 +108,27 @@ internal class StudentDao : IStudentDao
             && a.Lesson.Timeslot.EndTime <= endTime).ToList();
         var studentLessonsIds = studentAttendances.Select(a => a.LessonId).ToList();
         var otherAttendances = _context.Attendances.Query()
-            .Where(a => studentLessonsIds.Contains(a.LessonId) 
+            .Where(a => studentLessonsIds.Contains(a.LessonId)
                         && a.StudentId != studentId
                         && a.IsConfirmed == true).ToList();
         var groupLessons = otherAttendances.Select(a => a.LessonId).ToList();
-        
+
         var individualAttendances = studentAttendances
             .Where(sa => !groupLessons.Contains(sa.LessonId)).ToList();
         var individualTimeslots = individualAttendances
             .Select(ia => ia.Lesson!.Timeslot!).ToList();
         double individualMinutes = individualTimeslots.Select(it => (it.EndTime - it.StartTime).TotalMinutes).Sum();
-        
+
         var groupAttendances = studentAttendances
             .Where(sa => groupLessons.Contains(sa.LessonId)).ToList();
         var groupTimeslots = groupAttendances
             .Where(ga => ga.Lesson != null && ga.Lesson.Timeslot != null)
-            .Select(ga => ga.Lesson!.Timeslot!).ToList();        
+            .Select(ga => ga.Lesson!.Timeslot!).ToList();
         double groupMinutes = groupTimeslots.Select(gt => (gt.EndTime - gt.StartTime).TotalMinutes).Sum();
 
         return [individualMinutes, groupMinutes];
     }
-    
+
     public DbStudentGroup GetStudentGroupAssignments(Guid studentGroupId)
     {
         return _context.StudentGroups.Query()
@@ -139,6 +139,12 @@ internal class StudentDao : IStudentDao
                     .ThenInclude(sg => sg.Memberships)
                         .ThenInclude(sm => sm.Resource)
             .SingleOrDefault(rg => rg.Guid == studentGroupId);
+    }
+
+    public void EmptyStudentGroup(int groupId)
+    {
+        _context.StudentMemberships.RemoveRange(
+            _context.StudentMemberships.Query().Where(m => m.GroupId == groupId));
     }
 
     public void SaveStudentGroup(DbStudentGroup group)

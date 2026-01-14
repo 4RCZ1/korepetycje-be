@@ -156,12 +156,12 @@ public class StudentService : IStudentService
         List<int> ids = new List<int>();
         if(group.StudentIds is null)
             throw new BadRequestException("Nie podano uczniów");
-        
+
         foreach (var externalId in group.StudentIds)
         {
             if (string.IsNullOrEmpty(externalId))
                 throw new BadRequestException("Podano puste id");
-                
+
             var id = int.Parse(externalId);
             var student = dao.GetStudent(id);
             if (student == null)
@@ -172,7 +172,7 @@ public class StudentService : IStudentService
             }
             ids.Add(id);
         }
-        
+
         return ids.Select(id =>
         {
             return new DbStudentMembership
@@ -211,10 +211,10 @@ public class StudentService : IStudentService
 
         var parsedStartTime = ParseDateTime(startTime);
         parsedStartTime = new DateTimeOffset(parsedStartTime.Date, parsedStartTime.Offset);
-        
+
         var parsedEndTime = ParseDateTime(endTime);
         parsedEndTime = new DateTimeOffset(parsedEndTime.Date.AddDays(1), parsedEndTime.Offset);
-        
+
         var minutesList = t.StudentDao.GetStudentMinutes(int.Parse(studentExternalId),parsedStartTime,
             parsedEndTime);
 
@@ -226,7 +226,7 @@ public class StudentService : IStudentService
 
         return report;
     }
-    
+
     private static DateTimeOffset ParseDateTime(string s)
     {
         if (DateTimeOffset.TryParse(
@@ -246,11 +246,11 @@ public class StudentService : IStudentService
     public StudentGroupAssignmentsDto GetStudentGroupAssignments(Guid groupGuid, TutorRole role)
     {
         using var t = _transactor.BeginTransaction();
-        
+
         var group = t.StudentDao.GetStudentGroupByGuid(groupGuid);
         if (group == null)
             throw new BadRequestException("Grupa nie istnieje.");
-        
+
         var response = t.StudentDao.GetStudentGroupAssignments(groupGuid);
 
         var directResources = response.AccessPolicies
@@ -267,7 +267,7 @@ public class StudentService : IStudentService
         var resourceGroups = response.AccessPolicies
             .Where(ap => ap.ResourceGroup != null && !ap.ResourceGroup.IsSingle)
             .Select(ac => ac.ResourceGroup!);
-            
+
 
         return new StudentGroupAssignmentsDto()
         {
@@ -293,6 +293,20 @@ public class StudentService : IStudentService
                 Resources = []
             }).ToList()
         };
+    }
+
+    public void UpdateStudentGroup(Guid groupId, StudentGroupDto newContent, TutorRole role)
+    {
+        using var t = _transactor.BeginTransaction();
+        var group = t.StudentDao.GetStudentGroupByGuid(groupId);
+        if (group == null)
+            throw new BadRequestException("Aktualizowana grupa została już usunięta.");
+        t.StudentDao.EmptyStudentGroup(group.Id);
+        group.Memberships = CreateMemberships(t.StudentDao, newContent);
+        if (newContent.Name != null)
+            group.Name = newContent.Name;
+        t.StudentDao.SaveStudentGroup(group);
+        t.Commit();
     }
 
     private readonly ITransactor _transactor;
