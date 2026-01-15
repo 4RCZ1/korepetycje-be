@@ -147,6 +147,14 @@ internal class StudentDao : IStudentDao
             _context.StudentMemberships.Query().Where(m => m.GroupId == groupId));
     }
 
+    public void DeleteGroupByGuid(Guid groupId)
+    {
+        var group = _context.StudentGroups.Query().SingleOrDefault(g => g.Guid == groupId);
+        if (group == null)
+            return;
+        _context.StudentGroups.Remove(group);
+    }
+
     public void SaveStudentGroup(DbStudentGroup group)
     {
         _context.StudentGroups.Update(group);
