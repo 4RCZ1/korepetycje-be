@@ -17,4 +17,5 @@ public interface IStudentDao
     List<double> GetStudentMinutes(int studentId, DateTimeOffset startTime, DateTimeOffset endTim);
     DbStudentGroup GetStudentGroupAssignments(Guid studentGroupId);
     void EmptyStudentGroup(int groupId);
+    void DeleteGroupByGuid(Guid groupId);
 }

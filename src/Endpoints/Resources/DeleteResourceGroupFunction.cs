@@ -11,9 +11,9 @@ public class DeleteResourceGroupFunction
         {
             var role = identity.RequireTutor();
             var service = await ServiceFactory.CreateResourceServiceAsync(identity);
-            var resourceId = RestIo.GetPathGuid(request, "groupId");
-            
-            service.DeleteResourceGroup(resourceId, role);
+            var groupId = RestIo.GetPathGuid(request, "groupId");
+
+            service.DeleteResourceGroup(groupId, role);
 
             return string.Empty;
         });

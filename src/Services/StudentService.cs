@@ -309,5 +309,12 @@ public class StudentService : IStudentService
         t.Commit();
     }
 
+    public void DeleteStudentGroup(Guid groupId, TutorRole role)
+    {
+        using var t = _transactor.BeginTransaction();
+        t.StudentDao.DeleteGroupByGuid(groupId);
+        t.Commit();
+    }
+
     private readonly ITransactor _transactor;
 }

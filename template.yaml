@@ -815,6 +815,24 @@ Resources:
             Method: put
             RestApiId: !Ref KorepetycjeApi
 
+  DeleteStudentGroup:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/Endpoints/
+      Handler: Endpoints::Endpoints.StudentFunctions.DeleteStudentGroupFunction::DeleteStudentGroup
+      Runtime: dotnet8
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        GetLessons:
+          Type: Api
+          Properties:
+            Path: /api/student-group/{groupId}
+            Method: delete
+            RestApiId: !Ref KorepetycjeApi
+
   CreateAccessPolicies:
     Type: AWS::Serverless::Function
     Properties:
