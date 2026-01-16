@@ -58,6 +58,7 @@ public class ResourceService : IResourceService
     {
         using var t = _transactor.BeginTransaction();
         var url = _fileStorage.GetUploadUrl(GetFilePath(filename, t));
+        t.ResourceDao.DeleteResourcesByFilename(filename);
         t.ResourceDao.SaveSingleResource(filename, $"(single) {filename}");
         t.Commit();
         return new ResourceUrlDto { Url = url };
@@ -287,7 +288,7 @@ public class ResourceService : IResourceService
         var studentGroups = response.AccessPolicies
             .Where(ap => ap.StudentGroup != null && !ap.StudentGroup.IsSingle)
             .Select(ac => ac.StudentGroup!);
-            
+
 
         return new ResourceGroupAssignmentsDto()
         {

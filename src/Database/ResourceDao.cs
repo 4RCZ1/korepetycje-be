@@ -48,6 +48,17 @@ internal class ResourceDao : IResourceDao
         _context.Resources.Remove(resource);
     }
 
+    public void DeleteResourcesByFilename(string filename)
+    {
+        var resources = _context.Resources.Query().Where(r => r.Filename == filename).ToList();
+        foreach (var resource in resources)
+        {
+            var singleGroup = GetResourceSingleGroupByResourceId(resource.Id);
+            _context.Resources.Remove(resource);
+            _context.ResourceGroups.Remove(singleGroup);
+        }
+    }
+
     public void SaveResourceGroup(DbResourceGroup group)
     {
         _context.ResourceGroups.Update(group);

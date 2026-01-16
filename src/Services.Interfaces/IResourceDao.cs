@@ -9,6 +9,7 @@ public interface IResourceDao
     IList<DbResourceGroup> GetAllResourceGroups();
     void SaveSingleResource(string filename, string singleGroupName);
     void DeleteResource(DbResource resource);
+    void DeleteResourcesByFilename(string filename);
     void DeleteGroupByGuid(Guid groupId);
     void SaveResourceGroup(DbResourceGroup group);
     void EmptyResourceGroup(int groupId);
