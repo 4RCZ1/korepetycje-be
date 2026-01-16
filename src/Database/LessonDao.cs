@@ -1,4 +1,5 @@
 ﻿using Database.Entities;
+using Endpoints.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Services.Interfaces;
 
@@ -100,7 +101,7 @@ internal class LessonDao : ILessonDao
     {
         var timeslotsToTake = schedule.Lessons.Select(l => l.Timeslot!).ToList();
         if (DetectCollisions(timeslotsToTake))
-            throw new ApplicationException("There are colliding lessons!");
+            throw new BadRequestException("Nie udało się zaplanować lekcji, ponieważ lekcje nie mogą się nakładać.");
         _context.Schedules.Add(schedule);
     }
 
