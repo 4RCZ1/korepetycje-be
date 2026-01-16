@@ -16,9 +16,7 @@ internal class CognitoClient
         }
         catch (NotAuthorizedException)
         {
-            throw new BadRequestException(
-                "Wystąpił błąd uwierzytelniania." +
-                " Spróbuj odświeżyć stronę lub zalogować się ponownie.");
+            throw CreateUserErrorException();
         }
     }
 
@@ -62,17 +60,24 @@ internal class CognitoClient
     public async Task<InitiateAuthResponse> InitiateAuthAsync(
         string username, string password, string appClientId, string appClientSecret)
     {
-        return await _impl.InitiateAuthAsync(new InitiateAuthRequest
+        try
         {
-            AuthFlow = AuthFlowType.USER_PASSWORD_AUTH,
-            AuthParameters = new Dictionary<string, string>
+            return await _impl.InitiateAuthAsync(new InitiateAuthRequest
             {
-                { "USERNAME", username },
-                { "PASSWORD", password },
-                { "SECRET_HASH", ComputeSecretHash(username, appClientId, appClientSecret) },
-            },
-            ClientId = appClientId,
-        });
+                AuthFlow = AuthFlowType.USER_PASSWORD_AUTH,
+                AuthParameters = new Dictionary<string, string>
+                {
+                    { "USERNAME", username },
+                    { "PASSWORD", password },
+                    { "SECRET_HASH", ComputeSecretHash(username, appClientId, appClientSecret) },
+                },
+                ClientId = appClientId,
+            });
+        }
+        catch (NotAuthorizedException)
+        {
+            throw CreateUserErrorException();
+        }
     }
 
     public async Task<RespondToAuthChallengeResponse> RespondToAuthChallengeAsync(
@@ -104,6 +109,13 @@ internal class CognitoClient
         var hmac = new HMACSHA256(ascii.GetBytes(appClientSecret));
         var hash = hmac.ComputeHash(ascii.GetBytes(username + appClientId));
         return Convert.ToBase64String(hash);
+    }
+
+    private static BadRequestException CreateUserErrorException()
+    {
+        return new BadRequestException(
+            "Wystąpił błąd uwierzytelniania." +
+            " Spróbuj odświeżyć stronę lub zalogować się ponownie.");
     }
 
     private readonly AmazonCognitoIdentityProviderClient _impl = new();
